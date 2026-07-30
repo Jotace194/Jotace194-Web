@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>JOTACE194 - Redes Oficiales</title>
+<meta name="description" content="Conecta con todas las redes oficiales y canales de comunidad de JOTACE194.">
+<link rel="icon" href="img/avatar.webp">
+<style>
+:root{
+  --naranja:#FF6600; --naranja-claro:#FF8833; --naranja-oscuro:#CC5200;
+  --negro:#030202; --carbon:#0A0808; --carbon-claro:#141111;
+  --turquesa:#8AE6DF; --hueso:#F7F2EC; --tenue:#8C827A; 
+  --twitch:#9146FF; --discord:#5865F2; --youtube:#FF0000; --instagram:#E1306C; --tiktok:#EE1D52;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--negro);color:var(--hueso);font-family:'Segoe UI',sans-serif;line-height:1.7;text-rendering:optimizeLegibility;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+.wrap{max-width:1000px;margin:0 auto;padding:0 24px}
+
+.navbar{position:fixed;top:0;left:0;width:100%;z-index:1000;background:rgba(3,2,2,0.92);backdrop-filter:blur(12px);border-bottom:1px solid rgba(255,102,0,.15)}
+.nav-wrap{max-width:1200px;margin:0 auto;padding:0 24px;display:flex;align-items:center;justify-content:space-between;height:70px}
+.nav-logo img{height:40px;width:40px;object-fit:cover;border-radius:50%;border:2px solid var(--naranja)}
+.nav-links{display:flex;gap:26px;align-items:center;list-style:none}
+.nav-links a{font-size:.9rem;color:var(--tenue);font-weight:600;text-decoration:none;transition:color .2s ease}
+.nav-links a:hover, .nav-links a.active{color:var(--naranja-claro);text-shadow:0 0 10px rgba(255,136,51,.3)}
+.nav-cta{padding:8px 16px !important;font-size:.85rem !important; color:#030202 !important;}
+.nav-toggle{display:none;background:none;border:none;cursor:pointer;flex-direction:column;gap:5px;z-index:1001}
+.nav-toggle span{display:block;width:25px;height:2px;background:var(--hueso);transition:0.3s}
+
+/* Canvas de Fuego Global para Cabeceras */
+.header-fire-bg{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:0;}
+
+.networks-header{position:relative;padding:130px 0 35px;text-align:center;animation: fadeInDown 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;}
+.networks-tag{font-size:.72rem;letter-spacing:.3em;text-transform:uppercase;color:var(--naranja);font-weight:700;position:relative;z-index:1;}
+.networks-header h1{font-size:clamp(2.3rem,5vw,3.6rem);font-weight:900;color:var(--hueso);margin-top:6px;margin-bottom:10px;position:relative;z-index:1;}
+.networks-header p{color:var(--tenue);max-width:550px;margin:0 auto;font-size:1.05rem;position:relative;z-index:1;}
+
+.networks-grid{display:grid;grid-template-columns:repeat(auto-fit, minmax(280px, 1fr));gap:24px;padding:20px 0 60px}
+
+.network-card{
+  background:var(--carbon);border:1px solid rgba(255,102,0,.2);border-radius:16px;
+  padding:30px;text-align:center;position:relative;overflow:hidden;
+  transition:transform .3s cubic-bezier(0.16, 1, 0.3, 1), border-color .3s ease, box-shadow .3s ease;
+  box-shadow:0 10px 30px rgba(0,0,0,0.5);display:flex;flex-direction:column;align-items:center;
+  text-decoration:none;opacity:0;transform:translateY(20px);animation: fadeInUp 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.network-card:nth-child(1) { animation-delay: 0.1s; }
+.network-card:nth-child(2) { animation-delay: 0.2s; }
+.network-card:nth-child(3) { animation-delay: 0.3s; }
+.network-card:nth-child(4) { animation-delay: 0.4s; }
+.network-card:nth-child(5) { animation-delay: 0.5s; }
+
+.network-card::before{
+  content:'';position:absolute;top:0;left:0;width:100%;height:3px;background:var(--naranja);transition:background .3s ease;
+}
+
+.network-card.twitch::before{background:var(--twitch);}
+.network-card.youtube::before{background:var(--youtube);}
+.network-card.discord::before{background:var(--discord);}
+.network-card.instagram::before{background:var(--instagram);}
+.network-card.tiktok::before{background:var(--tiktok);}
+
+.network-card:hover{
+  transform:translateY(-8px) scale(1.01);border-color:var(--naranja);
+  box-shadow:0 20px 45px rgba(0,0,0,.8), 0 0 25px rgba(255,102,0,.25);
+}
+
+.network-icon{
+  width:64px;height:64px;border-radius:16px;background:rgba(255,255,255,.05);
+  display:flex;align-items:center;justify-content:center;font-size:1.8rem;margin-bottom:20px;
+  border:1px solid rgba(255,255,255,.08);transition:transform 0.3s ease, background 0.3s ease;
+}
+
+.network-card:hover .network-icon {transform: scale(1.1) rotate(5deg);background: rgba(255,255,255,.08);}
+
+.network-title{font-size:1.3rem;font-weight:800;color:var(--hueso);margin-bottom:8px}
+.network-desc{color:var(--tenue);font-size:0.9rem;margin-bottom:24px;line-height:1.5}
+
+.network-btn{
+  margin-top:auto;display:inline-flex;align-items:center;gap:8px;padding:10px 22px;
+  border-radius:10px;font-weight:700;font-size:0.9rem;background:rgba(255,102,0,.15);
+  color:var(--naranja-claro);border:1px solid rgba(255,102,0,.3);transition:all .25s ease;
+}
+
+.network-card.twitch .network-btn{background:rgba(145,70,255,.15);color:#b985ff;border-color:rgba(145,70,255,.3);}
+.network-card.youtube .network-btn{background:rgba(255,0,0,.15);color:#ff6666;border-color:rgba(255,0,0,.3);}
+.network-card.discord .network-btn{background:rgba(88,101,242,.15);color:#8ea1ff;border-color:rgba(88,101,242,.3);}
+.network-card.instagram .network-btn{background:rgba(225,48,108,.15);color:#ff7cb0;border-color:rgba(225,48,108,.3);}
+.network-card.tiktok .network-btn{background:rgba(238,29,82,.15);color:#ff85a1;border-color:rgba(238,29,82,.3);}
+
+.network-card:hover .network-btn{background:var(--naranja);color:var(--negro);border-color:var(--naranja);box-shadow: 0 4px 15px rgba(255,102,0,.4);}
+
+@keyframes fadeInUp { to { opacity: 1; transform: translateY(0); } }
+@keyframes fadeInDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+
+footer{padding:35px 0;border-top:1px solid rgba(255,102,0,.15);text-align:center;color:var(--tenue);font-size:.85rem;background:var(--carbon)}
+footer a{color:var(--naranja-claro)}
+
+@media(max-width:768px){
+  .nav-toggle{display:flex}
+  .nav-links{
+    position:absolute;top:70px;left:0;width:100%;background:rgba(3,2,2,0.98);
+    backdrop-filter:blur(12px);flex-direction:column;align-items:center;padding:24px 0;
+    border-bottom:1px solid rgba(255,102,0,.15);display:none;
+  }
+  .nav-links.open{display:flex}
+  .wrap{padding:0 16px}
+}
+</style>
+</head>
+<body>
+
+<nav class="navbar">
+  <div class="nav-wrap">
+    <a class="nav-logo" href="index.html">
+      <img src="img/avatar.jpeg" alt="Logo de Jotace194">
+    </a>
+    <button class="nav-toggle" id="navToggle" aria-label="Abrir menú de navegación">
+      <span></span><span></span><span></span>
+    </button>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="index.html">Inicio</a></li>
+      <li><a href="universo.html">Universo</a></li>
+      <li><a href="salon.html">Salón</a></li>
+      <li><a href="redes.html" class="active">Redes</a></li>
+      <li><a class="btn p nav-cta" href="https://twitch.tv/jotace194" target="_blank" rel="noopener noreferrer">▶ Twitch</a></li>
+    </ul>
+  </div>
+</nav>
+
+<main class="wrap">
+  <header class="networks-header">
+    <canvas id="fire-particles" class="header-fire-bg"></canvas>
+    <span class="networks-tag">Conexiones Oficiales</span>
+    <h1>Canales y Redes</h1>
+    <p>Sigue de cerca cada directo, vídeo y novedad de la comunidad en todas las plataformas oficiales.</p>
+  </header>
+
+  <div class="networks-grid">
+    <a href="https://twitch.tv/jotace194" class="network-card twitch" target="_blank" rel="noopener noreferrer">
+      <div class="network-icon">👾</div>
+      <h3 class="network-title">Twitch</h3>
+      <p class="network-desc">Directos casi diarios, partidas en directo, charlas con el chat y risas aseguradas.</p>
+      <span class="network-btn">Seguir en Twitch</span>
+    </a>
+
+    <a href="https://www.youtube.com/@Jotace194" class="network-card youtube" target="_blank" rel="noopener noreferrer">
+      <div class="network-icon">▶️</div>
+      <h3 class="network-title">YouTube</h3>
+      <p class="network-desc">Vídeos oficiales recopilatorios, gameplays destacados y clips cortos verticales (Shorts).</p>
+      <span class="network-btn">Visitar Canal</span>
+    </a>
+
+    <a href="https://discord.gg/4ARhx4fUQG" class="network-card discord" target="_blank" rel="noopener noreferrer">
+      <div class="network-icon">💬</div>
+      <h3 class="network-title">Discord ("El Refugio")</h3>
+      <p class="network-desc">El punto de encuentro oficial de la comunidad para debatir, compartir fanarts y enterarse de todo.</p>
+      <span class="network-btn">Unirse al Servidor</span>
+    </a>
+
+    <a href="https://instagram.com/j0tace194" class="network-card instagram" target="_blank" rel="noopener noreferrer">
+      <div class="network-icon">📸</div>
+      <h3 class="network-title">Instagram</h3>
+      <p class="network-desc">Publicaciones especiales, historias del día a día y momentos destacados fuera de cámara.</p>
+      <span class="network-btn">Seguir en Instagram</span>
+    </a>
+
+    <a href="https://www.tiktok.com/@Jotace.194" class="network-card tiktok" target="_blank" rel="noopener noreferrer">
+      <div class="network-icon">🎬</div>
+      <h3 class="network-title">TikTok</h3>
+      <p class="network-desc">Clips cortos directos, momentos graciosos y contenido dinámico de los directos.</p>
+      <span class="network-btn">Seguir en TikTok</span>
+    </a>
+  </div>
+</main>
+
+<footer>
+  <div class="wrap">
+    <p>Web Oficial de Jotace194</p>
+    <p style="margin-top:8px;opacity:.7">Vinculada a <a href="https://mundoluckyboy.com" target="_blank" rel="noopener noreferrer">Mundo Luckyboy</a> 🍀</p>
+  </div>
+</footer>
+
+<script>
+document.getElementById('navToggle').addEventListener('click', () => {
+  document.getElementById('navLinks').classList.toggle('open');
+});
+
+(function initFireEmbers() {
+  const canvas = document.getElementById('fire-particles');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  let width, height;
+  let particles = [];
+
+  function resize() {
+    width = canvas.width = canvas.offsetWidth;
+    height = canvas.height = canvas.offsetHeight;
+  }
+  window.addEventListener('resize', resize);
+  resize();
+
+  const colors = ['rgba(255, 102, 0, ', 'rgba(255, 136, 51, ', 'rgba(204, 82, 0, ', 'rgba(255, 200, 100, '];
+
+  class Ember {
+    constructor() { this.reset(); }
+    reset() {
+      this.x = Math.random() * width;
+      this.y = height + Math.random() * 50;
+      this.size = Math.random() * 2.8 + 0.8;
+      this.speedY = Math.random() * 1.2 + 0.4;
+      this.speedX = (Math.random() - 0.5) * 0.8;
+      this.baseAlpha = Math.random() * 0.6 + 0.2;
+      this.alpha = this.baseAlpha;
+      this.decay = Math.random() * 0.008 + 0.002;
+      this.color = colors[Math.floor(Math.random() * colors.length)];
+    }
+    update() {
+      this.y -= this.speedY;
+      this.x += this.speedX + Math.sin(this.y * 0.02) * 0.3;
+      this.alpha -= this.decay * 0.2;
+      if (this.y < 0 || this.alpha <= 0) { this.reset(); }
+    }
+    draw() {
+      ctx.save();
+      ctx.globalAlpha = Math.max(this.alpha, 0);
+      ctx.fillStyle = this.color + this.alpha + ')';
+      ctx.shadowBlur = 10;
+      ctx.shadowColor = '#FF6600';
+      ctx.beginPath();
+      ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+    }
+  }
+
+  const particleCount = Math.floor(window.innerWidth < 768 ? 20 : 45);
+  for (let i = 0; i < particleCount; i++) {
+    const p = new Ember();
+    p.y = Math.random() * height;
+    particles.push(p);
+  }
+
+  function animate() {
+    ctx.clearRect(0, 0, width, height);
+    particles.forEach(p => { p.update(); p.draw(); });
+    requestAnimationFrame(animate);
+  }
+  animate();
+})();
+</script>
+</body>
+</html>

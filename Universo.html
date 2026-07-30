@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>JOTACE194 - Universo</title>
+<meta name="description" content="Universo, estadísticas en directo y multimedia del canal de YouTube y Twitch @Jotace194.">
+<link rel="icon" href="img/avatar.webp">
+<style>
+:root{
+  --naranja:#FF6600; --naranja-claro:#FF8833; --naranja-oscuro:#CC5200;
+  --negro:#030202; --carbon:#0A0808; --carbon-claro:#141111;
+  --turquesa:#8AE6DF; --hueso:#F7F2EC; --tenue:#8C827A; --twitch:#9146FF;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--negro);color:var(--hueso);font-family:'Segoe UI',sans-serif;line-height:1.7;text-rendering:optimizeLegibility;-webkit-font-smoothing:antialiased}
+.wrap{max-width:1200px;margin:0 auto;padding:0 24px}
+
+.navbar{position:fixed;top:0;left:0;width:100%;z-index:1000;background:rgba(3,2,2,0.92);backdrop-filter:blur(12px);border-bottom:1px solid rgba(255,102,0,.15)}
+.nav-wrap{max-width:1200px;margin:0 auto;padding:0 24px;display:flex;align-items:center;justify-content:space-between;height:70px}
+.nav-logo img{height:40px;width:40px;object-fit:cover;border-radius:50%;border:2px solid var(--naranja)}
+.nav-links{display:flex;gap:26px;align-items:center;list-style:none}
+.nav-links a{font-size:.9rem;color:var(--tenue);font-weight:600;text-decoration:none;transition:color .2s ease}
+.nav-links a:hover, .nav-links a.active{color:var(--naranja-claro);text-shadow:0 0 10px rgba(255,136,51,.3)}
+.nav-cta{padding:8px 16px !important;font-size:.85rem !important; color:#030202 !important;}
+.nav-toggle{display:none;background:none;border:none;cursor:pointer;flex-direction:column;gap:5px;z-index:1001}
+.nav-toggle span{display:block;width:25px;height:2px;background:var(--hueso);transition:0.3s}
+
+.btn{display:inline-flex;align-items:center;gap:9px;padding:13px 26px;border-radius:11px;font-weight:700;font-size:.95rem;border:1px solid rgba(255,102,0,.25);background:rgba(10,8,8,.6);transition:all .25s ease;backdrop-filter:blur(6px);cursor:pointer;text-decoration:none;color:var(--hueso)}
+.btn:hover{transform:translateY(-2px);border-color:var(--naranja);box-shadow:0 0 20px rgba(255,102,0,.25)}
+.btn.p{background:var(--naranja);border-color:var(--naranja);color:#030202;box-shadow:0 4px 20px rgba(255,102,0,.35)}
+.btn.p:hover{background:var(--naranja-claro);box-shadow:0 8px 30px rgba(255,102,0,.5)}
+
+/* Canvas Fuego Cabecera */
+.header-fire-bg{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:0;}
+
+.story-header{position:relative;padding:130px 0 15px;text-align:center}
+.story-tag{font-size:.72rem;letter-spacing:.3em;text-transform:uppercase;color:var(--naranja);font-weight:700;position:relative;z-index:1;}
+.story-header h1{font-size:clamp(2.3rem,5vw,3.6rem);font-weight:900;color:var(--hueso);margin-top:6px;margin-bottom:10px;position:relative;z-index:1;}
+.story-header p{color:var(--tenue);max-width:600px;margin:0 auto;font-size:1.05rem;position:relative;z-index:1;}
+
+.live-stats-section { padding: 15px 0 35px; }
+.live-card {
+  background: var(--carbon);border: 1px solid rgba(255,102,0,.25);border-radius: 16px;
+  padding: 30px;text-align: center;position: relative;overflow: hidden;box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+}
+.live-card::before {
+  content: '';position: absolute;top: 0; left: 0; width: 100%; height: 3px;
+  background: linear-gradient(90deg, var(--naranja), var(--twitch));
+}
+.live-status-badge {
+  display: inline-flex;align-items: center;gap: 8px;padding: 6px 16px;
+  border-radius: 30px;font-size: 0.8rem;font-weight: 700;letter-spacing: 0.1em;
+  text-transform: uppercase;margin-bottom: 16px;background: rgba(10,8,8,.8);border: 1px solid rgba(255,255,255,.1);
+}
+.live-dot {width: 10px;height: 10px;border-radius: 50%;background: var(--tenue);display: inline-block;}
+.live-status-badge.online {border-color: rgba(255,0,0,0.4);color: #ff4444;}
+.live-status-badge.online .live-dot {background: #ff4444;box-shadow: 0 0 10px #ff4444;animation: pulse-dot 1.5s infinite;}
+.live-status-badge.offline {border-color: rgba(140,130,122,0.3);color: var(--tenue);}
+@keyframes pulse-dot {
+  0% { transform: scale(0.95); opacity: 0.8; }
+  50% { transform: scale(1.3); opacity: 1; box-shadow: 0 0 15px #ff4444; }
+  100% { transform: scale(0.95); opacity: 0.8; }
+}
+
+.timer-display {
+  font-size: clamp(2.5rem, 6vw, 4.5rem);font-weight: 900;font-family: monospace;
+  color: var(--hueso);letter-spacing: 2px;margin: 10px 0;text-shadow: 0 0 20px rgba(255,102,0,.2);
+}
+.live-card p {color: var(--tenue);font-size: 0.95rem;max-width: 500px;margin: 0 auto 20px;}
+
+.gallery-section{padding:25px 0 45px}
+.section-heading {font-size: 1.6rem;font-weight: 800;color: var(--hueso);margin-bottom: 6px;border-left: 4px solid var(--naranja);padding-left: 12px;}
+.section-subtext {color: var(--tenue);font-size: 0.92rem;margin-bottom: 20px;}
+
+.horizontal-carousel{
+  display: flex;gap: 24px;overflow-x: auto;overflow-y: hidden;
+  padding: 10px 4px 20px 4px;scroll-behavior: smooth;scrollbar-width: thin;scrollbar-color: var(--naranja) var(--carbon);
+}
+.horizontal-carousel::-webkit-scrollbar { height: 8px; }
+.horizontal-carousel::-webkit-scrollbar-track { background: var(--carbon); border-radius: 4px; }
+.horizontal-carousel::-webkit-scrollbar-thumb { background: var(--naranja); border-radius: 4px; }
+
+.video-card {
+  flex: 0 0 380px;background: var(--carbon);border: 1px solid rgba(255,102,0,.18);
+  border-radius: 14px;overflow: hidden;transition: transform .3s ease, border-color .3s ease, box-shadow .3s ease;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.5);display: flex;flex-direction: column;
+}
+.video-card:hover{transform: translateY(-5px);border-color: var(--naranja);box-shadow: 0 16px 40px rgba(0,0,0,.8), 0 0 20px rgba(255,102,0,.2);}
+
+.short-card {
+  flex: 0 0 240px;background: var(--carbon);border: 1px solid rgba(255,102,0,.18);
+  border-radius: 14px;overflow: hidden;transition: transform .3s ease, border-color .3s ease, box-shadow .3s ease;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.5);display: flex;flex-direction: column;
+}
+.short-card:hover{transform: translateY(-5px);border-color: var(--naranja);box-shadow: 0 16px 40px rgba(0,0,0,.8), 0 0 20px rgba(255,102,0,.2);}
+
+.card-video-wrap { width: 100%; aspect-ratio: 16/9; background: #000; position: relative; }
+.card-video-wrap iframe { width: 100%; height: 100%; border: none; }
+.card-short-wrap { width: 100%; aspect-ratio: 9/16; background: #000; position: relative; }
+.card-short-wrap iframe { width: 100%; height: 100%; border: none; }
+
+.card-body{ padding:16px; display:flex; flex-direction:column; flex-grow:1; }
+.card-tag{ font-size:0.68rem; letter-spacing:0.18em; text-transform:uppercase; color:var(--turquesa); font-weight:700; margin-bottom:6px; }
+.card-title{ font-size:1.05rem; color:var(--hueso); margin-bottom:6px; font-weight:800; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+.card-desc{ color:var(--tenue); font-size:0.82rem; line-height:1.4; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+
+footer{padding:35px 0;border-top:1px solid rgba(255,102,0,.15);text-align:center;color:var(--tenue);font-size:.85rem;background:var(--carbon)}
+footer a{color:var(--naranja-claro)}
+
+@media(max-width:768px){
+  .nav-toggle{display:flex}
+  .nav-links{
+    position:absolute;top:70px;left:0;width:100%;background:rgba(3,2,2,0.98);
+    backdrop-filter:blur(12px);flex-direction:column;align-items:center;padding:24px 0;
+    border-bottom:1px solid rgba(255,102,0,.15);display:none;
+  }
+  .nav-links.open{display:flex}
+  .wrap{padding:0 16px}
+  .video-card { flex: 0 0 300px; }
+  .short-card { flex: 0 0 210px; }
+}
+</style>
+</head>
+<body>
+
+<nav class="navbar">
+  <div class="nav-wrap">
+    <a class="nav-logo" href="index.html">
+      <img src="img/avatar.jpeg" alt="Logo de Jotace194">
+    </a>
+    <button class="nav-toggle" id="navToggle" aria-label="Abrir menú de navegación">
+      <span></span><span></span><span></span>
+    </button>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="index.html">Inicio</a></li>
+      <li><a href="universo.html" class="active">Universo</a></li>
+      <li><a href="salon.html">Salón</a></li>
+      <li><a href="redes.html">Redes</a></li>
+      <li><a class="btn p nav-cta" href="https://twitch.tv/jotace194" target="_blank" rel="noopener noreferrer">▶ Twitch</a></li>
+    </ul>
+  </div>
+</nav>
+
+<main class="wrap">
+  <header class="story-header">
+    <canvas id="fire-particles" class="header-fire-bg"></canvas>
+    <span class="story-tag">Multimedia</span>
+    <h1>Universo de Jotace194</h1>
+    <p>Explora el estado de la comunidad en directo y el contenido multimedia reciente.</p>
+  </header>
+
+  <section class="live-stats-section">
+    <div class="live-card">
+      <div id="liveBadge" class="live-status-badge offline">
+        <span class="live-dot"></span>
+        <span id="liveBadgeText">Comprobando estado...</span>
+      </div>
+      <div id="liveTimer" class="timer-display">00:00:00</div>
+      <p id="liveDescription">El cronómetro se sincroniza automáticamente en tiempo real cuando el canal de Twitch se pone en marcha.</p>
+      <a class="btn p" href="https://twitch.tv/jotace194" target="_blank" rel="noopener noreferrer">Ir al Canal de Twitch</a>
+    </div>
+  </section>
+
+  <section class="gallery-section">
+    <h2 class="section-heading">Vídeos de YouTube</h2>
+    <p class="section-subtext">Últimos vídeos subidos del canal.</p>
+    <div class="horizontal-carousel" id="youtube-feed-grid">
+      <p style="color: var(--tenue);">Cargando vídeos recientes...</p>
+    </div>
+  </section>
+
+  <section class="gallery-section" style="padding-bottom: 60px;">
+    <h2 class="section-heading">Shorts de YouTube</h2>
+    <p class="section-subtext">Todos los Shorts del canal.</p>
+    <div class="horizontal-carousel" id="youtube-shorts-grid">
+      <p style="color: var(--tenue);">Cargando reels recientes...</p>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <p>Web Oficial de Jotace194</p>
+    <p style="margin-top:8px;opacity:.7">Vinculada a <a href="https://mundoluckyboy.com" target="_blank" rel="noopener noreferrer">Mundo Luckyboy</a> 🍀</p>
+  </div>
+</footer>
+
+<script>
+document.getElementById('navToggle').addEventListener('click', () => {
+  document.getElementById('navLinks').classList.toggle('open');
+});
+
+document.addEventListener("DOMContentLoaded", () => {
+  const carousels = document.querySelectorAll(".horizontal-carousel");
+  carousels.forEach(carousel => {
+    carousel.addEventListener("wheel", (evt) => {
+      if (evt.deltaY !== 0) {
+        evt.preventDefault();
+        carousel.scrollLeft += evt.deltaY;
+      }
+    }, { passive: false });
+  });
+});
+
+let streamSeconds = 0;
+let timerInterval = null;
+let isCurrentlyLive = false;
+
+function formatTime(totalSeconds) {
+  const hours = String(Math.floor(totalSeconds / 3600)).padStart(2, '0');
+  const minutes = String(Math.floor((totalSeconds % 3600) / 60)).padStart(2, '0');
+  const seconds = String(totalSeconds % 60).padStart(2, '0');
+  return `${hours}:${minutes}:${seconds}`;
+}
+
+function checkTwitchStatus() {
+  const channelName = "jotace194";
+  const apiUrl = `https://decapi.me/twitch/uptime/${channelName}`;
+
+  fetch(apiUrl)
+    .then(response => response.text())
+    .then(text => {
+      const badge = document.getElementById("liveBadge");
+      const badgeText = document.getElementById("liveBadgeText");
+      const timerElem = document.getElementById("liveTimer");
+      const descElem = document.getElementById("liveDescription");
+
+      if (text.includes("offline") || text.includes("not live") || text.includes("No such channel") || text.includes("Error")) {
+        if (isCurrentlyLive) {
+          isCurrentlyLive = false;
+          clearInterval(timerInterval);
+          streamSeconds = 0;
+        }
+        badge.className = "live-status-badge offline";
+        badgeText.textContent = "Transmisión Offline";
+        timerElem.textContent = "00:00:00";
+        descElem.textContent = "El canal está desconectado en este momento. Vuelve pronto para el siguiente directo.";
+      } else {
+        if (!isCurrentlyLive) {
+          isCurrentlyLive = true;
+          streamSeconds = parseUptimeToSeconds(text);
+          clearInterval(timerInterval);
+          timerInterval = setInterval(() => {
+            streamSeconds++;
+            timerElem.textContent = formatTime(streamSeconds);
+          }, 1000);
+        }
+        badge.className = "live-status-badge online";
+        badgeText.textContent = "🔴 En Directo Ahora";
+        timerElem.textContent = formatTime(streamSeconds);
+        descElem.textContent = "¡Directo activo! El contador registra el tiempo de emisión en tiempo real.";
+      }
+    })
+    .catch(err => { console.error("Error comprobando estado de Twitch:", err); });
+}
+
+function parseUptimeToSeconds(text) {
+  let hours = 0, minutes = 0, seconds = 0;
+  const hMatch = text.match(/(\d+)\s*h/);
+  const mMatch = text.match(/(\d+)\s*m/);
+  const sMatch = text.match(/(\d+)\s*s/);
+  if (hMatch) hours = parseInt(hMatch[1], 10);
+  if (mMatch) minutes = parseInt(mMatch[1], 10);
+  if (sMatch) seconds = parseInt(sMatch[1], 10);
+  return (hours * 3600) + (minutes * 60) + seconds;
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  checkTwitchStatus();
+  setInterval(checkTwitchStatus, 60000);
+});
+
+document.addEventListener("DOMContentLoaded", () => {
+  const channelID = "UCo3_1E20kq3zv2MbHhXl2xg"; 
+  const rssUrl = `https://api.rss2json.com/v1/api.json?rss_url=https%3A%2F%2Fwww.youtube.com%2Ffeeds%2Fvideos.xml%3Fchannel_id%3D` + channelID;
+  const videoContainer = document.getElementById("youtube-feed-grid");
+  const shortsContainer = document.getElementById("youtube-shorts-grid");
+
+  const cachedData = localStorage.getItem("yt_cache_data");
+  const cachedTime = localStorage.getItem("yt_cache_time");
+  const now = new Date().getTime();
+
+  if (cachedData && cachedTime && (now - cachedTime < 1800000)) {
+    renderYouTubeContent(JSON.parse(cachedData), videoContainer, shortsContainer);
+  } else {
+    fetch(rssUrl)
+      .then(response => response.json())
+      .then(data => {
+        if (data.status === "ok" && data.items.length > 0) {
+          localStorage.setItem("yt_cache_data", JSON.stringify(data.items));
+          localStorage.setItem("yt_cache_time", now);
+          renderYouTubeContent(data.items, videoContainer, shortsContainer);
+        } else {
+          videoContainer.innerHTML = `<p style="color: var(--tenue);">No se pudieron cargar los vídeos automáticos.</p>`;
+          shortsContainer.innerHTML = `<p style="color: var(--tenue);">No se pudieron cargar los reels automáticos.</p>`;
+        }
+      })
+      .catch(error => {
+        videoContainer.innerHTML = `<p style="color: var(--tenue);">Error de conexión con YouTube.</p>`;
+        shortsContainer.innerHTML = `<p style="color: var(--tenue);">Error de conexión con YouTube.</p>`;
+      });
+  }
+});
+
+function renderYouTubeContent(items, videoContainer, shortsContainer) {
+  videoContainer.innerHTML = "";
+  shortsContainer.innerHTML = "";
+  let videosCount = 0;
+  let shortsCount = 0;
+
+  items.forEach(video => {
+    let videoId = "";
+    if (video.link.includes("/shorts/")) {
+      const parts = video.link.split("/shorts/");
+      if (parts[1]) { videoId = parts[1].split("?")[0].split("&")[0]; }
+    } else if (video.link.includes("v=")) {
+      videoId = video.link.split("v=")[1];
+      const ampersandPosition = videoId ? videoId.indexOf('&') : -1;
+      if (ampersandPosition !== -1) { videoId = videoId.substring(0, ampersandPosition); }
+    }
+
+    if (!videoId) return;
+
+    const isShort = video.title.toLowerCase().includes("#shorts") || video.link.includes("/shorts/");
+
+    if (!isShort && videosCount < 10) { 
+      videosCount++;
+      const card = document.createElement("article");
+      card.className = "video-card";
+      card.innerHTML = `
+        <div class="card-video-wrap">
+          <iframe src="https://www.youtube-nocookie.com/embed/${videoId}?enablejsapi=1" title="${video.title}" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        </div>
+        <div class="card-body">
+          <span class="card-tag">YouTube</span>
+          <h3 class="card-title">${video.title}</h3>
+          <p class="card-desc">Nuevo vídeo publicado recientemente en el canal oficial.</p>
+        </div>
+      `;
+      videoContainer.appendChild(card);
+    } else if (isShort && shortsCount < 10) { 
+      shortsCount++;
+      const card = document.createElement("article");
+      card.className = "short-card";
+      card.innerHTML = `
+        <div class="card-short-wrap">
+          <iframe src="https://www.youtube-nocookie.com/embed/${videoId}?enablejsapi=1&controls=1" title="${video.title}" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        </div>
+        <div class="card-body">
+          <span class="card-tag" style="color:var(--naranja-claro);">Short / Reel</span>
+          <h3 class="card-title" style="font-size:0.95rem;">${video.title}</h3>
+          <p class="card-desc">Clip vertical automático.</p>
+        </div>
+      `;
+      shortsContainer.appendChild(card);
+    }
+  });
+
+  if(videosCount === 0) { videoContainer.innerHTML = `<p style="color: var(--tenue);">No hay vídeos horizontales recientes.</p>`; }
+  if(shortsCount === 0) { shortsContainer.innerHTML = `<p style="color: var(--tenue);">No hay reels o shorts recientes.</p>`; }
+}
+
+(function initFireEmbers() {
+  const canvas = document.getElementById('fire-particles');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  let width, height;
+  let particles = [];
+  function resize() {
+    width = canvas.width = canvas.offsetWidth;
+    height = canvas.height = canvas.offsetHeight;
+  }
+  window.addEventListener('resize', resize);
+  resize();
+
+  const colors = ['rgba(255, 102, 0, ', 'rgba(255, 136, 51, ', 'rgba(204, 82, 0, ', 'rgba(255, 200, 100, '];
+  class Ember {
+    constructor() { this.reset(); }
+    reset() {
+      this.x = Math.random() * width;
+      this.y = height + Math.random() * 50;
+      this.size = Math.random() * 2.8 + 0.8;
+      this.speedY = Math.random() * 1.2 + 0.4;
+      this.speedX = (Math.random() - 0.5) * 0.8;
+      this.baseAlpha = Math.random() * 0.6 + 0.2;
+      this.alpha = this.baseAlpha;
+      this.decay = Math.random() * 0.008 + 0.002;
+      this.color = colors[Math.floor(Math.random() * colors.length)];
+    }
+    update() {
+      this.y -= this.speedY;
+      this.x += this.speedX + Math.sin(this.y * 0.02) * 0.3;
+      this.alpha -= this.decay * 0.2;
+      if (this.y < 0 || this.alpha <= 0) { this.reset(); }
+    }
+    draw() {
+      ctx.save();
+      ctx.globalAlpha = Math.max(this.alpha, 0);
+      ctx.fillStyle = this.color + this.alpha + ')';
+      ctx.shadowBlur = 10;
+      ctx.shadowColor = '#FF6600';
+      ctx.beginPath();
+      ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+    }
+  }
+
+  const particleCount = Math.floor(window.innerWidth < 768 ? 20 : 45);
+  for (let i = 0; i < particleCount; i++) {
+    const p = new Ember();
+    p.y = Math.random() * height;
+    particles.push(p);
+  }
+
+  function animate() {
+    ctx.clearRect(0, 0, width, height);
+    particles.forEach(p => { p.update(); p.draw(); });
+    requestAnimationFrame(animate);
+  }
+  animate();
+})();
+</script>
+</body>
+</html>

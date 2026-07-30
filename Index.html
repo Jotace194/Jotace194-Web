@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>JOTACE194 - Inicio</title>
+<meta name="description" content="Jotace194: creador, narrador y constructor de Varkhal. Directos, rol y un mundo propio.">
+<meta property="og:title" content="JOTACE194">
+<meta property="og:description" content="No es un simple canal. Es un mundo.">
+<meta property="og:image" content="img/banner.webp">
+<meta name="theme-color" content="#030202">
+<link rel="icon" href="img/avatar.webp">
+<style>
+:root{
+  --naranja:#FF6600; --naranja-claro:#FF8833; --naranja-oscuro:#CC5200;
+  --negro:#030202; --carbon:#0A0808; --carbon-claro:#141111;
+  --turquesa:#8AE6DF; --hueso:#F7F2EC; --tenue:#8C827A; --discord:#5865F2;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{background:var(--negro);color:var(--hueso);
+  font-family:'Segoe UI',system-ui,-apple-system,sans-serif;line-height:1.65;
+  -webkit-font-smoothing:antialiased;overflow-x:hidden}
+.wrap{max-width:1120px;margin:0 auto;padding:0 24px}
+h1,h2,h3{line-height:1.1;letter-spacing:-.01em}
+a{color:inherit;text-decoration:none}
+
+/* ---------- NAVBAR INMERSIVO ---------- */
+.navbar{position:fixed;top:0;left:0;width:100%;z-index:1000;
+  background:rgba(3,2,2,0.92);backdrop-filter:blur(12px);
+  border-bottom:1px solid rgba(255,102,0,.15);transition:.3s}
+.nav-wrap{max-width:1120px;margin:0 auto;padding:0 24px;
+  display:flex;align-items:center;justify-content:space-between;height:70px}
+.nav-logo{display:flex;align-items:center;gap:8px;cursor:pointer}
+.nav-logo img{
+  height:40px;width:40px;object-fit:cover;border-radius:50%;
+  border:2px solid var(--naranja);box-shadow:0 0 10px rgba(255,102,0,0.3);display:block;
+}
+.nav-links{display:flex;gap:26px;align-items:center;list-style:none}
+.nav-links a{font-size:.9rem;color:var(--tenue);font-weight:600;transition:.2s;cursor:pointer}
+.nav-links a:hover, .nav-links a.active{color:var(--naranja-claro);text-shadow:0 0 10px rgba(255,136,51,.3)}
+.nav-cta{padding:8px 16px !important;font-size:.85rem !important; color:#030202 !important;}
+
+.nav-toggle{display:none;background:none;border:none;cursor:pointer;flex-direction:column;gap:5px;z-index:1001}
+.nav-toggle span{display:block;width:25px;height:2px;background:var(--hueso);transition:0.3s}
+
+/* ---------- HERO ---------- */
+.hero{position:relative;min-height:88vh;display:flex;align-items:center;
+  justify-content:center;text-align:center;overflow:hidden;padding-top:70px}
+.hero-bg{position:absolute;inset:0;background:url('img/banner.webp') center/cover no-repeat;opacity:.4}
+#fire-particles {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1;
+}
+.hero::after{content:'';position:absolute;inset:0;
+  background:radial-gradient(ellipse at 50% 55%,transparent 4%,var(--negro) 82%)}
+.hero .in{position:relative;z-index:2;padding:70px 24px 90px;width:100%;max-width:960px;margin:0 auto}
+.tag{display:inline-block;font-size:.72rem;letter-spacing:.32em;text-transform:uppercase;
+  color:var(--turquesa);border:1px solid rgba(138,230,223,.3);border-radius:999px;
+  padding:7px 18px;margin-bottom:26px;background:rgba(138,230,223,.03);box-shadow:0 0 20px rgba(138,230,223,.08)}
+.hero h1{font-size:clamp(3rem,12vw,7.5rem);font-weight:900;letter-spacing:-.03em;
+  text-shadow:0 0 80px rgba(255,102,0,.6),0 4px 24px rgba(0,0,0,.9)}
+.hero .lema{font-size:clamp(1.05rem,2.6vw,1.5rem);color:var(--tenue);
+  margin:22px auto 0;max-width:620px}
+.hero .lema b{color:var(--naranja-claro);font-weight:600;text-shadow:0 0 10px rgba(255,136,51,.25)}
+
+/* ---------- BOTONES ---------- */
+.btns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:38px}
+.btn{display:inline-flex;align-items:center;gap:9px;padding:13px 26px;border-radius:11px;
+  font-weight:700;font-size:.95rem;border:1px solid rgba(255,102,0,.25);
+  background:rgba(10,8,8,.6);transition:all .25s ease;backdrop-filter:blur(6px);cursor:pointer}
+.btn:hover{transform:translateY(-2px);border-color:var(--naranja);box-shadow:0 0 20px rgba(255,102,0,.25)}
+.btn.p{background:var(--naranja);border-color:var(--naranja);color:#030202;box-shadow:0 4px 20px rgba(255,102,0,.35)}
+.btn.p:hover{background:var(--naranja-claro);box-shadow:0 8px 30px rgba(255,102,0,.5)}
+.btn.discord{background:rgba(88,101,242,.15);border-color:rgba(88,101,242,.4);color:var(--hueso)}
+.btn.discord:hover{background:var(--discord);border-color:var(--discord);box-shadow:0 0 20px rgba(88,101,242,.4)}
+
+/* ---------- REPRODUCTOR TWITCH ---------- */
+.live-container {
+  display: block;margin: 48px auto 0;max-width: 900px;background: var(--carbon);
+  border: 1px solid rgba(255, 102, 0, 0.22);border-radius: 16px;overflow: hidden;
+  box-shadow: 0 16px 50px rgba(0, 0, 0, 0.7), 0 0 30px rgba(255, 102, 0, 0.08);
+}
+.live-header {
+  display: flex;align-items: center;gap: 10px;padding: 12px 20px;
+  background: rgba(10, 8, 8, 0.9);border-bottom: 1px solid rgba(255, 102, 0, 0.15);
+  color: var(--tenue);font-weight: 700;font-size: 0.9rem;
+}
+.dot {width: 9px;height: 9px;border-radius: 50%;background: var(--naranja);box-shadow: 0 0 10px var(--naranja);}
+.twitch-embed-responsive {position: relative;width: 100%;aspect-ratio: 16/9;background: #000;}
+.twitch-embed-responsive iframe {width: 100%;height: 100%;border: none;}
+
+/* ---------- QUIÉN HAY AL OTRO LADO ---------- */
+.creator-section {
+  max-width: 900px;margin: 28px auto 0;background: var(--carbon);
+  border: 1px solid rgba(255, 102, 0, 0.18);border-radius: 16px;padding: 32px;
+  display: flex;align-items: center;gap: 28px;text-align: left;
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.6);transition: border-color .25s ease;
+}
+.creator-section:hover {border-color: rgba(255, 102, 0, 0.35);}
+.creator-avatar {width: 110px;height: 110px;border-radius: 50%;object-fit: cover;border: 2px solid var(--naranja);box-shadow: 0 0 20px rgba(255, 102, 0, 0.3);flex-shrink: 0;}
+.creator-info h3 {font-size: 1.3rem;margin-bottom: 6px;color: var(--hueso);}
+.creator-info p {font-size: 0.95rem;color: var(--tenue);line-height: 1.5;}
+.creator-info p b {color: var(--naranja-claro);}
+
+/* ---------- ARCHIVO DE CLIPS (CARRUSEL HORIZONTAL) ---------- */
+.vods-section{padding:60px 0 96px;background:var(--negro);border-top:1px solid rgba(255,102,0,.1)}
+.carousel-wrapper{position:relative;margin-top:30px;display:flex;align-items:center;}
+.vods-grid{
+  display:flex;
+  gap:24px;
+  overflow-x:auto;
+  scroll-behavior:smooth;
+  scrollbar-width:none; /* Firefox */
+  -ms-overflow-style:none; /* IE/Edge */
+  padding:10px 4px 20px 4px;
+  width:100%;
+}
+.vods-grid::-webkit-scrollbar{display:none;} /* Chrome/Safari */
+
+.vod-card{
+  background:var(--carbon);
+  border:1px solid rgba(255,102,0,.15);
+  border-radius:16px;
+  overflow:hidden;
+  transition:all .25s ease;
+  flex:0 0 420px; /* Tamaño de tarjeta más grande y ancho */
+}
+.vod-card:hover{transform:translateY(-5px);border-color:var(--naranja);box-shadow:0 16px 44px rgba(0,0,0,.8), 0 0 25px rgba(255,102,0,.18)}
+.twitch-clip-responsive {position: relative;width: 100%;aspect-ratio: 16/9;background: #000;}
+.twitch-clip-responsive iframe {width: 100%;height: 100%;border: none;}
+.vod-info{padding:20px}
+.vod-info h3{font-size:1.15rem;margin-bottom:8px;color:var(--hueso)}
+.vod-info p{font-size:0.85rem;color:var(--tenue)}
+
+/* Botones de control del carrusel */
+.carousel-btn{
+  position:absolute;
+  top:50%;
+  transform:translateY(-50%);
+  background:rgba(10,8,8,0.85);
+  border:1px solid rgba(255,102,0,0.4);
+  color:var(--hueso);
+  font-size:1.5rem;
+  width:45px;
+  height:45px;
+  border-radius:50%;
+  cursor:pointer;
+  z-index:10;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  transition:all 0.2s ease;
+  backdrop-filter:blur(6px);
+}
+.carousel-btn:hover{background:var(--naranja);border-color:var(--naranja);color:#030202;box-shadow:0 0 15px rgba(255,102,0,0.5);}
+.carousel-btn.prev{left:-22px;}
+.carousel-btn.next{right:-22px;}
+
+section{padding:60px 0;position:relative}
+.eyebrow{font-size:.72rem;letter-spacing:.3em;text-transform:uppercase;color:var(--naranja);margin-bottom:14px;font-weight:700;text-shadow:0 0 10px rgba(255,102,0,.3)}
+h2{font-size:clamp(2rem,5vw,3.2rem);font-weight:800;margin-bottom:18px}
+.sub{color:var(--tenue);max-width:620px;margin-bottom:52px;font-size:1.05rem}
+
+footer{padding:40px 0;border-top:1px solid rgba(255,102,0,.15);text-align:center;color:var(--tenue);font-size:.86rem;background:var(--carbon)}
+footer a{color:var(--naranja-claro)}
+
+@media(max-width:768px){
+  .nav-toggle{display:flex}
+  .nav-links{
+    position:absolute;top:70px;left:0;width:100%;background:rgba(3,2,2,0.98);
+    backdrop-filter:blur(12px);flex-direction:column;align-items:center;
+    padding:24px 0;border-bottom:1px solid rgba(255,102,0,.15);display:none;
+  }
+  .nav-links.open{display:flex}
+  .creator-section {flex-direction: column;text-align: center;padding: 24px;}
+  .vod-card{flex:0 0 300px;}
+  .carousel-btn{display:none;} /* Ocultar flechas en móvil para deslizar con el dedo fluidamente */
+}
+</style>
+</head>
+<body>
+
+<nav class="navbar">
+  <div class="nav-wrap">
+    <a class="nav-logo" href="index.html">
+      <img src="img/avatar.jpeg" alt="Avatar oficial de Jotace194">
+    </a>
+    <button class="nav-toggle" id="navToggle" aria-label="Abrir menú de navegación">
+      <span></span><span></span><span></span>
+    </button>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="index.html" class="active">Inicio</a></li>
+      <li><a href="universo.html">Universo</a></li>
+      <li><a href="redes.html">Redes</a></li>
+      <li><a href="salon.html">Salón</a></li>
+      <li><a class="btn p nav-cta" href="https://twitch.tv/jotace194" target="_blank" rel="noopener noreferrer">▶ Twitch</a></li>
+    </ul>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="hero-bg"></div>
+  <canvas id="fire-particles"></canvas>
+  
+  <div class="in">
+    <span class="tag">Canal Oficial</span>
+    <h1>JOTACE194</h1>
+    <p class="lema">No es un canal simple. Es un <b>mundo</b>.</p>
+    
+    <div class="btns">
+      <a class="btn p" href="https://twitch.tv/jotace194" target="_blank" rel="noopener noreferrer">▶ Ver en Twitch</a>
+      <a class="btn" href="universo.html">Vídeos YouTube</a>
+      <a class="btn discord" href="https://discord.gg/4ARhx4fUQG" target="_blank" rel="noopener noreferrer">💬 Comunidad Discord</a>
+    </div>
+
+    <div class="live-container">
+      <div class="live-header">
+        <span class="dot"></span> REPRODUCTOR OFICIAL DE JOTACE194
+      </div>
+      <div class="twitch-embed-responsive">
+        <iframe id="twitch-iframe" src="" allowfullscreen loading="lazy"></iframe>
+      </div>
+    </div>
+
+    <div class="creator-section">
+      <img src="img/avatar.jpeg" alt="Avatar de Jotace194" class="creator-avatar">
+      <div class="creator-info">
+        <h3>¿Quién es Jotace194?</h3>
+        <p>Detrás de Jotace se encuentra un apasionado de los videojuegos y la creación de contenido[cite: 1]. Aquí no solo se hacen directos, se da forma al <b>canal</b> y a historias compartidas[cite: 1]. Únete al directo y quédate a disfrutar de la charla[cite: 1].</p>
+      </div>
+    </div>
+
+  </div>
+</header>
+
+<section class="vods-section">
+  <div class="wrap">
+    <p class="eyebrow">Destacados</p>
+    <h2>Mejores Clips</h2>
+    <p class="sub">Momentos épicos, reacciones y fragmentos memorables de Twitch.</p>
+    
+    <div class="carousel-wrapper">
+      <button class="carousel-btn prev" id="slidePrev" aria-label="Anterior">&#10094;</button>
+      <div class="vods-grid" id="content-container"></div>
+      <button class="carousel-btn next" id="slideNext" aria-label="Siguiente">&#10095;</button>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <p>Web Oficial de Jotace194</p>
+    <p style="margin-top:10px;opacity:.7">Vinculada a <a href="https://mundoluckyboy.com" target="_blank" rel="noopener noreferrer">Mundo Luckyboy</a> 🍀</p>
+  </div>
+</footer>
+
+<script>
+document.getElementById('navToggle').addEventListener('click', () => {
+  document.getElementById('navLinks').classList.toggle('open');
+});
+
+(function configurarReproductorTwitchNativo(){
+  const currentDomain = window.location.hostname || "localhost";
+  const twitchIframe = document.getElementById('twitch-iframe');
+  const canalTwitch = "jotace194";
+  twitchIframe.src = `https://player.twitch.tv/?channel=${canalTwitch}&parent=${currentDomain}&autoplay=true`;
+
+  const contentContainer = document.getElementById('content-container');
+  
+  // Lista con los 15 clips configurados listos para recibir sus slugs y títulos reales
+  const clipsTwitch = [
+    { slug: "WimpyDistinctPepperFunRun-WHhDEJJcIv3bI4Fn", titulo: "Headshot en DayZ" },
+    { slug: "TrappedTenuousAnteaterBrokeBack-844GYkjqiFs0ScXy", titulo: "Asesinato en Fornite" },
+    { slug: "OpenMotionlessFloofSSSsss-AGUXVQm1mIYRbRWo", titulo: "DE Noob a Pro" },
+    { slug: "KindAltruisticCheeseWholeWheat-XgZZeMzLsyF1O8Iy", titulo: "La traición" },
+    { slug: "NimbleTenaciousEchidnaTBTacoRight-FLE6_uBgfWTknApv", titulo: "Matando camperos" },
+    { slug: "ObliviousGloriousTroutOSsloth-sAtECzzI0V-i6Wmd", titulo: "Caida tonta" },
+    { slug: "KindNastyOrcaUWot-g_dU8OULVGF3m_JO", titulo: "Huida en Roleplay" },
+    { slug: "ThoughtfulCooperativeNeanderthalPraiseIt-0yLZ-q3dNC1cKZai", titulo: "Camión embrujado" },
+    { slug: "ColorfulJazzyBearMrDestructoid-jdNmw5A7nHFwAmjz", titulo: "2 contra 1" },
+    { slug: "CallousHandsomeBillMrDestructoid-6NvS3gKzYkq28Po2", titulo: "El menos miedoso" }
+  ];
+
+  contentContainer.innerHTML = clipsTwitch.map(clip => `
+    <article class="vod-card">
+      <div class="twitch-clip-responsive">
+        <iframe src="https://clips.twitch.tv/embed?clip=${clip.slug}&parent=${currentDomain}&autoplay=false" allowfullscreen loading="lazy"></iframe>
+      </div>
+      <div class="vod-info">
+        <h3>${clip.titulo}</h3>
+        <p>Clip oficial de Twitch</p>
+      </div>
+    </article>
+  `).join('');
+
+  // Lógica de desplazamiento horizontal para el carrusel mediante botones
+  const grid = document.getElementById('content-container');
+  document.getElementById('slidePrev').addEventListener('click', () => {
+    grid.scrollBy({ left: -450, behavior: 'smooth' });
+  });
+  document.getElementById('slideNext').addEventListener('click', () => {
+    grid.scrollBy({ left: 450, behavior: 'smooth' });
+  });
+})();
+
+(function initFireEmbers() {
+  const canvas = document.getElementById('fire-particles');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  let width, height;
+  let particles = [];
+
+  function resize() {
+    width = canvas.width = canvas.offsetWidth;
+    height = canvas.height = canvas.offsetHeight;
+  }
+  window.addEventListener('resize', resize);
+  resize();
+
+  const colors = ['rgba(255, 102, 0, ', 'rgba(255, 136, 51, ', 'rgba(204, 82, 0, ', 'rgba(255, 200, 100, '];
+
+  class Ember {
+    constructor() { this.reset(); }
+    reset() {
+      this.x = Math.random() * width;
+      this.y = height + Math.random() * 50;
+      this.size = Math.random() * 2.8 + 0.8;
+      this.speedY = Math.random() * 1.2 + 0.4;
+      this.speedX = (Math.random() - 0.5) * 0.8;
+      this.baseAlpha = Math.random() * 0.6 + 0.2;
+      this.alpha = this.baseAlpha;
+      this.decay = Math.random() * 0.008 + 0.002;
+      this.color = colors[Math.floor(Math.random() * colors.length)];
+    }
+    update() {
+      this.y -= this.speedY;
+      this.x += this.speedX + Math.sin(this.y * 0.02) * 0.3;
+      this.alpha -= this.decay * 0.2;
+      if (this.y < 0 || this.alpha <= 0) { this.reset(); }
+    }
+    draw() {
+      ctx.save();
+      ctx.globalAlpha = Math.max(this.alpha, 0);
+      ctx.fillStyle = this.color + this.alpha + ')';
+      ctx.shadowBlur = 10;
+      ctx.shadowColor = '#FF6600';
+      ctx.beginPath();
+      ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+    }
+  }
+
+  const particleCount = Math.floor(window.innerWidth < 768 ? 35 : 70);
+  for (let i = 0; i < particleCount; i++) {
+    const p = new Ember();
+    p.y = Math.random() * height;
+    particles.push(p);
+  }
+
+  function animate() {
+    ctx.clearRect(0, 0, width, height);
+    particles.forEach(p => { p.update(); p.draw(); });
+    requestAnimationFrame(animate);
+  }
+  animate();
+})();
+</script>
+</body>
+</html>

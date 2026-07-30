@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>JOTACE194 - Salón de Cartas</title>
+<link rel="icon" href="img/avatar.webp">
+<!-- LIBRERÍA DE SUPABASE -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root{
+  --naranja:#FF6600; --naranja-claro:#FF8833; --naranja-oscuro:#CC5200;
+  --negro:#030202; --carbon:#0A0808; --carbon-claro:#141111;
+  --turquesa:#8AE6DF; --hueso:#F7F2EC; --tenue:#8C827A; 
+  --twitch-purple:#9146FF; --twitch-hover:#772ce8;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--negro);color:var(--hueso);font-family:'Segoe UI',sans-serif;line-height:1.7}
+.wrap{max-width:1200px;margin:0 auto;padding:0 24px}
+
+.navbar{position:fixed;top:0;left:0;width:100%;z-index:1000;background:rgba(3,2,2,0.92);backdrop-filter:blur(12px);border-bottom:1px solid rgba(255,102,0,.15)}
+.nav-wrap{max-width:1200px;margin:0 auto;padding:0 24px;display:flex;align-items:center;justify-content:space-between;height:70px}
+.nav-logo img{height:40px;width:40px;object-fit:cover;border-radius:50%;border:2px solid var(--naranja)}
+.nav-links{display:flex;gap:26px;align-items:center;list-style:none}
+.nav-links a{font-size:.9rem;color:var(--tenue);font-weight:600;text-decoration:none;transition:color .2s ease}
+.nav-links a:hover, .nav-links a.active{color:var(--naranja-claro)}
+.nav-toggle{display:none;background:none;border:none;cursor:pointer;flex-direction:column;gap:5px}
+.nav-toggle span{display:block;width:25px;height:2px;background:var(--hueso)}
+
+.salon-header{position:relative;padding:130px 0 50px;text-align:center;min-height:260px;overflow:hidden}
+.salon-tag{font-size:.72rem;letter-spacing:.3em;text-transform:uppercase;color:var(--naranja);font-weight:700}
+.salon-header h1{font-size:clamp(2.3rem,5vw,3.6rem);font-weight:900;color:var(--hueso);margin:6px 0 10px}
+.salon-header p{color:var(--tenue);max-width:600px;margin:0 auto}
+
+.game-container{padding:10px 0 60px;}
+.hidden{display:none !important;}
+
+.auth-box{background:var(--carbon);border:1px solid rgba(255,102,0,0.3);border-radius:16px;padding:40px;text-align:center;max-width:450px;margin:40px auto;box-shadow:0 10px 30px rgba(0,0,0,0.5)}
+.btn-twitch{display:flex;align-items:center;justify-content:center;gap:12px;background:var(--twitch-purple);color:white;border:none;width:100%;padding:14px;border-radius:10px;font-weight:700;font-size:1rem;cursor:pointer;transition:background 0.2s, transform 0.2s;text-decoration:none;margin-top:20px;}
+.btn-twitch:hover{background:var(--twitch-hover);transform:translateY(-2px);}
+
+.user-hud{display:flex;justify-content:space-between;align-items:center;background:var(--carbon);border:1px solid rgba(255,102,0,0.2);padding:16px 24px;border-radius:12px;margin-bottom:25px;flex-wrap:wrap;gap:15px;}
+.hud-profile{display:flex;align-items:center;gap:12px;}
+.hud-profile img{width:45px;height:45px;border-radius:50%;border:2px solid var(--twitch-purple);object-fit:cover;}
+.hud-info h3{color:var(--naranja-claro);font-size:1.1rem;}
+.hud-stats{display:flex;gap:20px;font-weight:700;}
+.stat-badge{background:var(--carbon-claro);padding:8px 16px;border-radius:8px;border:1px solid rgba(255,255,255,0.05);color:var(--turquesa);}
+
+footer{padding:30px 0;border-top:1px solid rgba(255,102,0,.15);text-align:center;color:var(--tenue);font-size:.85rem;background:var(--carbon)}
+</style>
+</head>
+<body>
+
+<nav class="navbar">
+  <div class="nav-wrap">
+    <a class="nav-logo" href="index.html"><img src="img/avatar.jpeg" alt="Avatar"></a>
+    <button class="nav-toggle" id="navToggle"><span></span><span></span><span></span></button>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="index.html">Inicio</a></li>
+      <li><a href="universo.html">Universo</a></li>
+      <li><a href="salon.html" class="active">Salón</a></li>
+      <li><a href="redes.html">Redes</a></li>
+    </ul>
+  </div>
+</nav>
+
+<main class="wrap">
+  <header class="salon-header">
+    <span class="salon-tag">Minijuego de Colección</span>
+    <h1>SALÓN DE CARTAS</h1>
+    <p>Inicia sesión con tu cuenta de Twitch para gestionar tus cartas y puntos en la nube.</p>
+  </header>
+
+  <div class="game-container">
+    <!-- SECCIÓN DE LOGIN -->
+    <div id="authSection" class="auth-box">
+      <h3 style="margin-bottom: 8px;">Acceso de Espectadores</h3>
+      <p style="color: var(--tenue); font-size: 0.88rem; margin-bottom: 20px;">Conéctate para sincronizar tu progreso global.</p>
+      <a href="#" id="twitchLoginBtn" class="btn-twitch">
+        <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M11.64 5.93h1.66v5.81h-1.66V5.93zm3.32 0h1.66v5.81h-1.66V5.93zM3.32 0L0 3.32v16.6h5.81V24l3.32-3.32h4.15L24 11.64V0H3.32zm17.41 10.81l-3.32 3.32h-4.15l-2.49 2.49v-2.49H7.47V1.66h13.26v9.15z"/></svg>
+        Iniciar sesión con Twitch
+      </a>
+    </div>
+
+    <!-- PANEL DE JUEGO -->
+    <div id="gameDashboard" class="hidden">
+      
+      <!-- HUD DE USUARIO -->
+      <div class="user-hud">
+        <div class="hud-profile">
+          <img id="twitchAvatar" src="" alt="Avatar Twitch">
+          <div class="hud-info">
+            <span style="font-size: 0.75rem; color: var(--tenue);">Conectado como:</span>
+            <h3 id="displayUsername">Usuario</h3>
+          </div>
+        </div>
+        <div class="hud-stats">
+          <div class="stat-badge">🪙 <span id="userPoints">0</span> Puntos</div>
+        </div>
+        <button id="logoutBtn" style="background:none; border:none; color: var(--tenue); cursor:pointer; font-size: 0.85rem; text-decoration: underline;">Cerrar sesión</button>
+      </div>
+
+      <!-- SECCIÓN DE CANJE DE PUNTOS -->
+      <div class="game-section-card" style="background: var(--carbon); border: 1px solid rgba(255,102,0,0.2); border-radius: 16px; padding: 25px; margin-bottom: 25px;">
+        <h3 style="color: var(--naranja-claro); font-size: 1.1rem; margin-bottom: 10px;">🎁 Canjear Puntos de Twitch</h3>
+        <p style="color: var(--tenue); font-size: 0.88rem; margin-bottom: 15px;">
+          Introduce tu código de canje para sumar puntos directamente a tu cuenta en la nube.
+        </p>
+        <div style="display: flex; gap: 10px; max-width: 400px; flex-wrap: wrap;">
+          <input type="text" id="redeemCodeInput" placeholder="Introduce tu código aquí..." style="flex: 1; min-width: 200px; background: var(--carbon-claro); border: 1px solid rgba(255,102,0,0.3); padding: 10px 14px; border-radius: 8px; color: var(--hueso); outline: none;">
+          <button id="redeemBtn" style="background: var(--naranja); color: white; border: none; padding: 10px 20px; border-radius: 8px; font-weight: 700; cursor: pointer; transition: background 0.2s;">Canjear</button>
+        </div>
+        <p id="redeemMessage" style="font-size: 0.85rem; margin-top: 10px;"></p>
+      </div>
+
+      <!-- TARJETA DE BIENVENIDA -->
+      <div class="game-section-card" style="background: var(--carbon); border: 1px solid rgba(255,102,0,0.2); border-radius: 16px; padding: 30px; text-align: center;">
+        <h3>¡Bienvenido al Salón!</h3>
+        <p style="color: var(--tenue); margin-top: 8px;">Tus datos ahora están sincronizados de forma segura en la nube.</p>
+      </div>
+
+    </div>
+  </div>
+</main>
+
+<footer>
+  <div class="wrap"><p>Web Oficial de Jotace194</p></div>
+</footer>
+
+<script>
+// ==========================================
+// CONFIGURACIÓN DE SUPABASE Y TWITCH
+// ==========================================
+const SUPABASE_URL = 'https://oeoujsnnyodrcqeyzcxo.supabase.co'; // Pega aquí tu URL (ej: https://xxxx.supabase.co)
+const SUPABASE_ANON_KEY = 'sb_publishable_Axgs2Qo4NXmTL6Q8IjVTYA_MA1dF5uE'; // Pega aquí tu Publishable key
+
+const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+document.getElementById('navToggle').addEventListener('click', () => {
+  document.getElementById('navLinks').classList.toggle('open');
+});
+
+let currentUserData = null; // Almacenará los datos actuales del usuario desde Supabase
+
+const TWITCH_CLIENT_ID = 'gcykx8eznq8gex7rgm0ebihs2k9q5h'; 
+const REDIRECT_URI = window.location.origin + window.location.pathname;
+
+const loginUrl = `https://id.twitch.tv/oauth2/authorize?client_id=${TWITCH_CLIENT_ID}&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&response_type=token&scope=user:read:email`;
+document.getElementById('twitchLoginBtn').href = loginUrl;
+
+const fragment = window.location.hash.substring(1);
+const params = new URLSearchParams(fragment);
+const accessToken = params.get('access_token');
+
+if (accessToken) {
+  localStorage.setItem('twitch_access_token', accessToken);
+  window.history.replaceState({}, document.title, window.location.pathname);
+}
+
+const savedToken = localStorage.getItem('twitch_access_token');
+if (savedToken) {
+  obtenerDatosTwitch(savedToken);
+}
+
+async function obtenerDatosTwitch(token) {
+  try {
+    const response = await fetch('https://api.twitch.tv/helix/users', {
+      headers: {
+        'Client-ID': TWITCH_CLIENT_ID,
+        'Authorization': `Bearer ${token}`
+      }
+    });
+
+    if (!response.ok) {
+      localStorage.removeItem('twitch_access_token');
+      return;
+    }
+
+    const data = await response.json();
+    const user = data.data[0];
+
+    // Mostrar interfaz de juego logueada
+    document.getElementById('authSection').classList.add('hidden');
+    document.getElementById('gameDashboard').classList.remove('hidden');
+    document.getElementById('displayUsername').textContent = user.display_name;
+    document.getElementById('twitchAvatar').src = user.profile_image_url;
+
+    // Cargar o registrar usuario en la base de datos de Supabase
+    await sincronizarUsuarioSupabase(user);
+
+  } catch (err) {
+    console.error("Error al conectar con la API de Twitch", err);
+  }
+}
+
+// Función para buscar al usuario en Supabase o crearlo si es nuevo
+async function sincronizarUsuarioSupabase(user) {
+  try {
+    // Buscar si el usuario ya existe en la tabla 'usuarios_twitch'
+    let { data, error } = await supabaseClient
+      .from('usuarios_twitch')
+      .select('*')
+      .eq('twitch_id', user.id)
+      .single();
+
+    if (error && error.code === 'PGRST116') {
+      // El usuario no existe, lo creamos con 500 puntos iniciales
+      const nuevoUsuario = {
+        twitch_id: user.id,
+        username: user.display_name,
+        points: 500,
+        collection: {}
+      };
+
+      const { data: insertedData, error: insertError } = await supabaseClient
+        .from('usuarios_twitch')
+        .insert([nuevoUsuario])
+        .select()
+        .single();
+
+      if (insertError) {
+        console.error("Error al crear usuario en Supabase:", insertError);
+        return;
+      }
+      currentUserData = insertedData;
+    } else if (data) {
+      currentUserData = data;
+    }
+
+    // Actualizar puntos en pantalla
+    document.getElementById('userPoints').textContent = currentUserData.points;
+
+  } catch (err) {
+    console.error("Error al sincronizar con Supabase:", err);
+  }
+}
+
+document.getElementById('logoutBtn').addEventListener('click', () => {
+  localStorage.removeItem('twitch_access_token');
+  window.location.href = window.location.pathname;
+});
+
+// Códigos válidos de ejemplo para canjear puntos
+const CODIGOS_VALIDOS = {
+  "TWITCH500-ABC": 500,
+  "TWITCH1000-XYZ": 1000
+};
+
+document.getElementById('redeemBtn').addEventListener('click', async () => {
+  const inputCode = document.getElementById('redeemCodeInput').value.trim();
+  const msgEl = document.getElementById('redeemMessage');
+
+  if (!currentUserData) {
+    msgEl.style.color = "#FF6B6B";
+    msgEl.textContent = "Error: Sesión no sincronizada.";
+    return;
+  }
+
+  if (!inputCode) {
+    msgEl.style.color = "#FF6B6B";
+    msgEl.textContent = "Por favor, introduce un código válido.";
+    return;
+  }
+
+  // Comprobar códigos usados en el almacenamiento local del navegador
+  let codigosUsados = JSON.parse(localStorage.getItem('jotace_codigos_usados')) || [];
+
+  if (codigosUsados.includes(inputCode)) {
+    msgEl.style.color = "#FF6B6B";
+    msgEl.textContent = "Este código ya ha sido canjeado anteriormente.";
+    return;
+  }
+
+  if (CODIGOS_VALIDOS.hasOwnProperty(inputCode)) {
+    const puntosGanados = CODIGOS_VALIDOS[inputCode];
+    const nuevosPuntos = currentUserData.points + puntosGanados;
+
+    // Actualizar puntos en la base de datos de Supabase
+    const { error } = await supabaseClient
+      .from('usuarios_twitch')
+      .update({ points: nuevosPuntos })
+      .eq('twitch_id', currentUserData.twitch_id);
+
+    if (error) {
+      msgEl.style.color = "#FF6B6B";
+      msgEl.textContent = "Error al actualizar los puntos en la nube.";
+      return;
+    }
+
+    // Actualizar variable local y marcar código como usado
+    currentUserData.points = nuevosPuntos;
+    codigosUsados.push(inputCode);
+    localStorage.setItem('jotace_codigos_usados', JSON.stringify(codigosUsados));
+
+    // Refrescar interfaz
+    document.getElementById('userPoints').textContent = currentUserData.points;
+
+    msgEl.style.color = "#8AE6DF";
+    msgEl.textContent = `¡Éxito! Has sumado ${puntosGanados} puntos a tu cuenta en la nube.`;
+    document.getElementById('redeemCodeInput').value = "";
+  } else {
+    msgEl.style.color = "#FF6B6B";
+    msgEl.textContent = "El código introducido no es válido.";
+  }
+});
+</script>
+</body>
+</html>
