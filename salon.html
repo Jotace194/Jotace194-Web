@@ -132,28 +132,37 @@ footer{padding:30px 0;border-top:1px solid rgba(255,102,0,.15);text-align:center
         <p id="redeemMessage" style="font-size: 0.85rem; margin-top: 10px;"></p>
       </div>
 
-      <!-- TIENDA DE SOBRES -->
-      <div class="game-section-card">
-        <h3 style="color: var(--naranja-claro); font-size: 1.1rem; margin-bottom: 10px;">TIENDA DE SOBRES</h3>
-        <p style="color: var(--tenue); font-size: 0.88rem;">Elige qué sobre abrir según tus puntos y busca cartas legendarias.</p>
-      <div class="packs-grid">
-      <!-- Sobre Estándar -->
-      <div class="pack-card">
-        <h4 style="color: var(--hueso);">Sobre Estándar</h4>
-        <p style="color: var(--tenue); font-size: 0.8rem; margin: 8px 0;">3 Cartas (Probabilidad equilibrada)</p>
-        <p style="color: var(--turquesa); font-weight: 700;">Coste: 200 Puntos</p>
-        <button class="pack-btn" id="buyStandardPack">Abrir Estándar</button>
+<!-- TIENDA DE SOBRES -->
+<div class="game-section-card">
+  <h3 style="color: var(--naranja-claro); font-size: 1.1rem; margin-bottom: 10px;">📦 Tienda de Sobres</h3>
+  <p style="color: var(--tenue); font-size: 0.88rem;">Elige qué sobre abrir según tus puntos y busca cartas legendarias.</p>
+  
+  <div class="packs-grid">
+    <!-- Sobre Estándar -->
+    <div class="pack-card">
+      <div class="pack-img-container">
+        <img src="img/sobre-estandar.png" alt="Sobre Estándar" class="pack-img">
       </div>
-      <!-- Sobre Premium -->
-      <div class="pack-card" style="border-color: #9013FE;">
-        <h4 style="color: #9013FE;">Sobre Premium</h4>
-        <p style="color: var(--tenue); font-size: 0.8rem; margin: 8px 0;">3 Cartas (¡Más Épicas y Legendarias!)</p>
-        <p style="color: var(--turquesa); font-weight: 700;">Coste: 500 Puntos</p>
-        <button class="pack-btn" id="buyPremiumPack" style="background: #9013FE;">Abrir Premium</button>
+      <h4 style="color: var(--hueso); margin-top: 10px;">Sobre Estándar</h4>
+      <p style="color: var(--tenue); font-size: 0.8rem; margin: 6px 0;">3 Cartas (Probabilidad equilibrada)</p>
+      <p style="color: var(--turquesa); font-weight: 700;">Coste: 200 Puntos</p>
+      <button class="pack-btn" id="buyStandardPack">Abrir Estándar</button>
+    </div>
+
+    <!-- Sobre Premium -->
+    <div class="pack-card" style="border-color: #9013FE;">
+      <div class="pack-img-container">
+        <img src="img/sobre-premium.png" alt="Sobre Premium" class="pack-img">
       </div>
-      </div>
-      <div id="packRevealArea" class="cards-reveal-grid"></div>
-      </div>
+      <h4 style="color: var(--hueso); margin-top: 10px;">Sobre Premium</h4>
+      <p style="color: var(--tenue); font-size: 0.8rem; margin: 6px 0;">3 Cartas (¡Más Épicas y Legendarias!)</p>
+      <p style="color: var(--turquesa); font-weight: 700;">Coste: 500 Puntos</p>
+      <button class="pack-btn" id="buyPremiumPack" style="background: #9013FE;">Abrir Premium</button>
+    </div>
+  </div>
+
+  <div id="packRevealArea" class="cards-reveal-grid"></div>
+</div>
 
       <!-- ÁLBUM DE CARTAS -->
       <div class="game-section-card">
