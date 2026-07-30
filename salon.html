@@ -13,6 +13,7 @@
   --negro:#030202; --carbon:#0A0808; --carbon-claro:#141111;
   --turquesa:#8AE6DF; --hueso:#F7F2EC; --tenue:#8C827A; 
   --twitch-purple:#9146FF; --twitch-hover:#772ce8;
+  --raro-comun: #8C827A; --raro-raro: #4A90E2; --raro-epico: #9013FE; --raro-legendario: #F5A623;
 }
 *{margin:0;padding:0;box-sizing:border-box}
 body{background:var(--negro);color:var(--hueso);font-family:'Segoe UI',sans-serif;line-height:1.7}
@@ -46,6 +47,26 @@ body{background:var(--negro);color:var(--hueso);font-family:'Segoe UI',sans-seri
 .hud-stats{display:flex;gap:20px;font-weight:700;}
 .stat-badge{background:var(--carbon-claro);padding:8px 16px;border-radius:8px;border:1px solid rgba(255,255,255,0.05);color:var(--turquesa);}
 
+.game-section-card{background: var(--carbon); border: 1px solid rgba(255,102,0,0.2); border-radius: 16px; padding: 25px; margin-bottom: 25px;}
+
+/* ESTILOS DE SOBRES Y CARTAS */
+.packs-grid{display:grid;grid-template-columns:repeat(auto-fit, minmax(220px, 1fr));gap:20px;margin-top:15px;}
+.pack-card{background:var(--carbon-claro);border:1px solid rgba(255,102,0,0.3);border-radius:12px;padding:20px;text-align:center;transition:transform 0.2s;}
+.pack-card:hover{transform:translateY(-4px);border-color:var(--naranja);}
+.pack-btn{background:var(--naranja);color:white;border:none;padding:10px 16px;border-radius:8px;font-weight:700;cursor:pointer;width:100%;margin-top:15px;transition:background 0.2s;}
+.pack-btn:hover{background:var(--naranja-oscuro);}
+
+.cards-reveal-grid{display:flex;justify-content:center;gap:15px;flex-wrap:wrap;margin-top:20px;}
+.collectible-card{width:140px;height:200px;background:var(--carbon-claro);border-radius:10px;border:2px solid var(--tenue);padding:10px;display:flex;flex-direction:column;justify-content:space-between;text-align:center;box-shadow:0 5px 15px rgba(0,0,0,0.3);animation:fadeIn 0.5s ease;}
+.card-image-placeholder{width:100%;height:100px;background:rgba(255,255,255,0.05);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:1.5rem;}
+.card-title{font-size:0.8rem;font-weight:700;color:var(--hueso);margin-top:5px;}
+.card-rarity{font-size:0.65text;text-transform:uppercase;font-weight:800;letter-spacing:0.1em;}
+
+.album-grid{display:grid;grid-template-columns:repeat(auto-fill, minmax(130px, 1fr));gap:15px;margin-top:15px;}
+.album-slot{background:var(--carbon-claro);border:1px dashed rgba(255,255,255,0.1);border-radius:10px;padding:12px;text-align:center;min-height:160px;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+.album-slot.unlocked{border:2px solid var(--turquesa);background:var(--carbon);}
+
+@keyframes fadeIn{from{opacity:0;transform:scale(0.9);}to{opacity:1;transform:scale(1);}}
 footer{padding:30px 0;border-top:1px solid rgba(255,102,0,.15);text-align:center;color:var(--tenue);font-size:.85rem;background:var(--carbon)}
 </style>
 </head>
@@ -68,7 +89,7 @@ footer{padding:30px 0;border-top:1px solid rgba(255,102,0,.15);text-align:center
   <header class="salon-header">
     <span class="salon-tag">Minijuego de Colección</span>
     <h1>SALÓN DE CARTAS</h1>
-    <p>Inicia sesión con tu cuenta de Twitch para gestionar tus cartas y puntos en la nube.</p>
+    <p>Canjea puntos, abre sobres y completa tu álbum exclusivo en la nube.</p>
   </header>
 
   <div class="game-container">
@@ -100,23 +121,37 @@ footer{padding:30px 0;border-top:1px solid rgba(255,102,0,.15);text-align:center
         <button id="logoutBtn" style="background:none; border:none; color: var(--tenue); cursor:pointer; font-size: 0.85rem; text-decoration: underline;">Cerrar sesión</button>
       </div>
 
-      <!-- SECCIÓN DE CANJE DE PUNTOS -->
-      <div class="game-section-card" style="background: var(--carbon); border: 1px solid rgba(255,102,0,0.2); border-radius: 16px; padding: 25px; margin-bottom: 25px;">
+      <!-- CANJEAR PUNTOS -->
+      <div class="game-section-card">
         <h3 style="color: var(--naranja-claro); font-size: 1.1rem; margin-bottom: 10px;">🎁 Canjear Puntos de Twitch</h3>
-        <p style="color: var(--tenue); font-size: 0.88rem; margin-bottom: 15px;">
-          Introduce tu código de canje para sumar puntos directamente a tu cuenta en la nube.
-        </p>
+        <p style="color: var(--tenue); font-size: 0.88rem; margin-bottom: 15px;">Introduce tu código para sumar puntos a tu cuenta.</p>
         <div style="display: flex; gap: 10px; max-width: 400px; flex-wrap: wrap;">
-          <input type="text" id="redeemCodeInput" placeholder="Introduce tu código aquí..." style="flex: 1; min-width: 200px; background: var(--carbon-claro); border: 1px solid rgba(255,102,0,0.3); padding: 10px 14px; border-radius: 8px; color: var(--hueso); outline: none;">
-          <button id="redeemBtn" style="background: var(--naranja); color: white; border: none; padding: 10px 20px; border-radius: 8px; font-weight: 700; cursor: pointer; transition: background 0.2s;">Canjear</button>
+          <input type="text" id="redeemCodeInput" placeholder="Introduce tu código..." style="flex: 1; min-width: 200px; background: var(--carbon-claro); border: 1px solid rgba(255,102,0,0.3); padding: 10px 14px; border-radius: 8px; color: var(--hueso); outline: none;">
+          <button id="redeemBtn" style="background: var(--naranja); color: white; border: none; padding: 10px 20px; border-radius: 8px; font-weight: 700; cursor: pointer;">Canjear</button>
         </div>
         <p id="redeemMessage" style="font-size: 0.85rem; margin-top: 10px;"></p>
       </div>
 
-      <!-- TARJETA DE BIENVENIDA -->
-      <div class="game-section-card" style="background: var(--carbon); border: 1px solid rgba(255,102,0,0.2); border-radius: 16px; padding: 30px; text-align: center;">
-        <h3>¡Bienvenido al Salón!</h3>
-        <p style="color: var(--tenue); margin-top: 8px;">Tus datos ahora están sincronizados de forma segura en la nube.</p>
+      <!-- TIENDA DE SOBRES -->
+      <div class="game-section-card">
+        <h3 style="color: var(--naranja-claro); font-size: 1.1rem; margin-bottom: 10px;">📦 Tienda de Sobres</h3>
+        <p style="color: var(--tenue); font-size: 0.88rem;">Gasta tus puntos para abrir sobres y conseguir cartas coleccionables.</p>
+        <div class="packs-grid">
+          <div class="pack-card">
+            <h4 style="color: var(--hueso);">Sobre Estándar</h4>
+            <p style="color: var(--tenue); font-size: 0.8rem; margin: 8px 0;">Contiene 3 cartas aleatorias.</p>
+            <p style="color: var(--turquesa); font-weight: 700;">Coste: 200 Puntos</p>
+            <button class="pack-btn" id="buyPackBtn">Abrir Sobre</button>
+          </div>
+        </div>
+        <div id="packRevealArea" class="cards-reveal-grid"></div>
+      </div>
+
+      <!-- ÁLBUM DE CARTAS -->
+      <div class="game-section-card">
+        <h3 style="color: var(--naranja-claro); font-size: 1.1rem; margin-bottom: 10px;">📖 Tu Álbum de Colección</h3>
+        <p style="color: var(--tenue); font-size: 0.88rem;">Cartas descubiertas y guardadas en la nube.</p>
+        <div class="album-grid" id="albumGrid"></div>
       </div>
 
     </div>
@@ -128,11 +163,8 @@ footer{padding:30px 0;border-top:1px solid rgba(255,102,0,.15);text-align:center
 </footer>
 
 <script>
-// ==========================================
-// CONFIGURACIÓN DE SUPABASE Y TWITCH
-// ==========================================
-const SUPABASE_URL = 'https://oeoujsnnyodrcqeyzcxo.supabase.co'; // Pega aquí tu URL (ej: https://xxxx.supabase.co)
-const SUPABASE_ANON_KEY = 'sb_publishable_Axgs2Qo4NXmTL6Q8IjVTYA_MA1dF5uE'; // Pega aquí tu Publishable key
+const SUPABASE_URL = 'https://oeoujsnnyodrcqeyzcxo.supabase.co'; 
+const SUPABASE_ANON_KEY = 'sb_publishable_tu_clave_real...'; // REEMPLAZA CON TU PUBLISHABLE KEY REAL
 
 const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
@@ -140,7 +172,7 @@ document.getElementById('navToggle').addEventListener('click', () => {
   document.getElementById('navLinks').classList.toggle('open');
 });
 
-let currentUserData = null; // Almacenará los datos actuales del usuario desde Supabase
+let currentUserData = null;
 
 const TWITCH_CLIENT_ID = 'gcykx8eznq8gex7rgm0ebihs2k9q5h'; 
 const REDIRECT_URI = window.location.origin + window.location.pathname;
@@ -179,24 +211,19 @@ async function obtenerDatosTwitch(token) {
     const data = await response.json();
     const user = data.data[0];
 
-    // Mostrar interfaz de juego logueada
     document.getElementById('authSection').classList.add('hidden');
     document.getElementById('gameDashboard').classList.remove('hidden');
     document.getElementById('displayUsername').textContent = user.display_name;
     document.getElementById('twitchAvatar').src = user.profile_image_url;
 
-    // Cargar o registrar usuario en la base de datos de Supabase
     await sincronizarUsuarioSupabase(user);
-
   } catch (err) {
-    console.error("Error al conectar con la API de Twitch", err);
+    console.error("Error al conectar con Twitch", err);
   }
 }
 
-// Función para buscar al usuario en Supabase o crearlo si es nuevo
 async function sincronizarUsuarioSupabase(user) {
   try {
-    // Buscar si el usuario ya existe en la tabla 'usuarios_twitch'
     let { data, error } = await supabaseClient
       .from('usuarios_twitch')
       .select('*')
@@ -204,7 +231,6 @@ async function sincronizarUsuarioSupabase(user) {
       .single();
 
     if (error && error.code === 'PGRST116') {
-      // El usuario no existe, lo creamos con 500 puntos iniciales
       const nuevoUsuario = {
         twitch_id: user.id,
         username: user.display_name,
@@ -218,21 +244,21 @@ async function sincronizarUsuarioSupabase(user) {
         .select()
         .single();
 
-      if (insertError) {
-        console.error("Error al crear usuario en Supabase:", insertError);
-        return;
-      }
+      if (insertError) return;
       currentUserData = insertedData;
     } else if (data) {
       currentUserData = data;
     }
 
-    // Actualizar puntos en pantalla
-    document.getElementById('userPoints').textContent = currentUserData.points;
-
+    actualizarInterfazUsuario();
   } catch (err) {
-    console.error("Error al sincronizar con Supabase:", err);
+    console.error("Error Supabase:", err);
   }
+}
+
+function actualizarInterfazUsuario() {
+  document.getElementById('userPoints').textContent = currentUserData.points;
+  renderizarAlbum();
 }
 
 document.getElementById('logoutBtn').addEventListener('click', () => {
@@ -240,34 +266,19 @@ document.getElementById('logoutBtn').addEventListener('click', () => {
   window.location.href = window.location.pathname;
 });
 
-// Códigos válidos de ejemplo para canjear puntos
-const CODIGOS_VALIDOS = {
-  "TWITCH500-ABC": 500,
-  "TWITCH1000-XYZ": 1000
-};
+// Códigos de canje
+const CODIGOS_VALIDOS = { "TWITCH500-ABC": 500, "TWITCH1000-XYZ": 1000 };
 
 document.getElementById('redeemBtn').addEventListener('click', async () => {
   const inputCode = document.getElementById('redeemCodeInput').value.trim();
   const msgEl = document.getElementById('redeemMessage');
 
-  if (!currentUserData) {
-    msgEl.style.color = "#FF6B6B";
-    msgEl.textContent = "Error: Sesión no sincronizada.";
-    return;
-  }
-
-  if (!inputCode) {
-    msgEl.style.color = "#FF6B6B";
-    msgEl.textContent = "Por favor, introduce un código válido.";
-    return;
-  }
-
-  // Comprobar códigos usados en el almacenamiento local del navegador
+  if (!inputCode) return;
   let codigosUsados = JSON.parse(localStorage.getItem('jotace_codigos_usados')) || [];
 
   if (codigosUsados.includes(inputCode)) {
     msgEl.style.color = "#FF6B6B";
-    msgEl.textContent = "Este código ya ha sido canjeado anteriormente.";
+    msgEl.textContent = "Este código ya ha sido canjeado.";
     return;
   }
 
@@ -275,32 +286,112 @@ document.getElementById('redeemBtn').addEventListener('click', async () => {
     const puntosGanados = CODIGOS_VALIDOS[inputCode];
     const nuevosPuntos = currentUserData.points + puntosGanados;
 
-    // Actualizar puntos en la base de datos de Supabase
     const { error } = await supabaseClient
       .from('usuarios_twitch')
       .update({ points: nuevosPuntos })
       .eq('twitch_id', currentUserData.twitch_id);
 
-    if (error) {
-      msgEl.style.color = "#FF6B6B";
-      msgEl.textContent = "Error al actualizar los puntos en la nube.";
-      return;
+    if (!error) {
+      currentUserData.points = nuevosPuntos;
+      codigosUsados.push(inputCode);
+      localStorage.setItem('jotace_codigos_usados', JSON.stringify(codigosUsados));
+      actualizarInterfazUsuario();
+      msgEl.style.color = "#8AE6DF";
+      msgEl.textContent = `¡Éxito! +${puntosGanados} puntos añadidos.`;
+      document.getElementById('redeemCodeInput').value = "";
     }
-
-    // Actualizar variable local y marcar código como usado
-    currentUserData.points = nuevosPuntos;
-    codigosUsados.push(inputCode);
-    localStorage.setItem('jotace_codigos_usados', JSON.stringify(codigosUsados));
-
-    // Refrescar interfaz
-    document.getElementById('userPoints').textContent = currentUserData.points;
-
-    msgEl.style.color = "#8AE6DF";
-    msgEl.textContent = `¡Éxito! Has sumado ${puntosGanados} puntos a tu cuenta en la nube.`;
-    document.getElementById('redeemCodeInput').value = "";
   } else {
     msgEl.style.color = "#FF6B6B";
-    msgEl.textContent = "El código introducido no es válido.";
+    msgEl.textContent = "Código no válido.";
+  }
+});
+
+// LISTA DE CARTAS DEL UNIVERSO JOTACE
+const CATALOGO_CARTAS = [
+  { id: "c1", name: "Jotace Iniciado", rarity: "Común", icon: "🃏" },
+  { id: "c2", name: "Café de Madrugada", rarity: "Común", icon: "☕" },
+  { id: "c3", name: "Moderador Fiel", rarity: "Raro", icon: "🛡️" },
+  { id: "c4", name: "Hype Train", rarity: "Raro", icon: "🚂" },
+  { id: "c5", name: "Emote Legendario", rarity: "Épico", icon: "🔥" },
+  { id: "c6", name: "Dios del Streaming", rarity: "Legendario", icon: "👑" }
+];
+
+function renderizarAlbum() {
+  const albumGrid = document.getElementById('albumGrid');
+  albumGrid.innerHTML = '';
+  const coleccionUsuario = currentUserData.collection || {};
+
+  CATALOGO_CARTAS.forEach(carta => {
+    const slot = document.createElement('div');
+    const desbloqueada = coleccionUsuario[carta.id] && coleccionUsuario[carta.id] > 0;
+    
+    slot.className = `album-slot ${desbloqueada ? 'unlocked' : ''}`;
+    
+    if (desbloqueada) {
+      slot.innerHTML = `
+        <div class="card-image-placeholder">${carta.icon}</div>
+        <div class="card-title">${carta.name}</div>
+        <div class="card-rarity" style="color:var(--turquesa)">x${coleccionUsuario[carta.id]}</div>
+      `;
+    } else {
+      slot.innerHTML = `
+        <div class="card-image-placeholder" style="filter:grayscale(1); opacity:0.3;">🔒</div>
+        <div class="card-title" style="color:var(--tenue)">Bloqueada</div>
+        <div class="card-rarity">${carta.rarity}</div>
+      `;
+    }
+    albumGrid.appendChild(slot);
+  });
+}
+
+// ABRIR SOBRES
+document.getElementById('buyPackBtn').addEventListener('click', async () => {
+  const costeSobre = 200;
+  const revealArea = document.getElementById('packRevealArea');
+  revealArea.innerHTML = '';
+
+  if (currentUserData.points < costeSobre) {
+    alert("¡No tienes suficientes puntos! Canjea códigos para conseguir más.");
+    return;
+  }
+
+  // Descontar puntos
+  const nuevosPuntos = currentUserData.points - costeSobre;
+  const coleccionActual = currentUserData.collection || {};
+
+  // Generar 3 cartas aleatorias
+  let cartasObtenidas = [];
+  for (let i = 0; i < 3; i++) {
+    const cartaAleatoria = CATALOGO_CARTAS[Math.floor(Math.random() * CATALOGO_CARTAS.length)];
+    cartasObtenidas.push(cartaAleatoria);
+    // Sumar al álbum
+    coleccionActual[cartaAleatoria.id] = (coleccionActual[cartaAleatoria.id] || 0) + 1;
+  }
+
+  // Guardar en Supabase
+  const { error } = await supabaseClient
+    .from('usuarios_twitch')
+    .update({ points: nuevosPuntos, collection: coleccionActual })
+    .eq('twitch_id', currentUserData.twitch_id);
+
+  if (!error) {
+    currentUserData.points = nuevosPuntos;
+    currentUserData.collection = coleccionActual;
+    actualizarInterfazUsuario();
+
+    // Mostrar animación visual de cartas abiertas
+    cartasObtenidas.forEach(carta => {
+      const cardEl = document.createElement('div');
+      cardEl.className = 'collectible-card';
+      cardEl.innerHTML = `
+        <div class="card-image-placeholder">${carta.icon}</div>
+        <div>
+          <div class="card-title">${carta.name}</div>
+          <div class="card-rarity" style="color:var(--naranja-claro)">${carta.rarity}</div>
+        </div>
+      `;
+      revealArea.appendChild(cardEl);
+    });
   }
 });
 </script>
