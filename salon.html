@@ -164,7 +164,7 @@ footer{padding:30px 0;border-top:1px solid rgba(255,102,0,.15);text-align:center
 
 <script>
 const SUPABASE_URL = 'https://oeoujsnnyodrcqeyzcxo.supabase.co'; 
-const SUPABASE_ANON_KEY = 'sb_publishable_Axgs2Qo4NXmTL6Q8IjVTYA_MA1dF5uE'; // REEMPLAZA CON TU PUBLISHABLE KEY REAL
+const SUPABASE_ANON_KEY = 'sb_publishable_tu_clave_real...'; // REEMPLAZA CON TU PUBLISHABLE KEY REAL
 
 const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
@@ -306,14 +306,14 @@ document.getElementById('redeemBtn').addEventListener('click', async () => {
   }
 });
 
-// LISTA DE CARTAS DEL UNIVERSO JOTACE
+// CATÁLOGO DE CARTAS CON SUS RAREZAS
 const CATALOGO_CARTAS = [
-  { id: "c1", name: "Jotace Iniciado", rarity: "Común", icon: "🃏" },
-  { id: "c2", name: "Café de Madrugada", rarity: "Común", icon: "☕" },
-  { id: "c3", name: "Moderador Fiel", rarity: "Raro", icon: "🛡️" },
-  { id: "c4", name: "Hype Train", rarity: "Raro", icon: "🚂" },
-  { id: "c5", name: "Emote Legendario", rarity: "Épico", icon: "🔥" },
-  { id: "c6", name: "Dios del Streaming", rarity: "Legendario", icon: "👑" }
+  { id: "c1", name: "Jotace Iniciado", rarity: "Común", icon: "🃏", color: "#8C827A" },
+  { id: "c2", name: "Café de Madrugada", rarity: "Común", icon: "☕", color: "#8C827A" },
+  { id: "c3", name: "Moderador Fiel", rarity: "Raro", icon: "🛡️", color: "#4A90E2" },
+  { id: "c4", name: "Hype Train", rarity: "Raro", icon: "🚂", color: "#4A90E2" },
+  { id: "c5", name: "Emote Legendario", rarity: "Épico", icon: "🔥", color: "#9013FE" },
+  { id: "c6", name: "Dios del Streaming", rarity: "Legendario", icon: "👑", color: "#F5A623" }
 ];
 
 function renderizarAlbum() {
@@ -331,41 +331,71 @@ function renderizarAlbum() {
       slot.innerHTML = `
         <div class="card-image-placeholder">${carta.icon}</div>
         <div class="card-title">${carta.name}</div>
-        <div class="card-rarity" style="color:var(--turquesa)">x${coleccionUsuario[carta.id]}</div>
+        <div class="card-rarity" style="color:${carta.color}">x${coleccionUsuario[carta.id]}</div>
       `;
     } else {
       slot.innerHTML = `
         <div class="card-image-placeholder" style="filter:grayscale(1); opacity:0.3;">🔒</div>
         <div class="card-title" style="color:var(--tenue)">Bloqueada</div>
-        <div class="card-rarity">${carta.rarity}</div>
+        <div class="card-rarity" style="color:${carta.color}">${carta.rarity}</div>
       `;
     }
     albumGrid.appendChild(slot);
   });
 }
 
-// ABRIR SOBRES
-document.getElementById('buyPackBtn').addEventListener('click', async () => {
-  const costeSobre = 200;
+// FUNCIÓN PARA SELECCIONAR CARTA POR PORCENTAJES
+function obtenerCartaPorProbabilidad(probabilidades) {
+  const rand = Math.random() * 100;
+  let acumulado = 0;
+  let rarezaSeleccionada = "Común";
+
+  for (const [rareza, porcentaje] of Object.entries(probabilidades)) {
+    acumulado += porcentaje;
+    if (rand <= acumulado) {
+      rarezaSeleccionada = rareza;
+      break;
+    }
+  }
+
+  // Filtrar cartas del catálogo que coincidan con esa rareza
+  const cartasDeRareza = CATALOGO_CARTAS.filter(c => c.rarity === rarezaSeleccionada);
+  // Si por lo que sea no hay de esa rareza, devolvemos una aleatoria general
+  if (cartasDeRareza.length === 0) return CATALOGO_CARTAS[0];
+
+  return cartasDeRareza[Math.floor(Math.random() * cartasDeRareza.length)];
+}
+
+// BOTÓN SOBRE ESTÁNDAR (Coste: 200)
+// Probabilidades: 70% Común, 20% Raro, 8% Épico, 2% Legendario
+document.getElementById('buyStandardPack').addEventListener('click', () => {
+  abrirSobre(200, { "Común": 70, "Raro": 20, "Épico": 8, "Legendario": 2 });
+});
+
+// BOTÓN SOBRE PREMIUM (Coste: 500)
+// Probabilidades: 40% Común, 35% Raro, 20% Épico, 5% Legendario
+document.getElementById('buyPremiumPack').addEventListener('click', () => {
+  abrirSobre(500, { "Común": 40, "Raro": 35, "Épico": 20, "Legendario": 5 });
+});
+
+async function abrirSobre(coste, probabilidades) {
   const revealArea = document.getElementById('packRevealArea');
   revealArea.innerHTML = '';
 
-  if (currentUserData.points < costeSobre) {
+  if (currentUserData.points < coste) {
     alert("¡No tienes suficientes puntos! Canjea códigos para conseguir más.");
     return;
   }
 
-  // Descontar puntos
-  const nuevosPuntos = currentUserData.points - costeSobre;
+  const nuevosPuntos = currentUserData.points - coste;
   const coleccionActual = currentUserData.collection || {};
-
-  // Generar 3 cartas aleatorias
   let cartasObtenidas = [];
+
+  // Abrir 3 cartas por sobre
   for (let i = 0; i < 3; i++) {
-    const cartaAleatoria = CATALOGO_CARTAS[Math.floor(Math.random() * CATALOGO_CARTAS.length)];
-    cartasObtenidas.push(cartaAleatoria);
-    // Sumar al álbum
-    coleccionActual[cartaAleatoria.id] = (coleccionActual[cartaAleatoria.id] || 0) + 1;
+    const carta = obtenerCartaPorProbabilidad(probabilidades);
+    cartasObtenidas.push(carta);
+    coleccionActual[carta.id] = (coleccionActual[carta.id] || 0) + 1;
   }
 
   // Guardar en Supabase
@@ -379,7 +409,7 @@ document.getElementById('buyPackBtn').addEventListener('click', async () => {
     currentUserData.collection = coleccionActual;
     actualizarInterfazUsuario();
 
-    // Mostrar animación visual de cartas abiertas
+    // Mostrar cartas obtenidas en pantalla
     cartasObtenidas.forEach(carta => {
       const cardEl = document.createElement('div');
       cardEl.className = 'collectible-card';
@@ -387,13 +417,13 @@ document.getElementById('buyPackBtn').addEventListener('click', async () => {
         <div class="card-image-placeholder">${carta.icon}</div>
         <div>
           <div class="card-title">${carta.name}</div>
-          <div class="card-rarity" style="color:var(--naranja-claro)">${carta.rarity}</div>
+          <div class="card-rarity" style="color:${carta.color}">${carta.rarity}</div>
         </div>
       `;
       revealArea.appendChild(cardEl);
     });
   }
-});
+}
 </script>
 </body>
 </html>
