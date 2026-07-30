@@ -343,14 +343,14 @@ document.getElementById('redeemBtn').addEventListener('click', async () => {
   }
 });
 
-// CATÁLOGO DE CARTAS CON SUS RAREZAS
+// CATÁLOGO DE CARTAS CON SUS IMÁGENES Y RAREZAS
 const CATALOGO_CARTAS = [
-  { id: "c1", name: "Jotace Iniciado", rarity: "Común", icon: "🃏", color: "#8C827A" },
-  { id: "c2", name: "Café de Madrugada", rarity: "Común", icon: "☕", color: "#8C827A" },
-  { id: "c3", name: "Moderador Fiel", rarity: "Raro", icon: "🛡️", color: "#4A90E2" },
-  { id: "c4", name: "Hype Train", rarity: "Raro", icon: "🚂", color: "#4A90E2" },
-  { id: "c5", name: "Emote Legendario", rarity: "Épico", icon: "🔥", color: "#9013FE" },
-  { id: "c6", name: "Dios del Streaming", rarity: "Legendario", icon: "👑", color: "#F5A623" }
+  { id: "c1", name: "Jotace Iniciado", rarity: "Común", image: "img/carta-iniciado.png", color: "#8C827A" },
+  { id: "c2", name: "Café de Madrugada", rarity: "Común", image: "img/carta-cafe.png", color: "#8C827A" },
+  { id: "c3", name: "Moderador Fiel", rarity: "Raro", image: "img/carta-moderador.png", color: "#4A90E2" },
+  { id: "c4", name: "Hype Train", rarity: "Raro", image: "img/carta-hype.png", color: "#4A90E2" },
+  { id: "c5", name: "Emote Legendario", rarity: "Épico", image: "img/carta-emote.png", color: "#9013FE" },
+  { id: "c6", name: "Dios del Streaming", rarity: "Legendario", image: "img/carta-dios.png", color: "#F5A623" }
 ];
 
 function renderizarAlbum() {
@@ -366,13 +366,13 @@ function renderizarAlbum() {
     
     if (desbloqueada) {
       slot.innerHTML = `
-        <div class="card-image-placeholder">${carta.icon}</div>
+        <div class="card-image-container"><img src="${carta.image}" alt="${carta.name}" class="card-real-img"></div>
         <div class="card-title">${carta.name}</div>
         <div class="card-rarity" style="color:${carta.color}">x${coleccionUsuario[carta.id]}</div>
       `;
     } else {
       slot.innerHTML = `
-        <div class="card-image-placeholder" style="filter:grayscale(1); opacity:0.3;">🔒</div>
+        <div class="card-image-container" style="filter:grayscale(1); opacity:0.3;"><img src="${carta.image}" alt="Bloqueada" class="card-real-img"></div>
         <div class="card-title" style="color:var(--tenue)">Bloqueada</div>
         <div class="card-rarity" style="color:${carta.color}">${carta.rarity}</div>
       `;
@@ -381,6 +381,53 @@ function renderizarAlbum() {
   });
 }
 
+// Actualización en la función abrirSobre para mostrar la imagen real al abrirlas
+async function abrirSobre(coste, probabilidades) {
+  const revealArea = document.getElementById('packRevealArea');
+  revealArea.innerHTML = '';
+
+  if (currentUserData.points < coste) {
+    alert("¡No tienes suficientes puntos! Canjea códigos para conseguir más.");
+    return;
+  }
+
+  const nuevosPuntos = currentUserData.points - coste;
+  const coleccionActual = currentUserData.collection || {};
+  let cartasObtenidas = [];
+
+  // Abrir 3 cartas por sobre
+  for (let i = 0; i < 3; i++) {
+    const carta = obtenerCartaPorProbabilidad(probabilidades);
+    cartasObtenidas.push(carta);
+    coleccionActual[carta.id] = (coleccionActual[carta.id] || 0) + 1;
+  }
+
+  // Guardar en Supabase
+  const { error } = await supabaseClient
+    .from('usuarios_twitch')
+    .update({ points: nuevosPuntos, collection: coleccionActual })
+    .eq('twitch_id', currentUserData.twitch_id);
+
+  if (!error) {
+    currentUserData.points = nuevosPuntos;
+    currentUserData.collection = coleccionActual;
+    actualizarInterfazUsuario();
+
+    // Mostrar cartas obtenidas con su imagen real
+    cartasObtenidas.forEach(carta => {
+      const cardEl = document.createElement('div');
+      cardEl.className = 'collectible-card';
+      cardEl.innerHTML = `
+        <div class="card-image-container"><img src="${carta.image}" alt="${carta.name}" class="card-real-img"></div>
+        <div>
+          <div class="card-title">${carta.name}</div>
+          <div class="card-rarity" style="color:${carta.color}">${carta.rarity}</div>
+        </div>
+      `;
+      revealArea.appendChild(cardEl);
+    });
+  }
+}
 // FUNCIÓN PARA SELECCIONAR CARTA POR PORCENTAJES
 function obtenerCartaPorProbabilidad(probabilidades) {
   const rand = Math.random() * 100;
