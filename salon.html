@@ -225,4 +225,394 @@ footer{padding:30px 0;border-top:1px solid rgba(255,102,0,.15);text-align:center
             <h4 style="font-size: 0.95rem; color: var(--hueso); margin-bottom: 6px;">Canjear Código</h4>
             <p style="color: var(--tenue); font-size: 0.8rem; margin-bottom: 12px;">Introduce un código promocional del canal.</p>
             <div style="display: flex; gap: 10px;">
-              <input type="text" id="redeemCodeInput" placeholder="Introduce tu código
+              <input type="text" id="redeemCodeInput" placeholder="Introduce tu código..." style="flex: 1; background: var(--carbon-claro); border: 1px solid rgba(255,102,0,0.3); padding: 9px 12px; border-radius: 8px; color: var(--hueso); outline: none; font-size: 0.85rem;">
+              <button id="redeemBtn" style="background: var(--naranja); color: white; border: none; padding: 9px 16px; border-radius: 8px; font-weight: 700; cursor: pointer; font-size: 0.85rem;">Canjear</button>
+            </div>
+            <p id="redeemMessage" style="font-size: 0.8rem; margin-top: 8px;"></p>
+          </div>
+
+          <!-- BLOQUE DERECHA: Recompensa Diaria 24h -->
+          <div class="reward-box">
+            <h4 style="font-size: 0.95rem; color: var(--hueso); margin-bottom: 6px;">Recompensa Diaria</h4>
+            <p style="color: var(--tenue); font-size: 0.8rem; margin-bottom: 12px;">Reclama puntos gratis cada 24 horas.</p>
+            <button id="dailyClaimBtn" style="background: var(--turquesa); color: var(--negro); border: none; padding: 10px 16px; border-radius: 8px; font-weight: 700; cursor: pointer; width: 100%; font-size: 0.9rem; transition: opacity 0.2s;">Reclamar 100 Puntos</button>
+            <p id="dailyMessage" style="font-size: 0.8rem; margin-top: 8px; color: var(--turquesa); text-align: center;"></p>
+          </div>
+        </div>
+      </div>
+
+      <!-- TIENDA DE SOBRES -->
+      <div class="game-section-card">
+        <h3 style="color: var(--naranja-claro); font-size: 1.1rem; margin-bottom: 10px;">TIENDA DE SOBRES</h3>
+        <p style="color: var(--tenue); font-size: 0.88rem;">Elige qué sobre abrir según tus puntos y busca cartas legendarias.</p>
+        
+        <div class="packs-grid">
+          <!-- Sobre Estándar -->
+          <div class="pack-card">
+            <div class="pack-img-container">
+              <img src="img/sobre-normal.png" alt="Sobre Estándar" class="pack-img">
+            </div>
+            <h4 style="color: var(--hueso); margin-top: 10px;">Sobre Estándar</h4>
+            <p style="color: var(--tenue); font-size: 0.8rem; margin: 6px 0;">3 Cartas (Probabilidad equilibrada)</p>
+            <p style="color: var(--turquesa); font-weight: 700;">Coste: 200 Puntos</p>
+            <button class="pack-btn" id="buyStandardPack">Abrir Estándar</button>
+          </div>
+
+          <!-- Sobre Premium -->
+          <div class="pack-card" style="border-color: #9013FE;">
+            <div class="pack-img-container">
+              <img src="img/sobre-premium.png" alt="Sobre Premium" class="pack-img">
+            </div>
+            <h4 style="color: var(--hueso); margin-top: 10px;">Sobre Premium</h4>
+            <p style="color: var(--tenue); font-size: 0.8rem; margin: 6px 0;">3 Cartas (¡Más Épicas y Legendarias!)</p>
+            <p style="color: var(--turquesa); font-weight: 700;">Coste: 500 Puntos</p>
+            <button class="pack-btn" id="buyPremiumPack" style="background: #9013FE;">Abrir Premium</button>
+          </div>
+        </div>
+
+        <div id="packRevealArea" class="cards-reveal-grid"></div>
+      </div>
+
+      <!-- ÁLBUM DE CARTAS -->
+      <div class="game-section-card">
+        <h3 style="color: var(--naranja-claro); font-size: 1.1rem; margin-bottom: 10px;">TU ÁLBUM</h3>
+        <p style="color: var(--tenue); font-size: 0.88rem;">Cartas descubiertas y guardadas en tu álbum.</p>
+        <div class="album-grid" id="albumGrid"></div>
+      </div>
+
+    </div>
+  </div>
+</main>
+
+<footer>
+  <div class="wrap"><p>Web Oficial de Jotace194</p></div>
+</footer>
+
+<script>
+const SUPABASE_URL = 'https://oeoujsnnyodrcqeyzcxo.supabase.co'; 
+const SUPABASE_ANON_KEY = 'sb_publishable_Axgs2Qo4NXmTL6Q8IjVTYA_MA1dF5uE';
+
+const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+document.getElementById('navToggle').addEventListener('click', () => {
+  document.getElementById('navLinks').classList.toggle('open');
+});
+
+let currentUserData = null;
+
+const TWITCH_CLIENT_ID = 'gcykx8eznq8gex7rgm0ebihs2k9q5h'; 
+const REDIRECT_URI = window.location.origin + window.location.pathname;
+
+const loginUrl = `https://id.twitch.tv/oauth2/authorize?client_id=${TWITCH_CLIENT_ID}&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&response_type=token&scope=user:read:email`;
+const loginBtn = document.getElementById('twitchLoginBtn');
+if (loginBtn) {
+  loginBtn.href = loginUrl;
+}
+
+const fragment = window.location.hash.substring(1);
+const params = new URLSearchParams(fragment);
+const accessToken = params.get('access_token');
+
+if (accessToken) {
+  localStorage.setItem('twitch_access_token', accessToken);
+  window.history.replaceState({}, document.title, window.location.pathname);
+}
+
+const savedToken = localStorage.getItem('twitch_access_token');
+if (savedToken) {
+  obtenerDatosTwitch(savedToken);
+}
+
+async function obtenerDatosTwitch(token) {
+  try {
+    const response = await fetch('https://api.twitch.tv/helix/users', {
+      headers: {
+        'Client-ID': TWITCH_CLIENT_ID,
+        'Authorization': `Bearer ${token}`
+      }
+    });
+
+    if (!response.ok) {
+      localStorage.removeItem('twitch_access_token');
+      return;
+    }
+
+    const data = await response.json();
+    const user = data.data[0];
+
+    document.getElementById('authSection').classList.add('hidden');
+    document.getElementById('gameDashboard').classList.remove('hidden');
+    document.getElementById('displayUsername').textContent = user.display_name;
+    document.getElementById('twitchAvatar').src = user.profile_image_url;
+
+    await sincronizarUsuarioSupabase(user);
+  } catch (err) {
+    console.error("Error al conectar con Twitch", err);
+  }
+}
+
+async function sincronizarUsuarioSupabase(user) {
+  try {
+    let { data, error } = await supabaseClient
+      .from('usuarios_twitch')
+      .select('*')
+      .eq('twitch_id', user.id)
+      .single();
+
+    if (error && error.code === 'PGRST116') {
+      const nuevoUsuario = {
+        twitch_id: user.id,
+        username: user.display_name,
+        points: 500,
+        collection: {}
+      };
+
+      const { data: insertedData, error: insertError } = await supabaseClient
+        .from('usuarios_twitch')
+        .insert([nuevoUsuario])
+        .select()
+        .single();
+
+      if (insertError) return;
+      currentUserData = insertedData;
+    } else if (data) {
+      currentUserData = data;
+    }
+
+    actualizarInterfazUsuario();
+  } catch (err) {
+    console.error("Error Supabase:", err);
+  }
+}
+
+function actualizarInterfazUsuario() {
+  document.getElementById('userPoints').textContent = currentUserData.points;
+  renderizarAlbum();
+  verificarEstadoRecompensaDiaria();
+}
+
+document.getElementById('logoutBtn').addEventListener('click', () => {
+  localStorage.removeItem('twitch_access_token');
+  window.location.href = window.location.pathname;
+});
+
+// Códigos de canje
+const CODIGOS_VALIDOS = { "TWITCH500-ABC": 500, "TWITCH1000-XYZ": 1000 };
+
+document.getElementById('redeemBtn').addEventListener('click', async () => {
+  const inputCode = document.getElementById('redeemCodeInput').value.trim();
+  const msgEl = document.getElementById('redeemMessage');
+
+  if (!inputCode) return;
+  let codigosUsados = JSON.parse(localStorage.getItem('jotace_codigos_usados')) || [];
+
+  if (codigosUsados.includes(inputCode)) {
+    msgEl.style.color = "#FF6B6B";
+    msgEl.textContent = "Este código ya ha sido canjeado.";
+    return;
+  }
+
+  if (CODIGOS_VALIDOS.hasOwnProperty(inputCode)) {
+    const puntosGanados = CODIGOS_VALIDOS[inputCode];
+    const nuevosPuntos = currentUserData.points + puntosGanados;
+
+    const { error } = await supabaseClient
+      .from('usuarios_twitch')
+      .update({ points: nuevosPuntos })
+      .eq('twitch_id', currentUserData.twitch_id);
+
+    if (!error) {
+      currentUserData.points = nuevosPuntos;
+      codigosUsados.push(inputCode);
+      localStorage.setItem('jotace_codigos_usados', JSON.stringify(codigosUsados));
+      actualizarInterfazUsuario();
+      msgEl.style.color = "#8AE6DF";
+      msgEl.textContent = `¡Éxito! +${puntosGanados} puntos añadidos.`;
+      document.getElementById('redeemCodeInput').value = "";
+    }
+  } else {
+    msgEl.style.color = "#FF6B6B";
+    msgEl.textContent = "Código no válido.";
+  }
+});
+
+// RECOMPENSA DIARIA (24 HORAS)
+const PUNTOS_DIARIOS = 100;
+
+function verificarEstadoRecompensaDiaria() {
+  const btnDaily = document.getElementById('dailyClaimBtn');
+  const msgDaily = document.getElementById('dailyMessage');
+  
+  if (!currentUserData.last_daily_claim) {
+    btnDaily.disabled = false;
+    btnDaily.style.opacity = "1";
+    msgDaily.textContent = "¡Disponible para reclamar ahora!";
+    return;
+  }
+
+  const ultimaVez = new Date(currentUserData.last_daily_claim).getTime();
+  const ahora = new Date().getTime();
+  const tiempoTranscurrido = ahora - ultimaVez;
+  const veinticuatroHoras = 24 * 60 * 60 * 1000;
+
+  if (tiempoTranscurrido < veinticuatroHoras) {
+    const tiempoRestante = veinticuatroHoras - tiempoTranscurrido;
+    btnDaily.disabled = true;
+    btnDaily.style.opacity = "0.5";
+    
+    const horas = Math.floor(tiempoRestante / (1000 * 60 * 60));
+    const minutos = Math.floor((tiempoRestante % (1000 * 60 * 60)) / (1000 * 60));
+    
+    msgDaily.textContent = `Próxima recompensa en: ${horas}h ${minutos}m`;
+  } else {
+    btnDaily.disabled = false;
+    btnDaily.style.opacity = "1";
+    msgDaily.textContent = "¡Disponible para reclamar ahora!";
+  }
+}
+
+document.getElementById('dailyClaimBtn').addEventListener('click', async () => {
+  const ahoraIso = new Date().toISOString();
+  const nuevosPuntos = currentUserData.points + PUNTOS_DIARIOS;
+
+  const { error } = await supabaseClient
+    .from('usuarios_twitch')
+    .update({ 
+      points: nuevosPuntos, 
+      last_daily_claim: ahoraIso 
+    })
+    .eq('twitch_id', currentUserData.twitch_id);
+
+  if (!error) {
+    currentUserData.points = nuevosPuntos;
+    currentUserData.last_daily_claim = ahoraIso;
+    actualizarInterfazUsuario();
+    verificarEstadoRecompensaDiaria();
+    alert(`¡Has reclamado con éxito tus ${PUNTOS_DIARIOS} puntos diarios!`);
+  } else {
+    alert("Hubo un error al reclamar los puntos. Inténtalo de nuevo.");
+  }
+});
+
+// CATÁLOGO DE CARTAS CON SUS IMÁGENES Y RAREZAS
+const CATALOGO_CARTAS = [
+  { id: "c1", name: "Bronce", rarity: "Común", image: "/img/carta-1.png", color: "#8C827A" },
+  { id: "c2", name: "Buu", rarity: "Común", image: "/img/carta-2.png", color: "#8C827A" },
+  { id: "c3", name: "Perdedor", rarity: "Raro", image: "/img/carta-3.png", color: "#4A90E2" },
+  { id: "c4", name: "Michael Miller", rarity: "Raro", image: "/img/carta-5.png", color: "#4A90E2" },
+  { id: "c5", name: "Martillazo", rarity: "Épico", image: "/img/carta-7.png", color: "#9013FE" }
+];
+
+function renderizarAlbum() {
+  const albumGrid = document.getElementById('albumGrid');
+  albumGrid.innerHTML = '';
+  const coleccionUsuario = currentUserData.collection || {};
+
+  CATALOGO_CARTAS.forEach(carta => {
+    const wrapper = document.createElement('div');
+    wrapper.className = 'album-slot-wrapper';
+    
+    const desbloqueada = coleccionUsuario[carta.id] && coleccionUsuario[carta.id] > 0;
+    
+    if (desbloqueada) {
+      wrapper.innerHTML = `
+        <div class="album-card unlocked">
+          <img src="${carta.image}" alt="${carta.name}" class="card-real-img" width="774" height="1039">
+        </div>
+        <div class="card-meta-outside">
+          <span class="card-title-out">${carta.name}</span>
+          <span class="card-rarity-out" style="color:${carta.color}">x${coleccionUsuario[carta.id]}</span>
+        </div>
+      `;
+    } else {
+      wrapper.innerHTML = `
+        <div class="album-card locked">
+          <img src="${carta.image}" alt="Bloqueada" class="card-real-img" width="774" height="1039">
+        </div>
+        <div class="card-meta-outside">
+          <span class="card-title-out" style="color:var(--tenue)">Bloqueada</span>
+          <span class="card-rarity-out" style="color:${carta.color}">${carta.rarity}</span>
+        </div>
+      `;
+    }
+    albumGrid.appendChild(wrapper);
+  });
+}
+
+function obtenerCartaPorProbabilidad(probabilidades) {
+  const rand = Math.random() * 100;
+  let acumulado = 0;
+  let rarezaSeleccionada = "Común";
+
+  for (const [rareza, porcentaje] of Object.entries(probabilidades)) {
+    acumulado += porcentaje;
+    if (rand <= acumulado) {
+      rarezaSeleccionada = rareza;
+      break;
+    }
+  }
+
+  const cartasDeRareza = CATALOGO_CARTAS.filter(c => c.rarity === rarezaSeleccionada);
+  if (cartasDeRareza.length === 0) return CATALOGO_CARTAS[0];
+
+  return cartasDeRareza[Math.floor(Math.random() * cartasDeRareza.length)];
+}
+
+async function abrirSobre(coste, probabilidades) {
+  const revealArea = document.getElementById('packRevealArea');
+  revealArea.innerHTML = '';
+
+  if (currentUserData.points < coste) {
+    alert("¡No tienes suficientes puntos! Canjea códigos para conseguir más.");
+    return;
+  }
+
+  const nuevosPuntos = currentUserData.points - coste;
+  const coleccionActual = currentUserData.collection || {};
+  let cartasObtenidas = [];
+
+  for (let i = 0; i < 3; i++) {
+    const carta = obtenerCartaPorProbabilidad(probabilidades);
+    cartasObtenidas.push(carta);
+    coleccionActual[carta.id] = (coleccionActual[carta.id] || 0) + 1;
+  }
+
+  const { error } = await supabaseClient
+    .from('usuarios_twitch')
+    .update({ points: nuevosPuntos, collection: coleccionActual })
+    .eq('twitch_id', currentUserData.twitch_id);
+
+  if (!error) {
+    currentUserData.points = nuevosPuntos;
+    currentUserData.collection = coleccionActual;
+    actualizarInterfazUsuario();
+
+    cartasObtenidas.forEach(carta => {
+      const cardEl = document.createElement('div');
+      cardEl.className = 'album-slot-wrapper';
+      cardEl.innerHTML = `
+        <div class="album-card unlocked" style="border-color:${carta.color}">
+          <img src="${carta.image}" alt="${carta.name}" class="card-real-img" width="774" height="1039">
+        </div>
+        <div class="card-meta-outside">
+          <span class="card-title-out">${carta.name}</span>
+          <span class="card-rarity-out" style="color:${carta.color}">${carta.rarity}</span>
+        </div>
+      `;
+      revealArea.appendChild(cardEl);
+    });
+  }
+}
+
+// BOTÓN SOBRE ESTÁNDAR (Coste: 200)
+document.getElementById('buyStandardPack').addEventListener('click', () => {
+  abrirSobre(200, { "Común": 70, "Raro": 20, "Épico": 8, "Legendario": 2 });
+});
+
+// BOTÓN SOBRE PREMIUM (Coste: 500)
+document.getElementById('buyPremiumPack').addEventListener('click', () => {
+  abrirSobre(500, { "Común": 40, "Raro": 35, "Épico": 20, "Legendario": 5 });
+});
+</script>
+</body>
+</html>
