@@ -49,21 +49,24 @@ body{background:var(--negro);color:var(--hueso);font-family:'Segoe UI',sans-seri
 
 .game-section-card{background: var(--carbon); border: 1px solid rgba(255,102,0,0.2); border-radius: 16px; padding: 25px; margin-bottom: 25px;}
 
-/* ESTILOS DE SOBRES Y CARTAS */
+/* ESTILOS DE SOBRES Y CARTAS GRANDES */
 .packs-grid{display:grid;grid-template-columns:repeat(auto-fit, minmax(220px, 1fr));gap:20px;margin-top:15px;}
 .pack-card{background:var(--carbon-claro);border:1px solid rgba(255,102,0,0.3);border-radius:12px;padding:20px;text-align:center;transition:transform 0.2s;}
 .pack-card:hover{transform:translateY(-4px);border-color:var(--naranja);}
 .pack-btn{background:var(--naranja);color:white;border:none;padding:10px 16px;border-radius:8px;font-weight:700;cursor:pointer;width:100%;margin-top:15px;transition:background 0.2s;}
 .pack-btn:hover{background:var(--naranja-oscuro);}
 
-.cards-reveal-grid{display:flex;justify-content:center;gap:15px;flex-wrap:wrap;margin-top:20px;}
-.collectible-card{width:140px;height:200px;background:var(--carbon-claro);border-radius:10px;border:2px solid var(--tenue);padding:10px;display:flex;flex-direction:column;justify-content:space-between;text-align:center;box-shadow:0 5px 15px rgba(0,0,0,0.3);animation:fadeIn 0.5s ease;}
-.card-title{font-size:0.8rem;font-weight:700;color:var(--hueso);margin-top:5px;}
-.card-rarity{font-size:0.65rem;text-transform:uppercase;font-weight:800;letter-spacing:0.1em;}
+.cards-reveal-grid{display:flex;justify-content:center;gap:20px;flex-wrap:wrap;margin-top:25px;}
 
-.album-grid{display:grid;grid-template-columns:repeat(auto-fill, minmax(130px, 1fr));gap:15px;margin-top:15px;}
-.album-slot{background:var(--carbon-claro);border:1px dashed rgba(255,255,255,0.1);border-radius:10px;padding:12px;text-align:center;min-height:160px;display:flex;flex-direction:column;align-items:center;justify-content:center;}
-.album-slot.unlocked{border:2px solid var(--turquesa);background:var(--carbon);}
+/* Carta individual grande y estilizada */
+.collectible-card{width:180px;height:260px;background:var(--carbon-claro);border-radius:12px;border:2px solid var(--tenue);padding:8px;display:flex;flex-direction:column;justify-content:space-between;text-align:center;box-shadow:0 8px 20px rgba(0,0,0,0.4);animation:fadeIn 0.5s ease;}
+.card-title{font-size:0.85rem;font-weight:700;color:var(--hueso);margin-top:4px;}
+.card-rarity{font-size:0.7rem;text-transform:uppercase;font-weight:800;letter-spacing:0.1em;margin-bottom:4px;}
+
+/* ÁLBUM MÁS GRANDE */
+.album-grid{display:grid;grid-template-columns:repeat(auto-fill, minmax(180px, 1fr));gap:20px;margin-top:20px;}
+.album-slot{background:var(--carbon-claro);border:1px dashed rgba(255,255,255,0.1);border-radius:12px;padding:10px;text-align:center;min-height:240px;display:flex;flex-direction:column;align-items:center;justify-content:space-between;}
+.album-slot.unlocked{border:2px solid var(--turquesa);background:var(--carbon);box-shadow:0 5px 15px rgba(0,0,0,0.3);}
 
 @keyframes fadeIn{from{opacity:0;transform:scale(0.9);}to{opacity:1;transform:scale(1);}}
 footer{padding:30px 0;border-top:1px solid rgba(255,102,0,.15);text-align:center;color:var(--tenue);font-size:.85rem;background:var(--carbon)}
@@ -87,20 +90,22 @@ footer{padding:30px 0;border-top:1px solid rgba(255,102,0,.15);text-align:center
 .pack-card:hover .pack-img{
   transform: scale(1.08);
 }
+
+/* Contenedor de la imagen ajustado al tamaño de la carta */
 .card-image-container {
   width: 100%;
-  height: 100px;
+  height: 180px;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(0, 0, 0, 0.2);
-  border-radius: 6px;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 8px;
   overflow: hidden;
 }
 .card-real-img {
-  max-height: 95px;
-  max-width: 100%;
-  object-fit: contain;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 .reward-container-grid {
   display: grid;
@@ -452,11 +457,11 @@ document.getElementById('dailyClaimBtn').addEventListener('click', async () => {
 
 // CATÁLOGO DE CARTAS CON SUS IMÁGENES Y RAREZAS
 const CATALOGO_CARTAS = [
-  { id: "c1", name: "Bronce", rarity: "Común", image: "/img/carta-1.png", color: "#8C827A" },
-  { id: "c2", name: "Buu", rarity: "Común", image: "/img/carta-2.png", color: "#8C827A" },
-  { id: "c3", name: "Perdedor", rarity: "Raro", image: "/img/carta-3.png", color: "#4A90E2" },
-  { id: "c4", name: "Michael Miller", rarity: "Raro", image: "/img/carta-5.png", color: "#4A90E2" },
-  { id: "c5", name: "Martillazo", rarity: "Épico", image: "/img/carta-7.png", color: "#9013FE" }
+  { id: "c1", name: "Bronce", rarity: "Común", image: "./img/carta-1.png", color: "#8C827A" },
+  { id: "c2", name: "Buu", rarity: "Común", image: "./img/carta-2.png", color: "#8C827A" },
+  { id: "c3", name: "Perdedor", rarity: "Raro", image: "./img/carta-3.png", color: "#4A90E2" },
+  { id: "c4", name: "Michael Miller", rarity: "Raro", image: "./img/carta-5.png", color: "#4A90E2" },
+  { id: "c5", name: "Martillazo", rarity: "Épico", image: "./img/carta-7.png", color: "#9013FE" }
 ];
 
 function renderizarAlbum() {
