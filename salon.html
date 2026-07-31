@@ -49,24 +49,84 @@ body{background:var(--negro);color:var(--hueso);font-family:'Segoe UI',sans-seri
 
 .game-section-card{background: var(--carbon); border: 1px solid rgba(255,102,0,0.2); border-radius: 16px; padding: 25px; margin-bottom: 25px;}
 
-/* ESTILOS DE SOBRES Y CARTAS GRANDES */
+/* ESTILOS DE SOBRES */
 .packs-grid{display:grid;grid-template-columns:repeat(auto-fit, minmax(220px, 1fr));gap:20px;margin-top:15px;}
 .pack-card{background:var(--carbon-claro);border:1px solid rgba(255,102,0,0.3);border-radius:12px;padding:20px;text-align:center;transition:transform 0.2s;}
 .pack-card:hover{transform:translateY(-4px);border-color:var(--naranja);}
 .pack-btn{background:var(--naranja);color:white;border:none;padding:10px 16px;border-radius:8px;font-weight:700;cursor:pointer;width:100%;margin-top:15px;transition:background 0.2s;}
 .pack-btn:hover{background:var(--naranja-oscuro);}
 
-.cards-reveal-grid{display:flex;justify-content:center;gap:20px;flex-wrap:wrap;margin-top:25px;}
+.cards-reveal-grid{display:flex;justify-content:center;gap:25px;flex-wrap:wrap;margin-top:25px;}
 
-/* Carta individual grande y estilizada */
-.collectible-card{width:180px;height:260px;background:var(--carbon-claro);border-radius:12px;border:2px solid var(--tenue);padding:8px;display:flex;flex-direction:column;justify-content:space-between;text-align:center;box-shadow:0 8px 20px rgba(0,0,0,0.4);animation:fadeIn 0.5s ease;}
-.card-title{font-size:0.85rem;font-weight:700;color:var(--hueso);margin-top:4px;}
-.card-rarity{font-size:0.7rem;text-transform:uppercase;font-weight:800;letter-spacing:0.1em;margin-bottom:4px;}
+/* TARJETA Y MARCO: Ahora la carta es exclusivamente el marco con la imagen dentro */
+.collectible-card{
+  width: 170px;
+  height: 245px;
+  background: var(--carbon-claro);
+  border-radius: 12px;
+  border: 3px solid var(--tenue);
+  overflow: hidden;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+  animation: fadeIn 0.5s ease;
+  position: relative;
+}
 
-/* ÁLBUM MÁS GRANDE */
-.album-grid{display:grid;grid-template-columns:repeat(auto-fill, minmax(180px, 1fr));gap:20px;margin-top:20px;}
-.album-slot{background:var(--carbon-claro);border:1px dashed rgba(255,255,255,0.1);border-radius:12px;padding:10px;text-align:center;min-height:240px;display:flex;flex-direction:column;align-items:center;justify-content:space-between;}
-.album-slot.unlocked{border:2px solid var(--turquesa);background:var(--carbon);box-shadow:0 5px 15px rgba(0,0,0,0.3);}
+/* ÁLBUM: Rejilla adaptada */
+.album-grid{display:grid;grid-template-columns:repeat(auto-fill, minmax(170px, 1fr));gap:35px 20px;margin-top:25px;}
+
+/* Contenedor individual de cada ranura del álbum */
+.album-slot-wrapper{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+/* Tarjeta dentro del álbum con su marco exacto */
+.album-card{
+  width: 170px;
+  height: 245px;
+  background: var(--carbon-claro);
+  border-radius: 12px;
+  border: 3px solid var(--tenue);
+  overflow: hidden;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+  position: relative;
+}
+.album-card.unlocked{
+  border-color: var(--turquesa);
+}
+.album-card.locked{
+  filter: grayscale(1);
+  opacity: 0.3;
+}
+
+/* La imagen ocupa al 100% el interior del marco */
+.card-real-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Textos y cantidades movidos completamente FUERA de la carta */
+.card-meta-outside {
+  margin-top: 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+.card-title-out {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--hueso);
+}
+.card-rarity-out {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+}
 
 @keyframes fadeIn{from{opacity:0;transform:scale(0.9);}to{opacity:1;transform:scale(1);}}
 footer{padding:30px 0;border-top:1px solid rgba(255,102,0,.15);text-align:center;color:var(--tenue);font-size:.85rem;background:var(--carbon)}
@@ -91,22 +151,6 @@ footer{padding:30px 0;border-top:1px solid rgba(255,102,0,.15);text-align:center
   transform: scale(1.08);
 }
 
-/* Contenedor de la imagen ajustado al tamaño de la carta */
-.card-image-container {
-  width: 100%;
-  height: 180px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: rgba(0, 0, 0, 0.3);
-  border-radius: 8px;
-  overflow: hidden;
-}
-.card-real-img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
 .reward-container-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -457,7 +501,7 @@ document.getElementById('dailyClaimBtn').addEventListener('click', async () => {
 
 // CATÁLOGO DE CARTAS CON SUS IMÁGENES Y RAREZAS
 const CATALOGO_CARTAS = [
-  { id: "c1", name: "Bronce", rarity: "Común", image: "/img/carta-1.png", color: "#8C827A" },
+  { id: "c1", name: "Bronce", rarity: "Común", image: ./img/carta-1.png", color: "#8C827A" },
   { id: "c2", name: "Buu", rarity: "Común", image: "/img/carta-2.png", color: "#8C827A" },
   { id: "c3", name: "Perdedor", rarity: "Raro", image: "/img/carta-3.png", color: "#4A90E2" },
   { id: "c4", name: "Michael Miller", rarity: "Raro", image: "/img/carta-5.png", color: "#4A90E2" },
@@ -470,25 +514,33 @@ function renderizarAlbum() {
   const coleccionUsuario = currentUserData.collection || {};
 
   CATALOGO_CARTAS.forEach(carta => {
-    const slot = document.createElement('div');
+    const wrapper = document.createElement('div');
+    wrapper.className = 'album-slot-wrapper';
+    
     const desbloqueada = coleccionUsuario[carta.id] && coleccionUsuario[carta.id] > 0;
     
-    slot.className = `album-slot ${desbloqueada ? 'unlocked' : ''}`;
-    
     if (desbloqueada) {
-      slot.innerHTML = `
-        <div class="card-image-container"><img src="${carta.image}" alt="${carta.name}" class="card-real-img"></div>
-        <div class="card-title">${carta.name}</div>
-        <div class="card-rarity" style="color:${carta.color}">x${coleccionUsuario[carta.id]}</div>
+      wrapper.innerHTML = `
+        <div class="album-card unlocked">
+          <img src="${carta.image}" alt="${carta.name}" class="card-real-img">
+        </div>
+        <div class="card-meta-outside">
+          <span class="card-title-out">${carta.name}</span>
+          <span class="card-rarity-out" style="color:${carta.color}">x${coleccionUsuario[carta.id]}</span>
+        </div>
       `;
     } else {
-      slot.innerHTML = `
-        <div class="card-image-container" style="filter:grayscale(1); opacity:0.3;"><img src="${carta.image}" alt="Bloqueada" class="card-real-img"></div>
-        <div class="card-title" style="color:var(--tenue)">Bloqueada</div>
-        <div class="card-rarity" style="color:${carta.color}">${carta.rarity}</div>
+      wrapper.innerHTML = `
+        <div class="album-card locked">
+          <img src="${carta.image}" alt="Bloqueada" class="card-real-img">
+        </div>
+        <div class="card-meta-outside">
+          <span class="card-title-out" style="color:var(--tenue)">Bloqueada</span>
+          <span class="card-rarity-out" style="color:${carta.color}">${carta.rarity}</span>
+        </div>
       `;
     }
-    albumGrid.appendChild(slot);
+    albumGrid.appendChild(wrapper);
   });
 }
 
@@ -542,12 +594,14 @@ async function abrirSobre(coste, probabilidades) {
 
     cartasObtenidas.forEach(carta => {
       const cardEl = document.createElement('div');
-      cardEl.className = 'collectible-card';
+      cardEl.className = 'album-slot-wrapper';
       cardEl.innerHTML = `
-        <div class="card-image-container"><img src="${carta.image}" alt="${carta.name}" class="card-real-img"></div>
-        <div>
-          <div class="card-title">${carta.name}</div>
-          <div class="card-rarity" style="color:${carta.color}">${carta.rarity}</div>
+        <div class="collectible-card" style="border-color:${carta.color}">
+          <img src="${carta.image}" alt="${carta.name}" class="card-real-img">
+        </div>
+        <div class="card-meta-outside">
+          <span class="card-title-out">${carta.name}</span>
+          <span class="card-rarity-out" style="color:${carta.color}">${carta.rarity}</span>
         </div>
       `;
       revealArea.appendChild(cardEl);
