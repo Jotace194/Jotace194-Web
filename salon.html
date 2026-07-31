@@ -58,23 +58,10 @@ body{background:var(--negro);color:var(--hueso);font-family:'Segoe UI',sans-seri
 
 .cards-reveal-grid{display:flex;justify-content:center;gap:25px;flex-wrap:wrap;margin-top:25px;}
 
-/* TARJETA Y MARCO: Ahora la carta es exclusivamente el marco con la imagen dentro */
-.collectible-card{
-  width: 170px;
-  height: 245px;
-  background: var(--carbon-claro);
-  border-radius: 12px;
-  border: 3px solid var(--tenue);
-  overflow: hidden;
-  box-shadow: 0 8px 20px rgba(0,0,0,0.4);
-  animation: fadeIn 0.5s ease;
-  position: relative;
-}
-
 /* ÁLBUM: Rejilla adaptada */
 .album-grid{display:grid;grid-template-columns:repeat(auto-fill, minmax(170px, 1fr));gap:35px 20px;margin-top:25px;}
 
-/* Contenedor individual de cada ranura del álbum */
+/* Contenedor individual: agrupa el marco y deja el texto fuera abajo */
 .album-slot-wrapper{
   display: flex;
   flex-direction: column;
@@ -82,7 +69,7 @@ body{background:var(--negro);color:var(--hueso);font-family:'Segoe UI',sans-seri
   text-align: center;
 }
 
-/* Tarjeta dentro del álbum con su marco exacto */
+/* MARCO DE LA CARTA (Puro marco e imagen) */
 .album-card{
   width: 170px;
   height: 245px;
@@ -92,6 +79,7 @@ body{background:var(--negro);color:var(--hueso);font-family:'Segoe UI',sans-seri
   overflow: hidden;
   box-shadow: 0 5px 15px rgba(0,0,0,0.3);
   position: relative;
+  animation: fadeIn 0.5s ease;
 }
 .album-card.unlocked{
   border-color: var(--turquesa);
@@ -101,28 +89,30 @@ body{background:var(--negro);color:var(--hueso);font-family:'Segoe UI',sans-seri
   opacity: 0.3;
 }
 
-/* La imagen ocupa al 100% el interior del marco */
+/* La imagen ocupa el 100% del marco */
 .card-real-img {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  display: block;
 }
 
-/* Textos y cantidades movidos completamente FUERA de la carta */
+/* TEXTOS Y CANTIDAD FUERA DE LA CARTA */
 .card-meta-outside {
-  margin-top: 8px;
+  margin-top: 10px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 2px;
+  gap: 3px;
+  width: 100%;
 }
 .card-title-out {
-  font-size: 0.85rem;
+  font-size: 0.88rem;
   font-weight: 700;
   color: var(--hueso);
 }
 .card-rarity-out {
-  font-size: 0.72rem;
+  font-size: 0.75rem;
   text-transform: uppercase;
   font-weight: 800;
   letter-spacing: 0.05em;
@@ -596,7 +586,7 @@ async function abrirSobre(coste, probabilidades) {
       const cardEl = document.createElement('div');
       cardEl.className = 'album-slot-wrapper';
       cardEl.innerHTML = `
-        <div class="collectible-card" style="border-color:${carta.color}">
+        <div class="album-card unlocked" style="border-color:${carta.color}">
           <img src="${carta.image}" alt="${carta.name}" class="card-real-img">
         </div>
         <div class="card-meta-outside">
