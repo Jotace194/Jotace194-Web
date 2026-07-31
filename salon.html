@@ -147,7 +147,7 @@ footer{padding:30px 0;border-top:1px solid rgba(255,102,0,.15);text-align:center
     <div id="authSection" class="auth-box">
       <h3 style="margin-bottom: 8px;">Acceso de Espectadores</h3>
       <p style="color: var(--tenue); font-size: 0.88rem; margin-bottom: 20px;">Conéctate para sincronizar tu progreso global.</p>
-      <a href="#" id="twitchLoginBtn" class="btn-twitch">
+      <a href="" id="twitchLoginBtn" class="btn-twitch">
         <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M11.64 5.93h1.66v5.81h-1.66V5.93zm3.32 0h1.66v5.81h-1.66V5.93zM3.32 0L0 3.32v16.6h5.81V24l3.32-3.32h4.15L24 11.64V0H3.32zm17.41 10.81l-3.32 3.32h-4.15l-2.49 2.49v-2.49H7.47V1.66h13.26v9.15z"/></svg>
         Iniciar sesión con Twitch
       </a>
@@ -260,7 +260,10 @@ const TWITCH_CLIENT_ID = 'gcykx8eznq8gex7rgm0ebihs2k9q5h';
 const REDIRECT_URI = window.location.origin + window.location.pathname;
 
 const loginUrl = `https://id.twitch.tv/oauth2/authorize?client_id=${TWITCH_CLIENT_ID}&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&response_type=token&scope=user:read:email`;
-document.getElementById('twitchLoginBtn').href = loginUrl;
+const loginBtn = document.getElementById('twitchLoginBtn');
+if (loginBtn) {
+  loginBtn.href = loginUrl;
+}
 
 const fragment = window.location.hash.substring(1);
 const params = new URLSearchParams(fragment);
@@ -387,7 +390,7 @@ document.getElementById('redeemBtn').addEventListener('click', async () => {
     msgEl.style.color = "#FF6B6B";
     msgEl.textContent = "Código no válido.";
   }
-}); // <-- LLAVE DE CIERRE QUE FALTABA Y CAUSABA EL ERROR
+});
 
 // RECOMPENSA DIARIA (24 HORAS)
 const PUNTOS_DIARIOS = 100;
