@@ -58,9 +58,8 @@ body{background:var(--negro);color:var(--hueso);font-family:'Segoe UI',sans-seri
 
 .cards-reveal-grid{display:flex;justify-content:center;gap:15px;flex-wrap:wrap;margin-top:20px;}
 .collectible-card{width:140px;height:200px;background:var(--carbon-claro);border-radius:10px;border:2px solid var(--tenue);padding:10px;display:flex;flex-direction:column;justify-content:space-between;text-align:center;box-shadow:0 5px 15px rgba(0,0,0,0.3);animation:fadeIn 0.5s ease;}
-.card-image-placeholder{width:100%;height:100px;background:rgba(255,255,255,0.05);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:1.5rem;}
 .card-title{font-size:0.8rem;font-weight:700;color:var(--hueso);margin-top:5px;}
-.card-rarity{font-size:0.65text;text-transform:uppercase;font-weight:800;letter-spacing:0.1em;}
+.card-rarity{font-size:0.65rem;text-transform:uppercase;font-weight:800;letter-spacing:0.1em;}
 
 .album-grid{display:grid;grid-template-columns:repeat(auto-fill, minmax(130px, 1fr));gap:15px;margin-top:15px;}
 .album-slot{background:var(--carbon-claro);border:1px dashed rgba(255,255,255,0.1);border-radius:10px;padding:12px;text-align:center;min-height:160px;display:flex;flex-direction:column;align-items:center;justify-content:center;}
@@ -69,7 +68,7 @@ body{background:var(--negro);color:var(--hueso);font-family:'Segoe UI',sans-seri
 @keyframes fadeIn{from{opacity:0;transform:scale(0.9);}to{opacity:1;transform:scale(1);}}
 footer{padding:30px 0;border-top:1px solid rgba(255,102,0,.15);text-align:center;color:var(--tenue);font-size:.85rem;background:var(--carbon)}
 
-  .pack-img-container{
+.pack-img-container{
   width: 100%;
   height: 140px;
   display: flex;
@@ -86,9 +85,9 @@ footer{padding:30px 0;border-top:1px solid rgba(255,102,0,.15);text-align:center
   transition: transform 0.3s ease;
 }
 .pack-card:hover .pack-img{
-  transform: scale(1.08); /* Pequeño efecto de zoom al pasar el ratón */
+  transform: scale(1.08);
 }
-  .card-image-container {
+.card-image-container {
   width: 100%;
   height: 100px;
   display: flex;
@@ -103,7 +102,7 @@ footer{padding:30px 0;border-top:1px solid rgba(255,102,0,.15);text-align:center
   max-width: 100%;
   object-fit: contain;
 }
-  .reward-container-grid {
+.reward-container-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 20px;
@@ -116,7 +115,7 @@ footer{padding:30px 0;border-top:1px solid rgba(255,102,0,.15);text-align:center
 }
 @media (max-width: 768px) {
   .reward-container-grid {
-    grid-template-columns: 1fr; /* En móviles se colocan uno debajo del otro */
+    grid-template-columns: 1fr;
   }
 }
 </style>
@@ -172,63 +171,63 @@ footer{padding:30px 0;border-top:1px solid rgba(255,102,0,.15);text-align:center
         <button id="logoutBtn" style="background:none; border:none; color: var(--tenue); cursor:pointer; font-size: 0.85rem; text-decoration: underline;">Cerrar sesión</button>
       </div>
 
-<!-- SECCIÓN DE CANJE Y RECOMPENSA DIARIA -->
-<div class="game-section-card">
-  <h3 style="color: var(--naranja-claro); font-size: 1.1rem; margin-bottom: 15px;">Reclamar Puntos</h3>
-  
-  <div class="reward-container-grid">
-    <!-- BLOQUE IZQUIERDA: Canjear Código -->
-    <div class="reward-box">
-      <h4 style="font-size: 0.95rem; color: var(--hueso); margin-bottom: 6px;">Canjear Código</h4>
-      <p style="color: var(--tenue); font-size: 0.8rem; margin-bottom: 12px;">Introduce un código promocional del canal.</p>
-      <div style="display: flex; gap: 10px;">
-        <input type="text" id="redeemCodeInput" placeholder="Introduce tu código..." style="flex: 1; background: var(--carbon-claro); border: 1px solid rgba(255,102,0,0.3); padding: 9px 12px; border-radius: 8px; color: var(--hueso); outline: none; font-size: 0.85rem;">
-        <button id="redeemBtn" style="background: var(--naranja); color: white; border: none; padding: 9px 16px; border-radius: 8px; font-weight: 700; cursor: pointer; font-size: 0.85rem;">Canjear</button>
+      <!-- SECCIÓN DE CANJE Y RECOMPENSA DIARIA -->
+      <div class="game-section-card">
+        <h3 style="color: var(--naranja-claro); font-size: 1.1rem; margin-bottom: 15px;">Reclamar Puntos</h3>
+        
+        <div class="reward-container-grid">
+          <!-- BLOQUE IZQUIERDA: Canjear Código -->
+          <div class="reward-box">
+            <h4 style="font-size: 0.95rem; color: var(--hueso); margin-bottom: 6px;">Canjear Código</h4>
+            <p style="color: var(--tenue); font-size: 0.8rem; margin-bottom: 12px;">Introduce un código promocional del canal.</p>
+            <div style="display: flex; gap: 10px;">
+              <input type="text" id="redeemCodeInput" placeholder="Introduce tu código..." style="flex: 1; background: var(--carbon-claro); border: 1px solid rgba(255,102,0,0.3); padding: 9px 12px; border-radius: 8px; color: var(--hueso); outline: none; font-size: 0.85rem;">
+              <button id="redeemBtn" style="background: var(--naranja); color: white; border: none; padding: 9px 16px; border-radius: 8px; font-weight: 700; cursor: pointer; font-size: 0.85rem;">Canjear</button>
+            </div>
+            <p id="redeemMessage" style="font-size: 0.8rem; margin-top: 8px;"></p>
+          </div>
+
+          <!-- BLOQUE DERECHA: Recompensa Diaria 24h -->
+          <div class="reward-box">
+            <h4 style="font-size: 0.95rem; color: var(--hueso); margin-bottom: 6px;">Recompensa Diaria</h4>
+            <p style="color: var(--tenue); font-size: 0.8rem; margin-bottom: 12px;">Reclama puntos gratis cada 24 horas.</p>
+            <button id="dailyClaimBtn" style="background: var(--turquesa); color: var(--negro); border: none; padding: 10px 16px; border-radius: 8px; font-weight: 700; cursor: pointer; width: 100%; font-size: 0.9rem; transition: opacity 0.2s;">Reclamar 100 Puntos</button>
+            <p id="dailyMessage" style="font-size: 0.8rem; margin-top: 8px; color: var(--turquesa); text-align: center;"></p>
+          </div>
+        </div>
       </div>
-      <p id="redeemMessage" style="font-size: 0.8rem; margin-top: 8px;"></p>
-    </div>
 
-    <!-- BLOQUE DERECHA: Recompensa Diaria 24h -->
-    <div class="reward-box">
-      <h4 style="font-size: 0.95rem; color: var(--hueso); margin-bottom: 6px;">Recompensa Diaria</h4>
-      <p style="color: var(--tenue); font-size: 0.8rem; margin-bottom: 12px;">Reclama puntos gratis cada 24 horas.</p>
-      <button id="dailyClaimBtn" style="background: var(--turquesa); color: var(--negro); border: none; padding: 10px 16px; border-radius: 8px; font-weight: 700; cursor: pointer; width: 100%; font-size: 0.9rem; transition: opacity 0.2s;">Reclamar 100 Puntos</button>
-      <p id="dailyMessage" style="font-size: 0.8rem; margin-top: 8px; color: var(--turquesa); text-align: center;"></p>
-    </div>
-  </div>
-</div>
+      <!-- TIENDA DE SOBRES -->
+      <div class="game-section-card">
+        <h3 style="color: var(--naranja-claro); font-size: 1.1rem; margin-bottom: 10px;">TIENDA DE SOBRES</h3>
+        <p style="color: var(--tenue); font-size: 0.88rem;">Elige qué sobre abrir según tus puntos y busca cartas legendarias.</p>
+        
+        <div class="packs-grid">
+          <!-- Sobre Estándar -->
+          <div class="pack-card">
+            <div class="pack-img-container">
+              <img src="img/sobre-normal.png" alt="Sobre Estándar" class="pack-img">
+            </div>
+            <h4 style="color: var(--hueso); margin-top: 10px;">Sobre Estándar</h4>
+            <p style="color: var(--tenue); font-size: 0.8rem; margin: 6px 0;">3 Cartas (Probabilidad equilibrada)</p>
+            <p style="color: var(--turquesa); font-weight: 700;">Coste: 200 Puntos</p>
+            <button class="pack-btn" id="buyStandardPack">Abrir Estándar</button>
+          </div>
 
-<!-- TIENDA DE SOBRES -->
-<div class="game-section-card">
-  <h3 style="color: var(--naranja-claro); font-size: 1.1rem; margin-bottom: 10px;">TIENDA DE SOBRES</h3>
-  <p style="color: var(--tenue); font-size: 0.88rem;">Elige qué sobre abrir según tus puntos y busca cartas legendarias.</p>
-  
-  <div class="packs-grid">
-    <!-- Sobre Estándar -->
-    <div class="pack-card">
-      <div class="pack-img-container">
-        <img src="img/sobre-normal.png" alt="Sobre Estándar" class="pack-img">
+          <!-- Sobre Premium -->
+          <div class="pack-card" style="border-color: #9013FE;">
+            <div class="pack-img-container">
+              <img src="img/sobre-premium.png" alt="Sobre Premium" class="pack-img">
+            </div>
+            <h4 style="color: var(--hueso); margin-top: 10px;">Sobre Premium</h4>
+            <p style="color: var(--tenue); font-size: 0.8rem; margin: 6px 0;">3 Cartas (¡Más Épicas y Legendarias!)</p>
+            <p style="color: var(--turquesa); font-weight: 700;">Coste: 500 Puntos</p>
+            <button class="pack-btn" id="buyPremiumPack" style="background: #9013FE;">Abrir Premium</button>
+          </div>
+        </div>
+
+        <div id="packRevealArea" class="cards-reveal-grid"></div>
       </div>
-      <h4 style="color: var(--hueso); margin-top: 10px;">Sobre Estándar</h4>
-      <p style="color: var(--tenue); font-size: 0.8rem; margin: 6px 0;">3 Cartas (Probabilidad equilibrada)</p>
-      <p style="color: var(--turquesa); font-weight: 700;">Coste: 200 Puntos</p>
-      <button class="pack-btn" id="buyStandardPack">Abrir Estándar</button>
-    </div>
-
-    <!-- Sobre Premium -->
-    <div class="pack-card" style="border-color: #9013FE;">
-      <div class="pack-img-container">
-        <img src="img/sobre-premium.png" alt="Sobre Premium" class="pack-img">
-      </div>
-      <h4 style="color: var(--hueso); margin-top: 10px;">Sobre Premium</h4>
-      <p style="color: var(--tenue); font-size: 0.8rem; margin: 6px 0;">3 Cartas (¡Más Épicas y Legendarias!)</p>
-      <p style="color: var(--turquesa); font-weight: 700;">Coste: 500 Puntos</p>
-      <button class="pack-btn" id="buyPremiumPack" style="background: #9013FE;">Abrir Premium</button>
-    </div>
-  </div>
-
-  <div id="packRevealArea" class="cards-reveal-grid"></div>
-</div>
 
       <!-- ÁLBUM DE CARTAS -->
       <div class="game-section-card">
@@ -247,7 +246,7 @@ footer{padding:30px 0;border-top:1px solid rgba(255,102,0,.15);text-align:center
 
 <script>
 const SUPABASE_URL = 'https://oeoujsnnyodrcqeyzcxo.supabase.co'; 
-const SUPABASE_ANON_KEY = 'sb_publishable_Axgs2Qo4NXmTL6Q8IjVTYA_MA1dF5uE'; // REEMPLAZA CON TU PUBLISHABLE KEY REAL
+const SUPABASE_ANON_KEY = 'sb_publishable_Axgs2Qo4NXmTL6Q8IjVTYA_MA1dF5uE';
 
 const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
@@ -388,7 +387,9 @@ document.getElementById('redeemBtn').addEventListener('click', async () => {
     msgEl.style.color = "#FF6B6B";
     msgEl.textContent = "Código no válido.";
   }
-  // RECOMPENSA DIARIA (24 HORAS)
+}); // <-- LLAVE DE CIERRE QUE FALTABA Y CAUSABA EL ERROR
+
+// RECOMPENSA DIARIA (24 HORAS)
 const PUNTOS_DIARIOS = 100;
 
 function verificarEstadoRecompensaDiaria() {
@@ -405,21 +406,18 @@ function verificarEstadoRecompensaDiaria() {
   const ultimaVez = new Date(currentUserData.last_daily_claim).getTime();
   const ahora = new Date().getTime();
   const tiempoTranscurrido = ahora - ultimaVez;
-  const veinticuatroHoras = 24 * 60 * 60 * 1000; // 24 horas en milisegundos
+  const veinticuatroHoras = 24 * 60 * 60 * 1000;
 
   if (tiempoTranscurrido < veinticuatroHoras) {
-    // Aún está en tiempo de espera
     const tiempoRestante = veinticuatroHoras - tiempoTranscurrido;
     btnDaily.disabled = true;
     btnDaily.style.opacity = "0.5";
     
-    // Calcular horas y minutos restantes
     const horas = Math.floor(tiempoRestante / (1000 * 60 * 60));
     const minutos = Math.floor((tiempoRestante % (1000 * 60 * 60)) / (1000 * 60));
     
     msgDaily.textContent = `Próxima recompensa en: ${horas}h ${minutos}m`;
   } else {
-    // Ya puede reclamar
     btnDaily.disabled = false;
     btnDaily.style.opacity = "1";
     msgDaily.textContent = "¡Disponible para reclamar ahora!";
@@ -430,7 +428,6 @@ document.getElementById('dailyClaimBtn').addEventListener('click', async () => {
   const ahoraIso = new Date().toISOString();
   const nuevosPuntos = currentUserData.points + PUNTOS_DIARIOS;
 
-  // Actualizar en Supabase
   const { error } = await supabaseClient
     .from('usuarios_twitch')
     .update({ 
@@ -487,7 +484,25 @@ function renderizarAlbum() {
   });
 }
 
-// Actualización en la función abrirSobre para mostrar la imagen real al abrirlas
+function obtenerCartaPorProbabilidad(probabilidades) {
+  const rand = Math.random() * 100;
+  let acumulado = 0;
+  let rarezaSeleccionada = "Común";
+
+  for (const [rareza, porcentaje] of Object.entries(probabilidades)) {
+    acumulado += porcentaje;
+    if (rand <= acumulado) {
+      rarezaSeleccionada = rareza;
+      break;
+    }
+  }
+
+  const cartasDeRareza = CATALOGO_CARTAS.filter(c => c.rarity === rarezaSeleccionada);
+  if (cartasDeRareza.length === 0) return CATALOGO_CARTAS[0];
+
+  return cartasDeRareza[Math.floor(Math.random() * cartasDeRareza.length)];
+}
+
 async function abrirSobre(coste, probabilidades) {
   const revealArea = document.getElementById('packRevealArea');
   revealArea.innerHTML = '';
@@ -501,14 +516,12 @@ async function abrirSobre(coste, probabilidades) {
   const coleccionActual = currentUserData.collection || {};
   let cartasObtenidas = [];
 
-  // Abrir 3 cartas por sobre
   for (let i = 0; i < 3; i++) {
     const carta = obtenerCartaPorProbabilidad(probabilidades);
     cartasObtenidas.push(carta);
     coleccionActual[carta.id] = (coleccionActual[carta.id] || 0) + 1;
   }
 
-  // Guardar en Supabase
   const { error } = await supabaseClient
     .from('usuarios_twitch')
     .update({ points: nuevosPuntos, collection: coleccionActual })
@@ -519,7 +532,6 @@ async function abrirSobre(coste, probabilidades) {
     currentUserData.collection = coleccionActual;
     actualizarInterfazUsuario();
 
-    // Mostrar cartas obtenidas con su imagen real
     cartasObtenidas.forEach(carta => {
       const cardEl = document.createElement('div');
       cardEl.className = 'collectible-card';
@@ -534,86 +546,16 @@ async function abrirSobre(coste, probabilidades) {
     });
   }
 }
-// FUNCIÓN PARA SELECCIONAR CARTA POR PORCENTAJES
-function obtenerCartaPorProbabilidad(probabilidades) {
-  const rand = Math.random() * 100;
-  let acumulado = 0;
-  let rarezaSeleccionada = "Común";
-
-  for (const [rareza, porcentaje] of Object.entries(probabilidades)) {
-    acumulado += porcentaje;
-    if (rand <= acumulado) {
-      rarezaSeleccionada = rareza;
-      break;
-    }
-  }
-
-  // Filtrar cartas del catálogo que coincidan con esa rareza
-  const cartasDeRareza = CATALOGO_CARTAS.filter(c => c.rarity === rarezaSeleccionada);
-  // Si por lo que sea no hay de esa rareza, devolvemos una aleatoria general
-  if (cartasDeRareza.length === 0) return CATALOGO_CARTAS[0];
-
-  return cartasDeRareza[Math.floor(Math.random() * cartasDeRareza.length)];
-}
 
 // BOTÓN SOBRE ESTÁNDAR (Coste: 200)
-// Probabilidades: 70% Común, 20% Raro, 8% Épico, 2% Legendario
 document.getElementById('buyStandardPack').addEventListener('click', () => {
   abrirSobre(200, { "Común": 70, "Raro": 20, "Épico": 8, "Legendario": 2 });
 });
 
 // BOTÓN SOBRE PREMIUM (Coste: 500)
-// Probabilidades: 40% Común, 35% Raro, 20% Épico, 5% Legendario
 document.getElementById('buyPremiumPack').addEventListener('click', () => {
   abrirSobre(500, { "Común": 40, "Raro": 35, "Épico": 20, "Legendario": 5 });
 });
-
-async function abrirSobre(coste, probabilidades) {
-  const revealArea = document.getElementById('packRevealArea');
-  revealArea.innerHTML = '';
-
-  if (currentUserData.points < coste) {
-    alert("¡No tienes suficientes puntos! Canjea códigos para conseguir más.");
-    return;
-  }
-
-  const nuevosPuntos = currentUserData.points - coste;
-  const coleccionActual = currentUserData.collection || {};
-  let cartasObtenidas = [];
-
-  // Abrir 3 cartas por sobre
-  for (let i = 0; i < 3; i++) {
-    const carta = obtenerCartaPorProbabilidad(probabilidades);
-    cartasObtenidas.push(carta);
-    coleccionActual[carta.id] = (coleccionActual[carta.id] || 0) + 1;
-  }
-
-  // Guardar en Supabase
-  const { error } = await supabaseClient
-    .from('usuarios_twitch')
-    .update({ points: nuevosPuntos, collection: coleccionActual })
-    .eq('twitch_id', currentUserData.twitch_id);
-
-  if (!error) {
-    currentUserData.points = nuevosPuntos;
-    currentUserData.collection = coleccionActual;
-    actualizarInterfazUsuario();
-
-    // Mostrar cartas obtenidas en pantalla
-    cartasObtenidas.forEach(carta => {
-      const cardEl = document.createElement('div');
-      cardEl.className = 'collectible-card';
-      cardEl.innerHTML = `
-        <div class="card-image-placeholder">${carta.icon}</div>
-        <div>
-          <div class="card-title">${carta.name}</div>
-          <div class="card-rarity" style="color:${carta.color}">${carta.rarity}</div>
-        </div>
-      `;
-      revealArea.appendChild(cardEl);
-    });
-  }
-}
 </script>
 </body>
 </html>
