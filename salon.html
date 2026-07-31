@@ -58,10 +58,10 @@ body{background:var(--negro);color:var(--hueso);font-family:'Segoe UI',sans-seri
 
 .cards-reveal-grid{display:flex;justify-content:center;gap:25px;flex-wrap:wrap;margin-top:25px;}
 
-/* ÁLBUM: Rejilla adaptada */
-.album-grid{display:grid;grid-template-columns:repeat(auto-fill, minmax(170px, 1fr));gap:35px 20px;margin-top:25px;}
+/* ÁLBUM: Rejilla adaptada al nuevo tamaño grande */
+.album-grid{display:grid;grid-template-columns:repeat(auto-fill, minmax(240px, 1fr));gap:35px 20px;margin-top:25px;}
 
-/* Contenedor individual: agrupa el marco y deja el texto fuera abajo */
+/* Contenedor individual */
 .album-slot-wrapper{
   display: flex;
   flex-direction: column;
@@ -69,18 +69,18 @@ body{background:var(--negro);color:var(--hueso);font-family:'Segoe UI',sans-seri
   text-align: center;
 }
 
-/* MARCO DE LA CARTA (Más grande que la imagen gracias al padding) */
+/* MARCO DE LA CARTA (Escalado proporcionalmente a 774x1039 con padding interior) */
 .album-card{
-  width: 170px;
-  height: 245px;
+  width: 232px;
+  height: 312px;
   background: var(--carbon-claro);
-  border-radius: 14px;
-  border: 3px solid var(--tenue);
-  padding: 10px; /* Margen interior para que el marco sea físicamente más grande que la imagen */
+  border-radius: 16px;
+  border: 4px solid var(--tenue);
+  padding: 12px; 
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.4);
   position: relative;
   animation: fadeIn 0.5s ease;
 }
@@ -92,31 +92,31 @@ body{background:var(--negro);color:var(--hueso);font-family:'Segoe UI',sans-seri
   opacity: 0.3;
 }
 
-/* La imagen ocupa el espacio interior del marco dejando ver el borde */
+/* Forzar tamaño 774x1039 nativo escalado al contenedor */
 .card-real-img {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  border-radius: 6px;
+  border-radius: 8px;
   display: block;
 }
 
 /* TEXTOS Y CANTIDAD FUERA DE LA CARTA */
 .card-meta-outside {
-  margin-top: 10px;
+  margin-top: 12px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 3px;
+  gap: 4px;
   width: 100%;
 }
 .card-title-out {
-  font-size: 0.88rem;
+  font-size: 0.95rem;
   font-weight: 700;
   color: var(--hueso);
 }
 .card-rarity-out {
-  font-size: 0.75rem;
+  font-size: 0.8rem;
   text-transform: uppercase;
   font-weight: 800;
   letter-spacing: 0.05em;
@@ -516,7 +516,7 @@ function renderizarAlbum() {
     if (desbloqueada) {
       wrapper.innerHTML = `
         <div class="album-card unlocked">
-          <img src="${carta.image}" alt="${carta.name}" class="card-real-img">
+          <img src="${carta.image}" alt="${carta.name}" class="card-real-img" width="774" height="1039">
         </div>
         <div class="card-meta-outside">
           <span class="card-title-out">${carta.name}</span>
@@ -526,7 +526,7 @@ function renderizarAlbum() {
     } else {
       wrapper.innerHTML = `
         <div class="album-card locked">
-          <img src="${carta.image}" alt="Bloqueada" class="card-real-img">
+          <img src="${carta.image}" alt="Bloqueada" class="card-real-img" width="774" height="1039">
         </div>
         <div class="card-meta-outside">
           <span class="card-title-out" style="color:var(--tenue)">Bloqueada</span>
@@ -591,7 +591,7 @@ async function abrirSobre(coste, probabilidades) {
       cardEl.className = 'album-slot-wrapper';
       cardEl.innerHTML = `
         <div class="album-card unlocked" style="border-color:${carta.color}">
-          <img src="${carta.image}" alt="${carta.name}" class="card-real-img">
+          <img src="${carta.image}" alt="${carta.name}" class="card-real-img" width="774" height="1039">
         </div>
         <div class="card-meta-outside">
           <span class="card-title-out">${carta.name}</span>
