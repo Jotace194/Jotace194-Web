@@ -69,14 +69,17 @@ body{background:var(--negro);color:var(--hueso);font-family:'Segoe UI',sans-seri
   text-align: center;
 }
 
-/* MARCO DE LA CARTA (Puro marco e imagen) */
+/* MARCO DE LA CARTA (Más grande que la imagen gracias al padding) */
 .album-card{
   width: 170px;
   height: 245px;
   background: var(--carbon-claro);
-  border-radius: 12px;
+  border-radius: 14px;
   border: 3px solid var(--tenue);
-  overflow: hidden;
+  padding: 10px; /* Margen interior para que el marco sea físicamente más grande que la imagen */
+  display: flex;
+  align-items: center;
+  justify-content: center;
   box-shadow: 0 5px 15px rgba(0,0,0,0.3);
   position: relative;
   animation: fadeIn 0.5s ease;
@@ -89,11 +92,12 @@ body{background:var(--negro);color:var(--hueso);font-family:'Segoe UI',sans-seri
   opacity: 0.3;
 }
 
-/* La imagen ocupa el 100% del marco */
+/* La imagen ocupa el espacio interior del marco dejando ver el borde */
 .card-real-img {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  border-radius: 6px;
   display: block;
 }
 
@@ -491,11 +495,11 @@ document.getElementById('dailyClaimBtn').addEventListener('click', async () => {
 
 // CATÁLOGO DE CARTAS CON SUS IMÁGENES Y RAREZAS
 const CATALOGO_CARTAS = [
-  { id: "c1", name: "Bronce", rarity: "Común", image: "img/carta-1.png", color: "#8C827A" },
-  { id: "c2", name: "Buu", rarity: "Común", image: "img/carta-2.png", color: "#8C827A" },
-  { id: "c3", name: "Perdedor", rarity: "Raro", image: "img/carta-3.png", color: "#4A90E2" },
-  { id: "c4", name: "Michael Miller", rarity: "Raro", image: "img/carta-5.png", color: "#4A90E2" },
-  { id: "c5", name: "Martillazo", rarity: "Épico", image: "img/carta-7.png", color: "#9013FE" }
+  { id: "c1", name: "Bronce", rarity: "Común", image: "/img/carta-1.png", color: "#8C827A" },
+  { id: "c2", name: "Buu", rarity: "Común", image: "/img/carta-2.png", color: "#8C827A" },
+  { id: "c3", name: "Perdedor", rarity: "Raro", image: "/img/carta-3.png", color: "#4A90E2" },
+  { id: "c4", name: "Michael Miller", rarity: "Raro", image: "/img/carta-5.png", color: "#4A90E2" },
+  { id: "c5", name: "Martillazo", rarity: "Épico", image: "/img/carta-7.png", color: "#9013FE" }
 ];
 
 function renderizarAlbum() {
