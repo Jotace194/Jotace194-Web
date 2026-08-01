@@ -23,7 +23,6 @@ body{background:var(--negro);color:var(--hueso);font-family:'Segoe UI',sans-seri
 .nav-links{display:flex;gap:26px;align-items:center;list-style:none}
 .nav-links a{font-size:.9rem;color:var(--tenue);font-weight:600;text-decoration:none;transition:color .2s ease}
 .nav-links a:hover, .nav-links a.active{color:var(--naranja-claro);text-shadow:0 0 10px rgba(255,136,51,.3)}
-.nav-cta{padding:8px 16px !important;font-size:.85rem !important; color:#030202 !important;}
 .nav-toggle{display:none;background:none;border:none;cursor:pointer;flex-direction:column;gap:5px;z-index:1001}
 .nav-toggle span{display:block;width:25px;height:2px;background:var(--hueso);transition:0.3s}
 
@@ -122,9 +121,9 @@ footer a{color:var(--naranja-claro)}
     <ul class="nav-links" id="navLinks">
       <li><a href="index.html">Inicio</a></li>
       <li><a href="universo.html">Universo</a></li>
-      <li><a href="redes.html">Redes</a></li>
+      <li><a href="redes.html" class="active">Redes</a></li>
       <li><a href="salon.html">Salón</a></li>
-      <li><a href="salon.html">Guardería</a></li>
+      <li><a href="salon.html#guarderiaSection">Guardería</a></li>
     </ul>
   </div>
 </nav>
