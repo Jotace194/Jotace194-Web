@@ -59,7 +59,7 @@ body{background:var(--negro);color:var(--hueso);font-family:'Segoe UI',sans-seri
 /* HABITACIÓN DE LA BESTIA */
 .pet-room {position: relative; width: 100%; height: 580px; background: linear-gradient(rgba(6, 5, 7, 0.4), rgba(6, 5, 7, 0.7)), url('https://oeoujsnnyodrcqeyzcxo.supabase.co/storage/v1/object/public/cartas/fondo-guarderia.png'); background-size: cover; background-position: center; border: 2px solid rgba(255,102,0,0.3); border-radius: 16px; overflow: hidden; box-shadow: inset 0 0 60px rgba(0,0,0,0.85);}
 
-/* CONTENEDOR MÓVIL CON ORIENTACIÓN DIRECCIONAL */
+/* CONTENEDOR MÓVIL CON GIRO FLUIDO Y DURACIÓN SINCRONIZADA */
 .pet-avatar-container {
   position: absolute;
   left: 50%;
@@ -71,7 +71,7 @@ body{background:var(--negro);color:var(--hueso);font-family:'Segoe UI',sans-seri
   display: flex; 
   align-items: center; 
   justify-content: center;
-  transition: left 8s linear, transform 0.4s ease-in-out;
+  transition: left 8s linear, transform 8s linear;
 }
 .pet-avatar-container img, .pet-avatar-container model-viewer {
   width: 220px; 
@@ -531,11 +531,7 @@ function iniciarMovimientoHorizontal() {
     const randomX = Math.random() * (maxX - minX) + minX;
     const percentX = (randomX / roomWidth) * 100;
 
-    // Calculamos si se mueve a la derecha o izquierda para orientar la mirada
     const seMueveALaDerecha = percentX > lastPositionX;
-    
-    // Si va a la derecha mira hacia adelante/derecha (ej: 90deg), si va a la izquierda mira al otro lado (-90deg)
-    // Ajusta estos grados si tu modelo mira originalmente hacia otro lado por defecto
     const anguloGiro = seMueveALaDerecha ? 90 : -90;
 
     petContainer.style.transform = `translate(-50%, -50%) rotateY(${anguloGiro}deg)`;
