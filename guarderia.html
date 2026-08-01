@@ -7,8 +7,8 @@
 <link rel="icon" href="img/avatar.webp">
 <!-- LIBRERÍA DE SUPABASE -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<!-- LIBRERÍA MODEL-VIEWER PARA ARCHIVOS .GLB -->
-<script type="module" src="https://unpkg.com/@model-viewer/public/dist/model-viewer.min.js"></script>
+<!-- LIBRERÍA MODEL-VIEWER ACTUALIZADA (Google Hosted / CDN Oficial recomendado) -->
+<script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/4.3.1/model-viewer.min.js"></script>
 <style>
 :root{
   --naranja:#FF6600; --naranja-claro:#FF8833; --naranja-oscuro:#CC5200;
@@ -405,7 +405,7 @@ async function seleccionarHuevoVida() {
 
   const mascotaInicial = {
     esHuevo: true,
-    animalIndex: null, // Se asignará aleatoriamente al llegar al nivel 6
+    animalIndex: null, 
     nivel: 1,
     exp: 0,
     hambre: 100,
@@ -457,25 +457,23 @@ function actualizarInterfazMascota() {
       limpiarIntervalosMovimiento();
       petContainer.style.left = '50%';
     } else {
-      // Ya eclosionó (Nivel 6 o superior)
       const animalAsignado = BANCO_24_ANIMALES[mascota.animalIndex] || BANCO_24_ANIMALES[0];
       document.getElementById('petName').textContent = animalAsignado.nombre;
       document.getElementById('petStageLabel').textContent = "Fase: 🐉 Criatura Definitiva";
 
-// Cargar modelo .glb usando model-viewer optimizado
-visualContent.innerHTML = `
-  <model-viewer 
-    id="petModel"
-    src="${animalAsignado.modeloGlb}"
-    alt="${animalAsignado.nombre}"
-    camera-controls
-    shadow-intensity="1"
-    animation-name="${animalAsignado.animacion}"
-    autoplay
-    style="width: 100%; height: 100%; background-color: transparent;"
-  >
-  </model-viewer>
-`;
+      visualContent.innerHTML = `
+        <model-viewer 
+          id="petModel"
+          src="${animalAsignado.modeloGlb}"
+          alt="${animalAsignado.nombre}"
+          camera-controls
+          shadow-intensity="1"
+          animation-name="${animalAsignado.animacion}"
+          autoplay
+          style="width: 100%; height: 100%; background-color: transparent;"
+        >
+        </model-viewer>
+      `;
 
       if (!petMovementInterval) {
         iniciarMovimientoHorizontal();
@@ -667,7 +665,6 @@ async function cuidarMascota(accion) {
   mascota.exp = (mascota.exp || 0) + 15;
   mascota.nivel = Math.floor(mascota.exp / 100) + 1;
 
-  // Comprobar si alcanza el nivel 6 para eclosionar el Huevo de la Vida
   if (mascota.esHuevo && mascota.nivel >= 6) {
     mascota.esHuevo = false;
     mascota.animalIndex = Math.floor(Math.random() * BANCO_24_ANIMALES.length);
