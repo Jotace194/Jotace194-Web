@@ -284,58 +284,34 @@ let poopCheckInterval = null;
 let lastPositionX = 50; 
 
 // ==========================================
-// CONFIGURACIÓN AISLADA DE CADA BESTIA Y HUEVO
+// BANCO DE 24 ANIMALES ÚNICOS (ELEGIDOS AL AZAR AL CREAR EL HUEVO)
 // ==========================================
-const BASE_DE_DATOS_BESTIAS = {
-  1: {
-    nombreBase: "Huevo Ígneo",
-    faseHuevoImg: "https://oeoujsnnyodrcqeyzcxo.supabase.co/storage/v1/object/public/cartas/igneo-huevo.png",
-    faseCachorroNombre: "Cachorro Ígneo",
-    faseCachorroImg: "https://oeoujsnnyodrcqeyzcxo.supabase.co/storage/v1/object/public/cartas/igneo-cachorro.png",
-    faseAdultoNombre: "Dragón Ígneo",
-    faseAdultoImg: "https://oeoujsnnyodrcqeyzcxo.supabase.co/storage/v1/object/public/cartas/igneo-adulto.png"
-  },
-  2: {
-    nombreBase: "Huevo Rudo",
-    faseHuevoImg: "https://oeoujsnnyodrcqeyzcxo.supabase.co/storage/v1/object/public/cartas/carta-2.png",
-    faseCachorroNombre: "Bestia Pesada Junior",
-    faseCachorroImg: "https://oeoujsnnyodrcqeyzcxo.supabase.co/storage/v1/object/public/cartas/carta-6.png",
-    faseAdultoNombre: "Titán Acorazado",
-    faseAdultoImg: "https://oeoujsnnyodrcqeyzcxo.supabase.co/storage/v1/object/public/cartas/carta-2.png"
-  },
-  3: {
-    nombreBase: "Huevo Cibernético",
-    faseHuevoImg: "https://oeoujsnnyodrcqeyzcxo.supabase.co/storage/v1/object/public/cartas/carta-6.png",
-    faseCachorroNombre: "Androide Alfa",
-    faseCachorroImg: "https://oeoujsnnyodrcqeyzcxo.supabase.co/storage/v1/object/public/cartas/carta-1.png",
-    faseAdultoNombre: "Mecabestia Omega",
-    faseAdultoImg: "https://oeoujsnnyodrcqeyzcxo.supabase.co/storage/v1/object/public/cartas/carta-6.png"
-  },
-  4: {
-    nombreBase: "Huevo Oscuro",
-    faseHuevoImg: "https://oeoujsnnyodrcqeyzcxo.supabase.co/storage/v1/object/public/cartas/carta-1.png",
-    faseCachorroNombre: "Sombra Menor",
-    faseCachorroImg: "https://oeoujsnnyodrcqeyzcxo.supabase.co/storage/v1/object/public/cartas/carta-2.png",
-    faseAdultoNombre: "Señor de las Sombras",
-    faseAdultoImg: "https://oeoujsnnyodrcqeyzcxo.supabase.co/storage/v1/object/public/cartas/carta-1.png"
-  },
-  5: {
-    nombreBase: "Huevo Astral",
-    faseHuevoImg: "https://oeoujsnnyodrcqeyzcxo.supabase.co/storage/v1/object/public/cartas/carta-2.png",
-    faseCachorroNombre: "Espíritu Estelar",
-    faseCachorroImg: "https://oeoujsnnyodrcqeyzcxo.supabase.co/storage/v1/object/public/cartas/carta-6.png",
-    faseAdultoNombre: "Avatar Cósmico",
-    faseAdultoImg: "https://oeoujsnnyodrcqeyzcxo.supabase.co/storage/v1/object/public/cartas/carta-2.png"
-  },
-  6: {
-    nombreBase: "Huevo Salvaje",
-    faseHuevoImg: "https://oeoujsnnyodrcqeyzcxo.supabase.co/storage/v1/object/public/cartas/carta-6.png",
-    faseCachorroNombre: "Bestia de la Pradera",
-    faseCachorroImg: "https://oeoujsnnyodrcqeyzcxo.supabase.co/storage/v1/object/public/cartas/carta-1.png",
-    faseAdultoNombre: "Depredador Alfa Salvaje",
-    faseAdultoImg: "https://oeoujsnnyodrcqeyzcxo.supabase.co/storage/v1/object/public/cartas/carta-6.png"
-  }
-};
+const BANCO_24_ANIMALES = [
+  { nombre: "Dragón Ígneo", imgHuevo: "https://oeoujsnnyodrcqeyzcxo.supabase.co/storage/v1/object/public/cartas/igneo-huevo.png", imgCachorro: "https://oeoujsnnyodrcqeyzcxo.supabase.co/storage/v1/object/public/cartas/igneo-cachorro.png", imgAdulto: "https://oeoujsnnyodrcqeyzcxo.supabase.co/storage/v1/object/public/cartas/igneo-adulto.png" },
+  { nombre: "Titán Acorazado", imgHuevo: "https://oeoujsnnyodrcqeyzcxo.supabase.co/storage/v1/object/public/cartas/carta-2.png", imgCachorro: "https://oeoujsnnyodrcqeyzcxo.supabase.co/storage/v1/object/public/cartas/carta-6.png", imgAdulto: "https://oeoujsnnyodrcqeyzcxo.supabase.co/storage/v1/object/public/cartas/carta-2.png" },
+  { nombre: "Mecabestia Omega", imgHuevo: "https://oeoujsnnyodrcqeyzcxo.supabase.co/storage/v1/object/public/cartas/carta-6.png", imgCachorro: "https://oeoujsnnyodrcqeyzcxo.supabase.co/storage/v1/object/public/cartas/carta-1.png", imgAdulto: "https://oeoujsnnyodrcqeyzcxo.supabase.co/storage/v1/object/public/cartas/carta-6.png" },
+  { nombre: "Señor de las Sombras", imgHuevo: "https://oeoujsnnyodrcqeyzcxo.supabase.co/storage/v1/object/public/cartas/carta-1.png", imgCachorro: "https://oeoujsnnyodrcqeyzcxo.supabase.co/storage/v1/object/public/cartas/carta-2.png", imgAdulto: "https://oeoujsnnyodrcqeyzcxo.supabase.co/storage/v1/object/public/cartas/carta-1.png" },
+  { nombre: "Avatar Cósmico", imgHuevo: "https://oeoujsnnyodrcqeyzcxo.supabase.co/storage/v1/object/public/cartas/carta-2.png", imgCachorro: "https://oeoujsnnyodrcqeyzcxo.supabase.co/storage/v1/object/public/cartas/carta-6.png", imgAdulto: "https://oeoujsnnyodrcqeyzcxo.supabase.co/storage/v1/object/public/cartas/carta-2.png" },
+  { nombre: "Depredador Alfa", imgHuevo: "https://oeoujsnnyodrcqeyzcxo.supabase.co/storage/v1/object/public/cartas/carta-6.png", imgCachorro: "https://oeoujsnnyodrcqeyzcxo.supabase.co/storage/v1/object/public/cartas/carta-1.png", imgAdulto: "https://oeoujsnnyodrcqeyzcxo.supabase.co/storage/v1/object/public/cartas/carta-6.png" },
+  { nombre: "Fénix Abrazador", imgHuevo: "https://oeoujsnnyodrcqeyzcxo.supabase.co/storage/v1/object/public/cartas/igneo-huevo.png", imgCachorro: "https://oeoujsnnyodrcqeyzcxo.supabase.co/storage/v1/object/public/cartas/igneo-cachorro.png", imgAdulto: "https://oeoujsnnyodrcqeyzcxo.supabase.co/storage/v1/object/public/cartas/igneo-adulto.png" },
+  { nombre: "Lobo Estelar", imgHuevo: "https://oeoujsnnyodrcqeyzcxo.supabase.co/storage/v1/object/public/cartas/carta-2.png", imgCachorro: "https://oeoujsnnyodrcqeyzcxo.supabase.co/storage/v1/object/public/cartas/carta-6.png", imgAdulto: "https://oeoujsnnyodrcqeyzcxo.supabase.co/storage/v1/object/public/cartas/carta-2.png" },
+  { nombre: "Cíclope Mecánico", imgHuevo: "https://oeoujsnnyodrcqeyzcxo.supabase.co/storage/v1/object/public/cartas/carta-6.png", imgCachorro: "https://oeoujsnnyodrcqeyzcxo.supabase.co/storage/v1/object/public/cartas/carta-1.png", imgAdulto: "https://oeoujsnnyodrcqeyzcxo.supabase.co/storage/v1/object/public/cartas/carta-6.png" },
+  { nombre: "Espectro Abisal", imgHuevo: "https://oeoujsnnyodrcqeyzcxo.supabase.co/storage/v1/object/public/cartas/carta-1.png", imgCachorro: "https://oeoujsnnyodrcqeyzcxo.supabase.co/storage/v1/object/public/cartas/carta-2.png", imgAdulto: "https://oeoujsnnyodrcqeyzcxo.supabase.co/storage/v1/object/public/cartas/carta-1.png" },
+  { nombre: "Quimera Astral", imgHuevo: "https://oeoujsnnyodrcqeyzcxo.supabase.co/storage/v1/object/public/cartas/carta-2.png", imgCachorro: "https://oeoujsnnyodrcqeyzcxo.supabase.co/storage/v1/object/public/cartas/carta-6.png", imgAdulto: "https://oeoujsnnyodrcqeyzcxo.supabase.co/storage/v1/object/public/cartas/carta-2.png" },
+  { nombre: "Tigre de las Praderas", imgHuevo: "https://oeoujsnnyodrcqeyzcxo.supabase.co/storage/v1/object/public/cartas/carta-6.png", imgCachorro: "https://oeoujsnnyodrcqeyzcxo.supabase.co/storage/v1/object/public/cartas/carta-1.png", imgAdulto: "https://oeoujsnnyodrcqeyzcxo.supabase.co/storage/v1/object/public/cartas/carta-6.png" },
+  { nombre: "Basilisco Ígneo", imgHuevo: "https://oeoujsnnyodrcqeyzcxo.supabase.co/storage/v1/object/public/cartas/igneo-huevo.png", imgCachorro: "https://oeoujsnnyodrcqeyzcxo.supabase.co/storage/v1/object/public/cartas/igneo-cachorro.png", imgAdulto: "https://oeoujsnnyodrcqeyzcxo.supabase.co/storage/v1/object/public/cartas/igneo-adulto.png" },
+  { nombre: "Golem Pesado", imgHuevo: "https://oeoujsnnyodrcqeyzcxo.supabase.co/storage/v1/object/public/cartas/carta-2.png", imgCachorro: "https://oeoujsnnyodrcqeyzcxo.supabase.co/storage/v1/object/public/cartas/carta-6.png", imgAdulto: "https://oeoujsnnyodrcqeyzcxo.supabase.co/storage/v1/object/public/cartas/carta-2.png" },
+  { nombre: "Ciber-Raptor", imgHuevo: "https://oeoujsnnyodrcqeyzcxo.supabase.co/storage/v1/object/public/cartas/carta-6.png", imgCachorro: "https://oeoujsnnyodrcqeyzcxo.supabase.co/storage/v1/object/public/cartas/carta-1.png", imgAdulto: "https://oeoujsnnyodrcqeyzcxo.supabase.co/storage/v1/object/public/cartas/carta-6.png" },
+  { nombre: "Banshee Nocturna", imgHuevo: "https://oeoujsnnyodrcqeyzcxo.supabase.co/storage/v1/object/public/cartas/carta-1.png", imgCachorro: "https://oeoujsnnyodrcqeyzcxo.supabase.co/storage/v1/object/public/cartas/carta-2.png", imgAdulto: "https://oeoujsnnyodrcqeyzcxo.supabase.co/storage/v1/object/public/cartas/carta-1.png" },
+  { nombre: "Nebulosa Viviente", imgHuevo: "https://oeoujsnnyodrcqeyzcxo.supabase.co/storage/v1/object/public/cartas/carta-2.png", imgCachorro: "https://oeoujsnnyodrcqeyzcxo.supabase.co/storage/v1/object/public/cartas/carta-6.png", imgAdulto: "https://oeoujsnnyodrcqeyzcxo.supabase.co/storage/v1/object/public/cartas/carta-2.png" },
+  { nombre: "Oso Salvaje Mutante", imgHuevo: "https://oeoujsnnyodrcqeyzcxo.supabase.co/storage/v1/object/public/cartas/carta-6.png", imgCachorro: "https://oeoujsnnyodrcqeyzcxo.supabase.co/storage/v1/object/public/cartas/carta-1.png", imgAdulto: "https://oeoujsnnyodrcqeyzcxo.supabase.co/storage/v1/object/public/cartas/carta-6.png" },
+  { nombre: "Salamandra de Magma", imgHuevo: "https://oeoujsnnyodrcqeyzcxo.supabase.co/storage/v1/object/public/cartas/igneo-huevo.png", imgCachorro: "https://oeoujsnnyodrcqeyzcxo.supabase.co/storage/v1/object/public/cartas/igneo-cachorro.png", imgAdulto: "https://oeoujsnnyodrcqeyzcxo.supabase.co/storage/v1/object/public/cartas/igneo-adulto.png" },
+  { nombre: "Minotauro Blindado", imgHuevo: "https://oeoujsnnyodrcqeyzcxo.supabase.co/storage/v1/object/public/cartas/carta-2.png", imgCachorro: "https://oeoujsnnyodrcqeyzcxo.supabase.co/storage/v1/object/public/cartas/carta-6.png", imgAdulto: "https://oeoujsnnyodrcqeyzcxo.supabase.co/storage/v1/object/public/cartas/carta-2.png" },
+  { nombre: "Androide Centinela", imgHuevo: "https://oeoujsnnyodrcqeyzcxo.supabase.co/storage/v1/object/public/cartas/carta-6.png", imgCachorro: "https://oeoujsnnyodrcqeyzcxo.supabase.co/storage/v1/object/public/cartas/carta-1.png", imgAdulto: "https://oeoujsnnyodrcqeyzcxo.supabase.co/storage/v1/object/public/cartas/carta-6.png" },
+  { nombre: "Vampiro Astral", imgHuevo: "https://oeoujsnnyodrcqeyzcxo.supabase.co/storage/v1/object/public/cartas/carta-1.png", imgCachorro: "https://oeoujsnnyodrcqeyzcxo.supabase.co/storage/v1/object/public/cartas/carta-2.png", imgAdulto: "https://oeoujsnnyodrcqeyzcxo.supabase.co/storage/v1/object/public/cartas/carta-1.png" },
+  { nombre: "Pegaso Dimensional", imgHuevo: "https://oeoujsnnyodrcqeyzcxo.supabase.co/storage/v1/object/public/cartas/carta-2.png", imgCachorro: "https://oeoujsnnyodrcqeyzcxo.supabase.co/storage/v1/object/public/cartas/carta-6.png", imgAdulto: "https://oeoujsnnyodrcqeyzcxo.supabase.co/storage/v1/object/public/cartas/carta-2.png" },
+  { nombre: "Jabalí Salvaje", imgHuevo: "https://oeoujsnnyodrcqeyzcxo.supabase.co/storage/v1/object/public/cartas/carta-6.png", imgCachorro: "https://oeoujsnnyodrcqeyzcxo.supabase.co/storage/v1/object/public/cartas/carta-1.png", imgAdulto: "https://oeoujsnnyodrcqeyzcxo.supabase.co/storage/v1/object/public/cartas/carta-6.png" }
+];
 
 const TWITCH_CLIENT_ID = 'gcykx8eznq8gex7rgm0ebihs2k9q5h'; 
 const REDIRECT_URI = window.location.origin + window.location.pathname;
@@ -443,11 +419,12 @@ if (logoutBtn) {
 async function seleccionarTipoHuevo(tipoId) {
   if (!currentUserData) return;
 
-  const configBestia = BASE_DE_DATOS_BESTIAS[tipoId];
-  if (!configBestia) return;
+  // Seleccionar de forma aleatoria uno de los 24 animales del banco
+  const animalAleatorio = BANCO_24_ANIMALES[Math.floor(Math.random() * BANCO_24_ANIMALES.length)];
 
   const mascotaInicial = {
     tipoId: tipoId,
+    animalIndex: BANCO_24_ANIMALES.indexOf(animalAleatorio), // Guardamos qué animal tocó
     fase: 'huevo', 
     nivel: 1,
     exp: 0,
@@ -488,21 +465,21 @@ function actualizarInterfazMascota() {
     activeView.classList.remove('hidden');
 
     const mascota = currentUserData.mascota_data;
-    const configBestia = BASE_DE_DATOS_BESTIAS[mascota.tipoId];
+    
+    // Recuperar el animal específico asignado de los 24 posibles
+    const animalAsignado = BANCO_24_ANIMALES[mascota.animalIndex] || BANCO_24_ANIMALES[0];
 
     if (!mascota.poops) mascota.poops = [];
 
-    let nombreActual = configBestia.nombreBase;
-    let imagenActual = configBestia.faseHuevoImg;
+    let nombreActual = animalAsignado.nombre;
+    let imagenActual = animalAsignado.imgHuevo;
     let textoFase = "Fase: 🥚 Huevo";
 
     if (mascota.fase === 'cachorro') {
-      nombreActual = configBestia.faseCachorroNombre;
-      imagenActual = configBestia.faseCachorroImg;
+      imagenActual = animalAsignado.imgCachorro;
       textoFase = "Fase: 🐾 Cachorro";
     } else if (mascota.fase === 'adulto') {
-      nombreActual = configBestia.faseAdultoNombre;
-      imagenActual = configBestia.faseAdultoImg;
+      imagenActual = animalAsignado.imgAdulto;
       textoFase = "Fase: 🐉 Adulto";
     }
 
@@ -595,9 +572,9 @@ function iniciarGeneradorDeCacas() {
     if (mascota.fase === 'huevo') return;
     if (!mascota.poops) mascota.poops = [];
 
-    // Límite máximo de 3 cacas
-    if (mascota.poops.length < 3) {
-      const randomX = Math.floor(Math.random() * 60) + 30; 
+    // Límite máximo de 5 cacas
+    if (mascota.poops.length < 5) {
+      const randomX = Math.floor(Math.random() * 80) + 10; 
       const randomY = Math.floor(Math.random() * 50) + 40; 
 
       mascota.poops.push({ id: Date.now() + Math.random(), x: randomX, y: randomY });
