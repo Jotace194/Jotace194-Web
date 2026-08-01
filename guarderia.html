@@ -99,7 +99,7 @@ footer{padding:30px 0;border-top:1px solid rgba(255,102,0,.15);text-align:center
     <div id="authSection" class="auth-box">
       <h3 style="margin-bottom: 8px;">Acceso de Espectadores</h3>
       <p style="color: var(--tenue); font-size: 0.88rem; margin-bottom: 20px;">Conéctate con Twitch para gestionar tu mascota.</p>
-      <a href="" id="twitchLoginBtn" class="btn-twitch">
+      <a href="#" id="twitchLoginBtn" class="btn-twitch">
         <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M11.64 5.93h1.66v5.81h-1.66V5.93zm3.32 0h1.66v5.81h-1.66V5.93Z3.32 0L0 3.32v16.6h5.81V24l3.32-3.32h4.15L24 11.64V0H3.32zm17.41 10.81l-3.32 3.32h-4.15l-2.49 2.49v-2.49H7.47V1.66h13.26v9.15z"/></svg>
         Iniciar sesión con Twitch
       </a>
@@ -209,17 +209,21 @@ const loginUrl = `https://id.twitch.tv/oauth2/authorize?client_id=${TWITCH_CLIEN
 const loginBtn = document.getElementById('twitchLoginBtn');
 if (loginBtn) { loginBtn.href = loginUrl; }
 
-const fragment = window.location.hash.substring(1);
-const params = new URLSearchParams(fragment);
-const accessToken = params.get('access_token');
-
-if (accessToken) {
-  localStorage.setItem('twitch_access_token', accessToken);
-  window.history.replaceState({}, document.title, window.location.pathname);
+// Capturar Token de Twitch de forma segura
+const hash = window.location.hash.substring(1);
+if (hash) {
+  const params = new URLSearchParams(hash);
+  const accessToken = params.get('access_token');
+  if (accessToken) {
+    localStorage.setItem('twitch_access_token', accessToken);
+    window.history.replaceState({}, document.title, window.location.pathname);
+  }
 }
 
 const savedToken = localStorage.getItem('twitch_access_token');
-if (savedToken) { obtenerDatosTwitch(savedToken); }
+if (savedToken) {
+  obtenerDatosTwitch(savedToken);
+}
 
 async function obtenerDatosTwitch(token) {
   try {
@@ -271,7 +275,10 @@ async function sincronizarUsuarioSupabase(user) {
         .select()
         .single();
 
-      if (insertError) return;
+      if (insertError) {
+        console.error("Error al insertar usuario:", insertError);
+        return;
+      }
       currentUserData = insertedData;
     } else if (data) {
       currentUserData = data;
@@ -285,16 +292,23 @@ async function sincronizarUsuarioSupabase(user) {
 }
 
 function actualizarInterfazUsuario() {
-  document.getElementById('userPoints').textContent = currentUserData.points;
+  if (currentUserData) {
+    document.getElementById('userPoints').textContent = currentUserData.points;
+  }
 }
 
-document.getElementById('logoutBtn').addEventListener('click', () => {
-  localStorage.removeItem('twitch_access_token');
-  window.location.href = window.location.pathname;
-});
+const logoutBtn = document.getElementById('logoutBtn');
+if (logoutBtn) {
+  logoutBtn.addEventListener('click', () => {
+    localStorage.removeItem('twitch_access_token');
+    window.location.href = window.location.pathname;
+  });
+}
 
 // --- LÓGICA DE LA GUARDERÍA ---
 async function adoptarMascota(nombre, imagenUrl) {
+  if (!currentUserData) return;
+
   const mascotaInicial = {
     nombre: nombre,
     imagen: imagenUrl,
@@ -321,7 +335,7 @@ function actualizarInterfazMascota() {
   const selectorView = document.getElementById('petSelectorView');
   const activeView = document.getElementById('petActiveView');
 
-  if (!currentUserData.mascota_data) {
+  if (!currentUserData || !currentUserData.mascota_data) {
     selectorView.classList.remove('hidden');
     activeView.classList.add('hidden');
   } else {
@@ -344,6 +358,8 @@ function actualizarInterfazMascota() {
 }
 
 async function cuidarMascota(accion) {
+  if (!currentUserData || !currentUserData.mascota_data) return;
+
   const mascota = currentUserData.mascota_data;
   const ahora = new Date().getTime();
   
@@ -383,17 +399,6 @@ async function cuidarMascota(accion) {
     alert("Error al actualizar la mascota.");
   }
 }
-
-// Sincronización automática si se cierra o abre sesión en otra pestaña
-window.addEventListener('storage', (event) => {
-  if (event.key === 'twitch_access_token') {
-    if (!event.newValue) {
-      window.location.reload();
-    } else {
-      obtenerDatosTwitch(event.newValue);
-    }
-  }
-});
 </script>
 
 </body>
