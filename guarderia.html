@@ -62,7 +62,7 @@ body{background:var(--negro);color:var(--hueso);font-family:'Segoe UI',sans-seri
 .pet-avatar-container {
   position: absolute;
   left: 50%;
-  bottom: 60px; /* Anclado justo sobre el suelo de la habitación */
+  bottom: 60px;
   transform: translateX(-50%);
   width: 220px; 
   height: 220px; 
@@ -77,7 +77,7 @@ body{background:var(--negro);color:var(--hueso);font-family:'Segoe UI',sans-seri
   height: 190px; 
   object-fit: contain; 
   filter: drop-shadow(0 20px 20px rgba(0,0,0,0.75));
-  transition: transform 0.3s ease; /* Giro fluido al cambiar de dirección */
+  transition: transform 0.3s ease;
 }
 
 /* ANIMACIÓN DE TAMBALEO PARA EL HUEVO */
@@ -96,7 +96,7 @@ body{background:var(--negro);color:var(--hueso);font-family:'Segoe UI',sans-seri
 
 .pet-dashboard {text-align: center; max-width: 1100px; margin: 0 auto;}
 
-/* BARRAS DE ESTADO PEQUEÑAS */
+/* BARRAS DE ESTADO Y EXPERIENCIA */
 .pet-stats-bars {display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin: 25px 0;}
 .stat-bar-group {text-align: left; background: var(--carbon-claro); padding: 10px 15px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.03);}
 .stat-bar-label {display: flex; justify-content: space-between; font-size: 0.8rem; margin-bottom: 5px; font-weight: 600;}
@@ -208,18 +208,23 @@ footer{padding:30px 0;border-top:1px solid rgba(255,102,0,.15);text-align:center
               </div>
             </div>
 
-            <h3 id="petName" style="color: var(--hueso); font-size: 1.4rem; margin-top: 15px;">Nombre de Bestia</h3>
-            <p id="petStageLabel" style="font-size: 0.85rem; color: var(--turquesa); margin-bottom: 10px;">Fase: Huevo (Incubando)</p>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 15px; flex-wrap: wrap; gap: 10px;">
+              <h3 id="petName" style="color: var(--hueso); font-size: 1.4rem;">Nombre de Bestia</h3>
+              <div style="display: flex; gap: 10px;">
+                <span id="petLevelBadge" style="background: var(--carbon-claro); border: 1px solid var(--naranja); padding: 4px 12px; border-radius: 6px; font-size: 0.85rem; font-weight: bold; color: var(--naranja-claro);">Nivel 1</span>
+                <span id="petStageLabel" style="background: var(--carbon-claro); border: 1px solid var(--turquesa); padding: 4px 12px; border-radius: 6px; font-size: 0.85rem; font-weight: bold; color: var(--turquesa);">Fase: Huevo</span>
+              </div>
+            </div>
 
-            <!-- BARRAS DE ESTADO PEQUEÑAS -->
+            <!-- BARRAS DE ESTADO Y EXPERIENCIA -->
             <div class="pet-stats-bars">
+              <div class="stat-bar-group">
+                <div class="stat-bar-label"><span>✨ Experiencia</span><span id="expText">0 / 60 XP</span></div>
+                <div class="stat-bar-bg"><div class="stat-bar-fill" id="expBar" style="background: var(--turquesa); width: 0%;"></div></div>
+              </div>
               <div class="stat-bar-group">
                 <div class="stat-bar-label"><span>🍖 Hambre</span><span id="hambreText">100%</span></div>
                 <div class="stat-bar-bg"><div class="stat-bar-fill" id="hambreBar" style="background: #FF6600; width: 100%;"></div></div>
-              </div>
-              <div class="stat-bar-group">
-                <div class="stat-bar-label"><span>✨ Limpieza</span><span id="limpiezaText">100%</span></div>
-                <div class="stat-bar-bg"><div class="stat-bar-fill" id="limpiezaBar" style="background: #249908; width: 100%;"></div></div>
               </div>
               <div class="stat-bar-group">
                 <div class="stat-bar-label"><span>⭐ Felicidad</span><span id="felicidadText">100%</span></div>
@@ -228,9 +233,9 @@ footer{padding:30px 0;border-top:1px solid rgba(255,102,0,.15);text-align:center
             </div>
 
             <div class="pet-actions-grid">
-              <button class="pet-action-btn" onclick="cuidarMascota('alimentar')">🍖 Alimentar</button>
-              <button class="pet-action-btn" onclick="cuidarMascota('limpiar')">✨ Limpiar</button>
-              <button class="pet-action-btn" onclick="cuidarMascota('jugar')">🎾 Jugar</button>
+              <button class="pet-action-btn" onclick="cuidarMascota('alimentar')">🍖 Alimentar (+15 XP)</button>
+              <button class="pet-action-btn" onclick="cuidarMascota('limpiar')">✨ Limpiar (+15 XP)</button>
+              <button class="pet-action-btn" onclick="cuidarMascota('jugar')">🎾 Jugar (+15 XP)</button>
             </div>
             <p id="petMsg" style="font-size: 0.85rem; margin-top: 12px; color: var(--tenue);"></p>
           </div>
@@ -257,7 +262,7 @@ document.getElementById('navToggle').addEventListener('click', () => {
 
 let currentUserData = null;
 let petMovementInterval = null;
-let lastPositionX = 50; // Para comparar si se mueve a la izquierda o derecha
+let lastPositionX = 50; 
 
 // ==========================================
 // CONFIGURACIÓN AISLADA DE CADA BESTIA Y HUEVO
@@ -425,7 +430,8 @@ async function seleccionarTipoHuevo(tipoId) {
   const mascotaInicial = {
     tipoId: tipoId,
     fase: 'huevo', 
-    cuidadosCount: 0,
+    nivel: 1,
+    exp: 0,
     hambre: 100,
     limpieza: 100,
     felicidad: 100,
@@ -469,7 +475,7 @@ function actualizarInterfazMascota() {
 
     let nombreActual = configBestia.nombreBase;
     let imagenActual = configBestia.faseHuevoImg;
-    let textoFase = "Fase: 🥚 Huevo (Incubando)";
+    let textoFase = "Fase: 🥚 Huevo";
 
     if (mascota.fase === 'cachorro') {
       nombreActual = configBestia.faseCachorroNombre;
@@ -478,23 +484,26 @@ function actualizarInterfazMascota() {
     } else if (mascota.fase === 'adulto') {
       nombreActual = configBestia.faseAdultoNombre;
       imagenActual = configBestia.faseAdultoImg;
-      textoFase = "Fase: 🐉 Bestia Adulta";
+      textoFase = "Fase: 🐉 Adulto";
     }
 
     document.getElementById('petName').textContent = nombreActual;
     petImg.src = imagenActual;
     document.getElementById('petStageLabel').textContent = textoFase;
+    document.getElementById('petLevelBadge').textContent = `Nivel ${mascota.nivel || 1}`;
+
+    // Barra de Experiencia (100 XP por nivel para calcular porcentaje visual limpio)
+    const expActual = mascota.exp || 0;
+    const expPorcentaje = Math.min(100, (expActual % 100));
+    document.getElementById('expText').textContent = `${expActual} XP`;
+    document.getElementById('expBar').style.width = expPorcentaje + '%';
 
     document.getElementById('hambreText').textContent = mascota.hambre + '%';
     document.getElementById('hambreBar').style.width = mascota.hambre + '%';
 
-    document.getElementById('limpiezaText').textContent = mascota.limpieza + '%';
-    document.getElementById('limpiezaBar').style.width = mascota.limpieza + '%';
-
     document.getElementById('felicidadText').textContent = mascota.felicidad + '%';
     document.getElementById('felicidadBar').style.width = mascota.felicidad + '%';
 
-    // Control del comportamiento según la fase (Huevo estático tambaleándose vs Cachorro/Adulto caminando)
     if (mascota.fase === 'huevo') {
       if (petMovementInterval) {
         clearInterval(petMovementInterval);
@@ -528,7 +537,6 @@ function iniciarMovimientoHorizontal() {
     const randomX = Math.random() * (maxX - minX) + minX;
     const percentX = (randomX / roomWidth) * 100;
 
-    // Detectar dirección para girar la imagen horizontalmente (scaleX)
     if (percentX < lastPositionX) {
       petImg.style.transform = 'scaleX(-1)';
     } else {
@@ -569,12 +577,20 @@ async function cuidarMascota(accion) {
   }
 
   mascota[campoUltimo] = new Date().toISOString();
-  mascota.cuidadosCount = (mascota.cuidadosCount || 0) + 1;
+  
+  // Sumar 15 de experiencia
+  mascota.exp = (mascota.exp || 0) + 15;
+  
+  // Calcular nivel basado en la experiencia total (cada 100 XP sube 1 nivel, empezando en nivel 1)
+  mascota.nivel = Math.floor(mascota.exp / 100) + 1;
 
-  if (mascota.fase === 'huevo' && mascota.cuidadosCount >= 5) {
-    mascota.fase = 'cachorro';
-  } else if (mascota.fase === 'cachorro' && mascota.cuidadosCount >= 12) {
+  // Evolución estricta basada en los niveles solicitados (Nivel 5 y Nivel 16)
+  if (mascota.nivel >= 16) {
     mascota.fase = 'adulto';
+  } else if (mascota.nivel >= 5) {
+    mascota.fase = 'cachorro';
+  } else {
+    mascota.fase = 'huevo';
   }
 
   const nuevosPuntos = currentUserData.points + 30;
@@ -593,7 +609,7 @@ async function cuidarMascota(accion) {
     actualizarInterfazUsuario();
     actualizarInterfazMascota();
     document.getElementById('petMsg').style.color = "var(--turquesa)";
-    document.getElementById('petMsg').textContent = `¡Acción '${accion}' realizada con éxito! +30 puntos.`;
+    document.getElementById('petMsg').textContent = `¡Acción '${accion}' realizada! +15 XP y +30 puntos.`;
   } else {
     alert("Error al actualizar la mascota.");
   }
