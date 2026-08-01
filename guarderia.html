@@ -595,9 +595,9 @@ function iniciarGeneradorDeCacas() {
     if (mascota.fase === 'huevo') return;
     if (!mascota.poops) mascota.poops = [];
 
-    // Límite máximo de 5 cacas
-    if (mascota.poops.length < 5) {
-      const randomX = Math.floor(Math.random() * 80) + 10; 
+    // Límite máximo de 3 cacas
+    if (mascota.poops.length < 3) {
+      const randomX = Math.floor(Math.random() * 60) + 30; 
       const randomY = Math.floor(Math.random() * 50) + 40; 
 
       mascota.poops.push({ id: Date.now() + Math.random(), x: randomX, y: randomY });
