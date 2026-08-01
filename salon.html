@@ -13,7 +13,7 @@
   --negro:#030202; --carbon:#0A0808; --carbon-claro:#141111;
   --turquesa:#8AE6DF; --hueso:#F7F2EC; --tenue:#8C827A; 
   --twitch-purple:#9146FF; --twitch-hover:#772ce8;
-  --raro-comun: #8C827A; --raro-raro: #4A90E2; --raro-epico: #9013FE; --raro-legendario: #F5A623;
+  --raro-comun: #8C827A; --raro-raro: #249908; --raro-epico: #4A90E2; --raro-legendario: #D6AA06;
 }
 *{margin:0;padding:0;box-sizing:border-box}
 body{background:var(--negro);color:var(--hueso);font-family:'Segoe UI',sans-serif;line-height:1.7}
@@ -58,8 +58,12 @@ body{background:var(--negro);color:var(--hueso);font-family:'Segoe UI',sans-seri
 
 .cards-reveal-grid{display:flex;justify-content:center;gap:25px;flex-wrap:wrap;margin-top:25px;}
 
-/* ÁLBUM: Rejilla adaptada */
-.album-grid{display:grid;grid-template-columns:repeat(auto-fill, minmax(170px, 1fr));gap:35px 20px;margin-top:25px;}
+/* SECCIONES Y ÁLBUM */
+.rarity-section { margin-top: 25px; }
+.rarity-section:first-child { margin-top: 10px; }
+.rarity-title { font-size: 1rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 15px; padding-bottom: 5px; border-bottom: 1px solid rgba(255,255,255,0.08); }
+
+.album-grid{display:grid;grid-template-columns:repeat(auto-fill, minmax(170px, 1fr));gap:20px;}
 
 .album-slot-wrapper{
   display: flex;
@@ -268,11 +272,13 @@ footer{padding:30px 0;border-top:1px solid rgba(255,102,0,.15);text-align:center
         <div id="packRevealArea" class="cards-reveal-grid"></div>
       </div>
 
-      <!-- ÁLBUM DE CARTAS -->
+      <!-- ÁLBUM DE CARTAS ORGANIZADO POR SECCIONES -->
       <div class="game-section-card">
         <h3 style="color: var(--naranja-claro); font-size: 1.1rem; margin-bottom: 10px;">TU ÁLBUM</h3>
-        <p style="color: var(--tenue); font-size: 0.88rem;">Cartas en tu álbum.</p>
-        <div class="album-grid" id="albumGrid"></div>
+        <p style="color: var(--tenue); font-size: 0.88rem; margin-bottom: 20px;">Colección organizada por rarezas.</p>
+        
+        <!-- Contenedor donde se generan las secciones por rareza -->
+        <div id="albumContainer"></div>
       </div>
 
     </div>
@@ -475,7 +481,7 @@ function verificarEstadoRecompensaDiaria() {
   const ultimaVez = new Date(currentUserData.last_daily_claim).getTime();
   const ahora = new Date().getTime();
   const tiempoTranscurrido = ahora - ultimaVez;
-  const seisHoras = 6 * 60 * 60 * 1000; // Modificado a 6 horas
+  const seisHoras = 6 * 60 * 60 * 1000;
 
   if (tiempoTranscurrido < seisHoras) {
     const tiempoRestante = seisHoras - tiempoTranscurrido;
@@ -584,58 +590,73 @@ const CATALOGO_CARTAS = [
 ];
 
 function renderizarAlbum() {
-  const albumGrid = document.getElementById('albumGrid');
-  albumGrid.innerHTML = '';
+  const albumContainer = document.getElementById('albumContainer');
+  albumContainer.innerHTML = '';
   const coleccionUsuario = currentUserData.collection || {};
 
-  CATALOGO_CARTAS.forEach(carta => {
-    const wrapper = document.createElement('div');
-    wrapper.className = 'album-slot-wrapper';
-    
-    const desbloqueada = coleccionUsuario[carta.id] && coleccionUsuario[carta.id] > 0;
-    
-    if (desbloqueada) {
-      wrapper.innerHTML = `
-        <div class="album-card unlocked">
-          <img src="${carta.image}" alt="${carta.name}" class="card-real-img">
-        </div>
-        <div class="card-meta-outside">
-          <span class="card-title-out">${carta.name}</span>
-          <span class="card-rarity-out" style="color:${carta.color}">x${coleccionUsuario[carta.id]}</span>
-        </div>
-      `;
-    } else {
-      wrapper.innerHTML = `
-        <div class="album-card locked">
-          <img src="${carta.image}" alt="Bloqueada" class="card-real-img">
-        </div>
-        <div class="card-meta-outside">
-          <span class="card-title-out" style="color:var(--tenue)">Bloqueada</span>
-          <span class="card-rarity-out" style="color:${carta.color}">${carta.rarity}</span>
-        </div>
-      `;
-    }
-    albumGrid.appendChild(wrapper);
+  // Definir orden de las secciones de rareza
+  const ordenRarezas = ["Común", "Raro", "Épico", "Legendario"];
+  
+  // Mapeo de colores para los títulos de sección
+  const coloresRareza = {
+    "Común": "#8C827A",
+    "Raro": "#249908",
+    "Épico": "#4A90E2",
+    "Legendario": "#D6AA06"
+  };
+
+  ordenRarezas.forEach(rareza => {
+    const cartasDeEstaRareza = CATALOGO_CARTAS.filter(c => c.rarity === rareza);
+    if (cartasDeEstaRareza.length === 0) return;
+
+    // Crear contenedor de la sección
+    const sectionDiv = document.createElement('div');
+    sectionDiv.className = 'rarity-section';
+
+    // Título de la sección
+    const titleEl = document.createElement('h4');
+    titleEl.className = 'rarity-title';
+    titleEl.style.color = coloresRareza[rareza] || '#ffffff';
+    titleEl.textContent = `Cartas de Rareza: ${rareza}`;
+    sectionDiv.appendChild(titleEl);
+
+    // Rejilla interna para las cartas de esta rareza
+    const gridDiv = document.createElement('div');
+    gridDiv.className = 'album-grid';
+
+    cartasDeEstaRareza.forEach(carta => {
+      const wrapper = document.createElement('div');
+      wrapper.className = 'album-slot-wrapper';
+      
+      const desbloqueada = coleccionUsuario[carta.id] && coleccionUsuario[carta.id] > 0;
+      
+      if (desbloqueada) {
+        wrapper.innerHTML = `
+          <div class="album-card unlocked" style="border-color:${carta.color}">
+            <img src="${carta.image}" alt="${carta.name}" class="card-real-img">
+          </div>
+          <div class="card-meta-outside">
+            <span class="card-title-out">${carta.name}</span>
+            <span class="card-rarity-out" style="color:${carta.color}">x${coleccionUsuario[carta.id]}</span>
+          </div>
+        `;
+      } else {
+        wrapper.innerHTML = `
+          <div class="album-card locked">
+            <img src="${carta.image}" alt="Bloqueada" class="card-real-img">
+          </div>
+          <div class="card-meta-outside">
+            <span class="card-title-out" style="color:var(--tenue)">Bloqueada</span>
+            <span class="card-rarity-out" style="color:${carta.color}">${carta.rarity}</span>
+          </div>
+        `;
+      }
+      gridDiv.appendChild(wrapper);
+    });
+
+    sectionDiv.appendChild(gridDiv);
+    albumContainer.appendChild(sectionDiv);
   });
-}
-
-function obtenerCartaPorProbabilidad(probabilidades) {
-  const rand = Math.random() * 100;
-  let acumulado = 0;
-  let rarezaSeleccionada = "Común";
-
-  for (const [rareza, porcentaje] of Object.entries(probabilidades)) {
-    acumulado += porcentaje;
-    if (rand <= acumulado) {
-      rarezaSeleccionada = rareza;
-      break;
-    }
-  }
-
-  const cartasDeRareza = CATALOGO_CARTAS.filter(c => c.rarity === rarezaSeleccionada);
-  if (cartasDeRareza.length === 0) return CATALOGO_CARTAS[0];
-
-  return cartasDeRareza[Math.floor(Math.random() * cartasDeRareza.length)];
 }
 
 async function abrirSobre(coste, probabilidades) {
@@ -651,7 +672,6 @@ async function abrirSobre(coste, probabilidades) {
   const coleccionActual = currentUserData.collection || {};
   let cartasObtenidas = [];
 
-  // Modificado a 5 cartas por sobre
   for (let i = 0; i < 5; i++) {
     const rand = Math.random() * 100;
     let acumulado = 0;
