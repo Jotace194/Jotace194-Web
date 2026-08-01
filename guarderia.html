@@ -59,7 +59,7 @@ body{background:var(--negro);color:var(--hueso);font-family:'Segoe UI',sans-seri
 /* HABITACIÓN DE LA BESTIA */
 .pet-room {position: relative; width: 100%; height: 580px; background: linear-gradient(rgba(6, 5, 7, 0.4), rgba(6, 5, 7, 0.7)), url('https://oeoujsnnyodrcqeyzcxo.supabase.co/storage/v1/object/public/cartas/fondo-guarderia.png'); background-size: cover; background-position: center; border: 2px solid rgba(255,102,0,0.3); border-radius: 16px; overflow: hidden; box-shadow: inset 0 0 60px rgba(0,0,0,0.85);}
 
-/* CONTENEDOR MÓVIL CON GIRO FLUIDO */
+/* CONTENEDOR MÓVIL CON ORIENTACIÓN DIRECCIONAL */
 .pet-avatar-container {
   position: absolute;
   left: 50%;
@@ -71,7 +71,7 @@ body{background:var(--negro);color:var(--hueso);font-family:'Segoe UI',sans-seri
   display: flex; 
   align-items: center; 
   justify-content: center;
-  transition: left 8s ease-in-out, transform 0.6s ease-in-out;
+  transition: left 8s linear, transform 0.4s ease-in-out;
 }
 .pet-avatar-container img, .pet-avatar-container model-viewer {
   width: 220px; 
@@ -469,7 +469,6 @@ function actualizarInterfazMascota() {
             id="petModel"
             src="${animalAsignado.modeloGlb}"
             alt="${animalAsignado.nombre}"
-            auto-rotate
             shadow-intensity="1"
             animation-name="${animalAsignado.animacion}"
             autoplay
@@ -532,20 +531,17 @@ function iniciarMovimientoHorizontal() {
     const randomX = Math.random() * (maxX - minX) + minX;
     const percentX = (randomX / roomWidth) * 100;
 
-    const caminaHaciaLaDerecha = percentX > lastPositionX;
-    const anguloGiro = caminaHaciaLaDerecha ? 35 : -35;
+    // Calculamos si se mueve a la derecha o izquierda para orientar la mirada
+    const seMueveALaDerecha = percentX > lastPositionX;
     
+    // Si va a la derecha mira hacia adelante/derecha (ej: 90deg), si va a la izquierda mira al otro lado (-90deg)
+    // Ajusta estos grados si tu modelo mira originalmente hacia otro lado por defecto
+    const anguloGiro = seMueveALaDerecha ? 90 : -90;
+
     petContainer.style.transform = `translate(-50%, -50%) rotateY(${anguloGiro}deg)`;
 
     lastPositionX = percentX;
     petContainer.style.left = percentX + '%';
-
-    setTimeout(() => {
-      if (petContainer) {
-        const giroFrontal = caminaHaciaLaDerecha ? 15 : -15;
-        petContainer.style.transform = `translate(-50%, -50%) rotateY(${giroFrontal}deg)`;
-      }
-    }, 4000);
 
     renderizarCacasEnHabitacion();
   }
@@ -657,7 +653,7 @@ async function cuidarMascota(accion) {
   const ultimoTiempo = mascota[campoUltimo] ? new Date(mascota[campoUltimo]).getTime() : 0;
 
   if (ahora - ultimoTiempo < cuatroHoras) {
-    const minutosFaltantes = Math.ceil((cuaturHoras - (ahora - ultimoTiempo)) / (1000 * 60));
+    const minutosFaltantes = Math.ceil((cuatroHoras - (ahora - ultimoTiempo)) / (1000 * 60));
     document.getElementById('petMsg').style.color = "#FF8833";
     document.getElementById('petMsg').textContent = `Ya has usado '${accion}' recientemente. Vuelve en ${minutosFaltantes} minutos.`;
     return;
