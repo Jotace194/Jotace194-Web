@@ -68,15 +68,17 @@ body{background:var(--negro);color:var(--hueso);font-family:'Segoe UI',sans-seri
   display: flex; 
   align-items: center; 
   justify-content: center;
-  transition: left linear; /* La duración se inyecta dinámicamente desde JS según sea Walk o Run */
+  transition: left linear;
 }
 
-/* MOTOR DE SPRITESHEET ASEPRITE */
+/* MOTOR DE SPRITESHEET ASEPRITE FORZANDO TAMAÑO VISIBLE */
 .aseprite-sprite {
-  width: 100%;
-  height: 100%;
+  width: 150px;
+  height: 150px;
+  background-size: auto 100%;
   background-repeat: no-repeat;
   image-rendering: pixelated;
+  image-rendering: crisp-edges;
 }
 
 @keyframes playSprite {
@@ -243,11 +245,11 @@ const BANCO_BESTIAS_2D = [
   { 
     nombre: "Zorro", 
     sprites: {
-      idle: "https://oeoujsnnyodrcqeyzcxo.supabase.co/storage/v1/object/public/cartas/Fox_Idle_front.aseprite",
-      walkRight: "https://oeoujsnnyodrcqeyzcxo.supabase.co/storage/v1/object/public/cartas/Fox_walk_right.aseprite",
-      walkLeft: "https://oeoujsnnyodrcqeyzcxo.supabase.co/storage/v1/object/public/cartas/Fox_walk_left.aseprite",
-      runRight: "https://oeoujsnnyodrcqeyzcxo.supabase.co/storage/v1/object/public/cartas/Fox_Run_right.aseprite",
-      runLeft: "https://oeoujsnnyodrcqeyzcxo.supabase.co/storage/v1/object/public/cartas/Fox_Run_left.aseprite"
+      idle: "https://oeoujsnnyodrcqeyzcxo.supabase.co/storage/v1/object/public/cartas/Fox_Idle_front.png",
+      walkRight: "https://oeoujsnnyodrcqeyzcxo.supabase.co/storage/v1/object/public/cartas/Fox_walk_right.png",
+      walkLeft: "https://oeoujsnnyodrcqeyzcxo.supabase.co/storage/v1/object/public/cartas/Fox_walk_left.png",
+      runRight: "https://oeoujsnnyodrcqeyzcxo.supabase.co/storage/v1/object/public/cartas/Fox_Run_right.png",
+      runLeft: "https://oeoujsnnyodrcqeyzcxo.supabase.co/storage/v1/object/public/cartas/Fox_Run_left.png"
     }
   }
 ];
@@ -354,17 +356,15 @@ function actualizarInterfazMascota() {
       document.getElementById('petName').textContent = "Huevo de la Vida";
       document.getElementById('petStageLabel').textContent = "Fase: 🥚 Incubación";
       
-      if (!visualContent.querySelector('img')) {
-        visualContent.innerHTML = `<img id="petImg" src="https://oeoujsnnyodrcqeyzcxo.supabase.co/storage/v1/object/public/cartas/igneo-huevo.png" alt="Huevo" style="width:130px;height:130px;object-fit:contain;">`;
-        document.getElementById('petImg').classList.add('is-egg');
-      }
+      visualContent.innerHTML = `<img id="petImg" src="https://oeoujsnnyodrcqeyzcxo.supabase.co/storage/v1/object/public/cartas/igneo-huevo.png" alt="Huevo" style="width:130px;height:130px;object-fit:contain;">`;
+      document.getElementById('petImg').classList.add('is-egg');
       limpiarIntervalosMovimiento();
       petContainer.style.left = '50%';
       petContainer.style.transform = 'translate(-50%, -50%)';
     } else {
       const bestiaAsignada = BANCO_BESTIAS_2D[mascota.animalIndex] || BANCO_BESTIAS_2D[0];
       document.getElementById('petName').textContent = bestiaAsignada.nombre;
-      document.getElementById('petStageLabel').textContent = "Fase: 🐉 Criatura 2D";
+      document.getElementById('petStageLabel').textContent = "Fase: Criatura";
 
       if (!visualContent.querySelector('.aseprite-sprite')) {
         visualContent.innerHTML = `<div id="spriteAnimado" class="aseprite-sprite animar-sprite" style="background-image: url('${bestiaAsignada.sprites.idle}');"></div>`;
@@ -403,11 +403,9 @@ function iniciarBucleComportamiento(bestia) {
   function planificarSiguienteMovimiento() {
     if (!currentUserData || currentUserData.mascota_data?.esHuevo) return;
 
-    // Decidir aleatoriamente el comportamiento: 0 = Pararse un rato (Idle), 1 = Caminar (Walk), 2 = Correr (Run)
     const tipoAccion = Math.random();
 
     if (tipoAccion < 0.35) {
-      // 1. QUEDARSE PARADO (IDLE) un rato aleatorio entre 3 y 7 segundos
       spriteDiv.style.backgroundImage = `url('${bestia.sprites.idle}')`;
       petContainer.style.transition = 'none';
       
@@ -415,7 +413,6 @@ function iniciarBucleComportamiento(bestia) {
       petMovementTimeout = setTimeout(planificarSiguienteMovimiento, tiempoParado);
 
     } else {
-      // 2. MOVERSE (WALK o RUN) hacia una nueva posición aleatoria
       const roomWidth = room.clientWidth;
       const minX = 80;
       const maxX = roomWidth - 80;
@@ -423,27 +420,25 @@ function iniciarBucleComportamiento(bestia) {
       const percentX = (randomX / roomWidth) * 100;
 
       const seMueveALaDerecha = percentX > lastPositionX;
-      const esCorriendo = Math.random() < 0.4; // 40% de probabilidad de correr
+      const esCorriendo = Math.random() < 0.4;
 
       let spriteElegido = "";
       let duracionViaje = 0;
 
       if (esCorriendo) {
         spriteElegido = seMueveALaDerecha ? bestia.sprites.runRight : bestia.sprites.runLeft;
-        duracionViaje = 3.5; // Los desplazamientos corriendo duran 3.5 segundos (más rápido)
+        duracionViaje = 3.5;
       } else {
         spriteElegido = seMueveALaDerecha ? bestia.sprites.walkRight : bestia.sprites.walkLeft;
-        duracionViaje = 7.0; // Los desplazamientos caminando duran 7 segundos (más pausado)
+        duracionViaje = 7.0;
       }
 
-      // Aplicar transición fluida para el movimiento horizontal
       petContainer.style.transition = `left ${duracionViaje}s linear`;
       spriteDiv.style.backgroundImage = `url('${spriteElegido}')`;
       petContainer.style.left = percentX + '%';
 
       lastPositionX = percentX;
 
-      // Al finalizar el desplazamiento, programa la siguiente acción tras una breve pausa
       petMovementTimeout = setTimeout(() => {
         planificarSiguienteMovimiento();
       }, duracionViaje * 1000);
