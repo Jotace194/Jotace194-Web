@@ -71,11 +71,11 @@ body{background:var(--negro);color:var(--hueso);font-family:'Segoe UI',sans-seri
   transition: left linear;
 }
 
-/* MOTOR DE SPRITESHEET ASEPRITE FORZANDO TAMAÑO VISIBLE */
+/* MOTOR DE SPRITESHEET ASEPRITE (ADAPTADO A 4 CUADROS) */
 .aseprite-sprite {
   width: 150px;
   height: 150px;
-  background-size: auto 100%;
+  background-size: 400% 100%;
   background-repeat: no-repeat;
   image-rendering: pixelated;
   image-rendering: crisp-edges;
@@ -87,7 +87,7 @@ body{background:var(--negro);color:var(--hueso);font-family:'Segoe UI',sans-seri
 }
 
 .animar-sprite {
-  animation: playSprite 0.8s steps(6) infinite;
+  animation: playSprite 0.8s steps(4) infinite;
 }
 
 @keyframes tambalearHuevo {
@@ -243,7 +243,7 @@ let lastPositionX = 50;
 // BANCO DE BESTIAS 2D CON SPRITES SEPARADOS PARA IZQUIERDA Y DERECHA (WALK Y RUN)
 const BANCO_BESTIAS_2D = [
   { 
-    nombre: "Zorro", 
+    nombre: "Bestia Fuego", 
     sprites: {
       idle: "https://oeoujsnnyodrcqeyzcxo.supabase.co/storage/v1/object/public/cartas/Fox_Idle_front.png",
       walkRight: "https://oeoujsnnyodrcqeyzcxo.supabase.co/storage/v1/object/public/cartas/Fox_walk_right.png",
@@ -364,7 +364,7 @@ function actualizarInterfazMascota() {
     } else {
       const bestiaAsignada = BANCO_BESTIAS_2D[mascota.animalIndex] || BANCO_BESTIAS_2D[0];
       document.getElementById('petName').textContent = bestiaAsignada.nombre;
-      document.getElementById('petStageLabel').textContent = "Fase: Criatura";
+      document.getElementById('petStageLabel').textContent = "Fase: 🐉 Criatura 2D";
 
       if (!visualContent.querySelector('.aseprite-sprite')) {
         visualContent.innerHTML = `<div id="spriteAnimado" class="aseprite-sprite animar-sprite" style="background-image: url('${bestiaAsignada.sprites.idle}');"></div>`;
@@ -456,7 +456,7 @@ async function cuidarMascota(accion) {
   else if (accion === 'limpiar') mascota.limpieza = Math.min(100, mascota.limpieza + 25);
   else if (accion === 'jugar') mascota.felicidad = Math.min(100, mascota.felicidad + 25);
 
-  mascota.exp = (mascota.exp || 0) + 1500;
+  mascota.exp = (mascota.exp || 0) + 15;
   mascota.nivel = Math.floor(mascota.exp / 100) + 1;
 
   if (mascota.esHuevo && mascota.nivel >= 6) {
