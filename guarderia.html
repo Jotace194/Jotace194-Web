@@ -48,31 +48,32 @@ body{background:var(--negro);color:var(--hueso);font-family:'Segoe UI',sans-seri
 
 .game-section-card{background: var(--carbon); border: 1px solid rgba(255,102,0,0.2); border-radius: 16px; padding: 25px; margin-bottom: 25px;}
 
-/* ESTILOS DE LA SELECCIÓN DE HUEVOS (6 OPCIONES) */
+/* ESTILOS DE LA SELECCIÓN DE HUEVOS */
 .egg-selection-grid {display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; margin-top: 15px;}
 .egg-option-card {background: var(--carbon-claro); border: 1px solid rgba(255,102,0,0.3); border-radius: 12px; padding: 15px; text-align: center; cursor: pointer; transition: all 0.2s;}
 .egg-option-card:hover {border-color: var(--naranja); transform: translateY(-4px);}
 .egg-option-img {width: 80px; height: 80px; object-fit: contain; margin: 0 auto 10px; display: block;}
 
-/* HABITACIÓN DE LA BESTIA */
-.pet-room {position: relative; width: 100%; height: 280px; background: linear-gradient(to bottom, #111015, #050405); border: 2px solid rgba(255,102,0,0.3); border-radius: 14px; overflow: hidden; display: flex; align-items: flex-end; justify-content: center; padding-bottom: 20px; box-shadow: inset 0 0 30px rgba(0,0,0,0.8);}
-.room-floor {position: absolute; bottom: 0; width: 100%; height: 40px; background: #1a1616; border-top: 2px solid var(--naranja-oscuro);}
+/* HABITACIÓN DE LA BESTIA (MÁS GRANDE) */
+.pet-room {position: relative; width: 100%; height: 420px; background: linear-gradient(to bottom, #141117, #060507); border: 2px solid rgba(255,102,0,0.3); border-radius: 14px; overflow: hidden; display: flex; align-items: flex-end; justify-content: center; padding-bottom: 30px; box-shadow: inset 0 0 40px rgba(0,0,0,0.8);}
+.room-floor {position: absolute; bottom: 0; width: 100%; height: 50px; background: #1c1717; border-top: 2px solid var(--naranja-oscuro);}
 
 /* ANIMACIÓN DE MOVIMIENTO DENTRO DE LA HABITACIÓN */
 @keyframes floatPet {
   0% { transform: translateY(0px) scale(1); }
-  50% { transform: translateY(-8px) scale(1.02); }
+  50% { transform: translateY(-12px) scale(1.03); }
   100% { transform: translateY(0px) scale(1); }
 }
-.pet-avatar-container {width: 120px; height: 120px; z-index: 2; display: flex; align-items: center; justify-content: center; animation: floatPet 3s ease-in-out infinite;}
-.pet-avatar-container img {width: 100px; height: 100px; object-fit: contain; filter: drop-shadow(0 10px 10px rgba(0,0,0,0.6));}
+.pet-avatar-container {width: 160px; height: 160px; z-index: 2; display: flex; align-items: center; justify-content: center; animation: floatPet 3.5s ease-in-out infinite;}
+.pet-avatar-container img {width: 140px; height: 140px; object-fit: contain; filter: drop-shadow(0 15px 15px rgba(0,0,0,0.7));}
 
-.pet-dashboard {text-align: center; max-width: 500px; margin: 0 auto;}
+.pet-dashboard {text-align: center; max-width: 600px; margin: 0 auto;}
 
-.pet-stats-bars {display: flex; flex-direction: column; gap: 10px; margin: 20px 0;}
-.stat-bar-group {text-align: left;}
-.stat-bar-label {display: flex; justify-content: space-between; font-size: 0.85rem; margin-bottom: 4px; font-weight: 600;}
-.stat-bar-bg {width: 100%; height: 10px; background: var(--carbon-claro); border-radius: 5px; overflow: hidden; border: 1px solid rgba(255,255,255,0.05);}
+/* BARRAS DE ESTADO MÁS PEQUEÑAS */
+.pet-stats-bars {display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 20px 0;}
+.stat-bar-group {text-align: left; background: var(--carbon-claro); padding: 8px 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.03);}
+.stat-bar-label {display: flex; justify-content: space-between; font-size: 0.75rem; margin-bottom: 3px; font-weight: 600;}
+.stat-bar-bg {width: 100%; height: 6px; background: #030202; border-radius: 3px; overflow: hidden;}
 .stat-bar-fill {height: 100%; width: 100%; transition: width 0.3s ease;}
 
 .pet-actions-grid {display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 20px;}
@@ -102,7 +103,7 @@ footer{padding:30px 0;border-top:1px solid rgba(255,102,0,.15);text-align:center
   <header class="salon-header">
     <span class="salon-tag">Guardería</span>
     <h1>HABITACIÓN DE BESTIAS</h1>
-    <p>Elige tu huevo, cuida de tu criatura en su habitación y hazla evolucionar.</p>
+    <p>Elige tu huevo, cuida de tu criatura en su espaciosa habitación y hazla evolucionar.</p>
   </header>
 
   <div class="game-container">
@@ -172,7 +173,7 @@ footer{padding:30px 0;border-top:1px solid rgba(255,102,0,.15);text-align:center
         <div id="petActiveView" class="hidden">
           <div class="pet-dashboard">
             
-            <!-- HABITACIÓN VISUAL -->
+            <!-- HABITACIÓN VISUAL GRANDE -->
             <div class="pet-room">
               <div class="room-floor"></div>
               <div class="pet-avatar-container">
@@ -180,9 +181,10 @@ footer{padding:30px 0;border-top:1px solid rgba(255,102,0,.15);text-align:center
               </div>
             </div>
 
-            <h3 id="petName" style="color: var(--hueso); font-size: 1.2rem; margin-top: 15px;">Nombre de Bestia</h3>
+            <h3 id="petName" style="color: var(--hueso); font-size: 1.3rem; margin-top: 15px;">Nombre de Bestia</h3>
             <p id="petStageLabel" style="font-size: 0.8rem; color: var(--turquesa); margin-bottom: 10px;">Fase: Huevo (Incubando)</p>
 
+            <!-- BARRAS DE ESTADO PEQUEÑAS -->
             <div class="pet-stats-bars">
               <div class="stat-bar-group">
                 <div class="stat-bar-label"><span>🍖 Hambre</span><span id="hambreText">100%</span></div>
@@ -338,12 +340,14 @@ async function adoptarHuevo(tipoId, nombreHuevo, imagenUrl) {
     tipoId: tipoId,
     nombre: nombreHuevo,
     imagen: imagenUrl,
-    fase: 'huevo', // huevo, cachorro, adulto
+    fase: 'huevo', 
     cuidadosCount: 0,
     hambre: 100,
     limpieza: 100,
     felicidad: 100,
-    ultimo_cuidado: new Date().toISOString()
+    ultimo_alimentar: null,
+    ultimo_limpiar: null,
+    ultimo_jugar: null
   };
 
   const { error } = await supabaseClient
@@ -395,33 +399,41 @@ async function cuidarMascota(accion) {
 
   const mascota = currentUserData.mascota_data;
   const ahora = new Date().getTime();
-  
   const cuatroHoras = 4 * 60 * 60 * 1000;
-  if (mascota.ultimo_cuidado) {
-    const ultimoTiempo = new Date(mascota.ultimo_cuidado).getTime();
-    if (ahora - ultimoTiempo < cuatroHoras) {
-      const minutosFaltantes = Math.ceil((cuatroHoras - (ahora - ultimoTiempo)) / (1000 * 60));
-      document.getElementById('petMsg').textContent = `Tu mascota ya está atendida. Vuelve en ${minutosFaltantes} minutos para ganar más puntos.`;
-      return;
-    }
+
+  // Clave dinámica según el botón pulsado
+  const campoUltimo = `ultimo_${accion}`;
+  const ultimoTiempo = mascota[campoUltimo] ? new Date(mascota[campoUltimo]).getTime() : 0;
+
+  if (ahora - ultimoTiempo < cuatroHoras) {
+    const minutosFaltantes = Math.ceil((cuatroHoras - (ahora - ultimoTiempo)) / (1000 * 60));
+    document.getElementById('petMsg').style.color = "#FF8833";
+    document.getElementById('petMsg').textContent = `Ya has usado '${accion}' recientemente. Vuelve en ${minutosFaltantes} minutos.`;
+    return;
   }
 
-  mascota.hambre = Math.min(100, mascota.hambre + 20);
-  mascota.limpieza = Math.min(100, mascota.limpieza + 20);
-  mascota.felicidad = Math.min(100, mascota.felicidad + 20);
-  mascota.ultimo_cuidado = new Date().toISOString();
+  // Modificar stats según la acción específica
+  if (accion === 'alimentar') {
+    mascota.hambre = Math.min(100, mascota.hambre + 25);
+  } else if (accion === 'limpiar') {
+    mascota.limpieza = Math.min(100, mascota.limpieza + 25);
+  } else if (accion === 'jugar') {
+    mascota.felicidad = Math.min(100, mascota.felicidad + 25);
+  }
+
+  mascota[campoUltimo] = new Date().toISOString();
   mascota.cuidadosCount = (mascota.cuidadosCount || 0) + 1;
 
-  // Lógica simple de evolución por número de cuidados
-  if (mascota.fase === 'huevo' && mascota.cuidadosCount >= 3) {
+  // Lógica de evolución
+  if (mascota.fase === 'huevo' && mascota.cuidadosCount >= 5) {
     mascota.fase = 'cachorro';
     mascota.nombre = "Cachorro de Bestia";
-  } else if (mascota.fase === 'cachorro' && mascota.cuidadosCount >= 6) {
+  } else if (mascota.fase === 'cachorro' && mascota.cuidadosCount >= 12) {
     mascota.fase = 'adulto';
     mascota.nombre = "Bestia Suprema";
   }
 
-  const nuevosPuntos = currentUserData.points + 50;
+  const nuevosPuntos = currentUserData.points + 30;
 
   const { error } = await supabaseClient
     .from('usuarios_twitch')
@@ -437,7 +449,7 @@ async function cuidarMascota(accion) {
     actualizarInterfazUsuario();
     actualizarInterfazMascota();
     document.getElementById('petMsg').style.color = "var(--turquesa)";
-    document.getElementById('petMsg').textContent = `¡Has cuidado de tu criatura! +50 puntos conseguidos.`;
+    document.getElementById('petMsg').textContent = `¡Acción '${accion}' realizada con éxito! +30 puntos.`;
   } else {
     alert("Error al actualizar la mascota.");
   }
