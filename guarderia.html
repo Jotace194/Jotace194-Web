@@ -61,7 +61,7 @@ body{background:var(--negro);color:var(--hueso);font-family:'Segoe UI',sans-seri
 .pet-avatar-container {
   position: absolute;
   left: 50%;
-  top: 100%;
+  top: 85%;
   transform: translate(-50%, -50%);
   width: 220px; 
   height: 220px; 
@@ -626,7 +626,7 @@ function renderizarCacasEnHabitacion() {
 
   mascota.poops.forEach((poopObj, index) => {
     const poopImg = document.createElement('img');
-    poopImg.src = 'https://oeoujsnnyodrcqeyzcxo.supabase.co/storage/v1/object/public/cartas/carta-1.png'; // Puedes cambiar esta URL por una imagen específica de caca si la tienes
+    poopImg.src = 'https://oeoujsnnyodrcqeyzcxo.supabase.co/storage/v1/object/public/cartas/caca-1.png'; // Puedes cambiar esta URL por una imagen específica de caca si la tienes
     poopImg.alt = 'Caca';
     poopImg.className = 'room-poop';
     poopImg.style.left = poopObj.x + '%';
