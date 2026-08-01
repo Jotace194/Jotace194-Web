@@ -80,6 +80,20 @@ body{background:var(--negro);color:var(--hueso);font-family:'Segoe UI',sans-seri
   transition: transform 0.3s ease; /* Giro fluido al cambiar de dirección */
 }
 
+/* ANIMACIÓN DE TAMBALEO PARA EL HUEVO */
+@keyframes tambalearHuevo {
+  0% { transform: translateX(-50%) rotate(0deg); }
+  25% { transform: translateX(-50%) rotate(-8deg); }
+  50% { transform: translateX(-50%) rotate(0deg); }
+  75% { transform: translateX(-50%) rotate(8deg); }
+  100% { transform: translateX(-50%) rotate(0deg); }
+}
+
+.is-egg {
+  animation: tambalearHuevo 2s infinite ease-in-out;
+  transform-origin: bottom center;
+}
+
 .pet-dashboard {text-align: center; max-width: 1100px; margin: 0 auto;}
 
 /* BARRAS DE ESTADO PEQUEÑAS */
@@ -436,6 +450,8 @@ async function seleccionarTipoHuevo(tipoId) {
 function actualizarInterfazMascota() {
   const selectorView = document.getElementById('petSelectorView');
   const activeView = document.getElementById('petActiveView');
+  const petContainer = document.getElementById('petContainer');
+  const petImg = document.getElementById('petImg');
 
   if (!currentUserData || !currentUserData.mascota_data) {
     selectorView.classList.remove('hidden');
@@ -466,7 +482,7 @@ function actualizarInterfazMascota() {
     }
 
     document.getElementById('petName').textContent = nombreActual;
-    document.getElementById('petImg').src = imagenActual;
+    petImg.src = imagenActual;
     document.getElementById('petStageLabel').textContent = textoFase;
 
     document.getElementById('hambreText').textContent = mascota.hambre + '%';
@@ -478,22 +494,19 @@ function actualizarInterfazMascota() {
     document.getElementById('felicidadText').textContent = mascota.felicidad + '%';
     document.getElementById('felicidadBar').style.width = mascota.felicidad + '%';
 
-    // Control del movimiento: Se mueve solo si YA NO es huevo (cachorro o adulto)
-    if (mascota.fase !== 'huevo') {
-      if (!petMovementInterval) {
-        iniciarMovimientoHorizontal();
-      }
-    } else {
-      // Si es huevo, se detiene el movimiento y se centra estático sin voltear
+    // Control del comportamiento según la fase (Huevo estático tambaleándose vs Cachorro/Adulto caminando)
+    if (mascota.fase === 'huevo') {
       if (petMovementInterval) {
         clearInterval(petMovementInterval);
         petMovementInterval = null;
       }
-      const petContainer = document.getElementById('petContainer');
-      const petImg = document.getElementById('petImg');
-      if (petContainer && petImg) {
-        petContainer.style.left = '50%';
-        petImg.style.transform = 'scaleX(1)';
+      petContainer.style.left = '50%';
+      petImg.style.transform = 'none';
+      petImg.classList.add('is-egg');
+    } else {
+      petImg.classList.remove('is-egg');
+      if (!petMovementInterval) {
+        iniciarMovimientoHorizontal();
       }
     }
   }
@@ -517,10 +530,8 @@ function iniciarMovimientoHorizontal() {
 
     // Detectar dirección para girar la imagen horizontalmente (scaleX)
     if (percentX < lastPositionX) {
-      // Se mueve hacia la izquierda (giramos la imagen)
       petImg.style.transform = 'scaleX(-1)';
     } else {
-      // Se mueve hacia la derecha (imagen original)
       petImg.style.transform = 'scaleX(1)';
     }
 
@@ -529,7 +540,6 @@ function iniciarMovimientoHorizontal() {
   }
 
   moverHorizontal();
-  // Movimiento pausado horizontal cada 8 segundos
   petMovementInterval = setInterval(moverHorizontal, 8000);
 }
 
