@@ -210,7 +210,7 @@ footer{padding:30px 0;border-top:1px solid rgba(255,102,0,.15);text-align:center
         <button id="logoutBtn" style="background:none; border:none; color: var(--tenue); cursor:pointer; font-size: 0.85rem; text-decoration: underline;">Cerrar sesión</button>
       </div>
 
-      <!-- SECCIÓN DE CANJE Y RECOMPENSA DIARIA -->
+      <!-- SECCIÓN DE CANJE Y RECOMPENSA CADA 6 HORAS -->
       <div class="game-section-card">
         <h3 style="color: var(--naranja-claro); font-size: 1.1rem; margin-bottom: 15px;">Reclamar Puntos</h3>
         
@@ -226,20 +226,20 @@ footer{padding:30px 0;border-top:1px solid rgba(255,102,0,.15);text-align:center
             <p id="redeemMessage" style="font-size: 0.8rem; margin-top: 8px;"></p>
           </div>
 
-          <!-- BLOQUE DERECHA: Recompensa Diaria 24h -->
+          <!-- BLOQUE DERECHA: Recompensa Cada 6 Horas -->
           <div class="reward-box">
-            <h4 style="font-size: 0.95rem; color: var(--hueso); margin-bottom: 6px;">Recompensa Diaria</h4>
-            <p style="color: var(--tenue); font-size: 0.8rem; margin-bottom: 12px;">Reclama puntos gratis cada 24 horas.</p>
+            <h4 style="font-size: 0.95rem; color: var(--hueso); margin-bottom: 6px;">Recompensa Cada 6 Horas</h4>
+            <p style="color: var(--tenue); font-size: 0.8rem; margin-bottom: 12px;">Reclama puntos gratis cada 6 horas.</p>
             <button id="dailyClaimBtn" style="background: var(--turquesa); color: var(--negro); border: none; padding: 10px 16px; border-radius: 8px; font-weight: 700; cursor: pointer; width: 100%; font-size: 0.9rem; transition: opacity 0.2s;">Reclamar 250 Puntos</button>
             <p id="dailyMessage" style="font-size: 0.8rem; margin-top: 8px; color: var(--turquesa); text-align: center;"></p>
           </div>
         </div>
       </div>
 
-      <!-- TIENDA DE SOBRES -->
+      <!-- TIENDA DE SOBRES (5 CARTAS) -->
       <div class="game-section-card">
         <h3 style="color: var(--naranja-claro); font-size: 1.1rem; margin-bottom: 10px;">TIENDA DE SOBRES</h3>
-        <p style="color: var(--tenue); font-size: 0.88rem;">Elige qué sobre abrir según tus puntos y busca cartas.</p>
+        <p style="color: var(--tenue); font-size: 0.88rem;">Elige qué sobre abrir según tus puntos (¡cada sobre incluye 5 cartas!).</p>
         
         <div class="packs-grid">
           <!-- Sobre Estándar -->
@@ -248,7 +248,7 @@ footer{padding:30px 0;border-top:1px solid rgba(255,102,0,.15);text-align:center
               <img src="img/sobre-normal.png" alt="Sobre Estándar" class="pack-img">
             </div>
             <h4 style="color: var(--hueso); margin-top: 10px;">Sobre Estándar</h4>
-            <p style="color: var(--tenue); font-size: 0.8rem; margin: 6px 0;">3 Cartas en cada sobre</p>
+            <p style="color: var(--tenue); font-size: 0.8rem; margin: 6px 0;">5 Cartas en cada sobre</p>
             <p style="color: var(--turquesa); font-weight: 700;">Coste: 750 Puntos</p>
             <button class="pack-btn" id="buyStandardPack">Abrir Estándar</button>
           </div>
@@ -259,7 +259,7 @@ footer{padding:30px 0;border-top:1px solid rgba(255,102,0,.15);text-align:center
               <img src="img/sobre-premium.png" alt="Sobre Premium" class="pack-img">
             </div>
             <h4 style="color: var(--hueso); margin-top: 10px;">Sobre Premium</h4>
-            <p style="color: var(--tenue); font-size: 0.8rem; margin: 6px 0;">3 Cartas en cada sobre</p>
+            <p style="color: var(--tenue); font-size: 0.8rem; margin: 6px 0;">5 Cartas en cada sobre</p>
             <p style="color: var(--turquesa); font-weight: 700;">Coste: 1500 Puntos</p>
             <button class="pack-btn" id="buyPremiumPack" style="background: #9013FE;">Abrir Premium</button>
           </div>
@@ -403,7 +403,6 @@ document.getElementById('redeemBtn').addEventListener('click', async () => {
   }
 
   try {
-    // 1. Buscar el código en la tabla 'codigos_canje' de Supabase
     const { data: codigoData, error: codigoError } = await supabaseClient
       .from('codigos_canje')
       .select('*')
@@ -416,14 +415,12 @@ document.getElementById('redeemBtn').addEventListener('click', async () => {
       return;
     }
 
-    // 2. Verificar si ya fue usado
     if (codigoData.usado) {
       msgEl.style.color = "#FF6B6B";
       msgEl.textContent = "Este código ya ha sido canjeado anteriormente.";
       return;
     }
 
-    // 3. Marcar el código como usado en la base de datos
     const { error: updateCodeError } = await supabaseClient
       .from('codigos_canje')
       .update({ usado: true, usado_por: currentUserData.username })
@@ -435,7 +432,6 @@ document.getElementById('redeemBtn').addEventListener('click', async () => {
       return;
     }
 
-    // 4. Sumar los puntos al usuario actual
     const nuevosPuntos = currentUserData.points + codigoData.puntos;
     const { error: updateUserError } = await supabaseClient
       .from('usuarios_twitch')
@@ -448,7 +444,6 @@ document.getElementById('redeemBtn').addEventListener('click', async () => {
       return;
     }
 
-    // Actualizar estado local y UI
     currentUserData.points = nuevosPuntos;
     actualizarInterfazUsuario();
 
@@ -463,7 +458,7 @@ document.getElementById('redeemBtn').addEventListener('click', async () => {
   }
 });
 
-// RECOMPENSA DIARIA (24 HORAS)
+// RECOMPENSA CADA 6 HORAS
 const PUNTOS_DIARIOS = 250;
 
 function verificarEstadoRecompensaDiaria() {
@@ -480,10 +475,10 @@ function verificarEstadoRecompensaDiaria() {
   const ultimaVez = new Date(currentUserData.last_daily_claim).getTime();
   const ahora = new Date().getTime();
   const tiempoTranscurrido = ahora - ultimaVez;
-  const veinticuatroHoras = 24 * 60 * 60 * 1000;
+  const seisHoras = 6 * 60 * 60 * 1000; // Modificado a 6 horas
 
-  if (tiempoTranscurrido < veinticuatroHoras) {
-    const tiempoRestante = veinticuatroHoras - tiempoTranscurrido;
+  if (tiempoTranscurrido < seisHoras) {
+    const tiempoRestante = seisHoras - tiempoTranscurrido;
     btnDaily.disabled = true;
     btnDaily.style.opacity = "0.5";
     
@@ -515,7 +510,7 @@ document.getElementById('dailyClaimBtn').addEventListener('click', async () => {
     currentUserData.last_daily_claim = ahoraIso;
     actualizarInterfazUsuario();
     verificarEstadoRecompensaDiaria();
-    alert(`¡Has reclamado con éxito tus ${PUNTOS_DIARIOS} puntos diarios!`);
+    alert(`¡Has reclamado con éxito tus ${PUNTOS_DIARIOS} puntos!`);
   } else {
     alert("Hubo un error al reclamar los puntos. Inténtalo de nuevo.");
   }
@@ -544,7 +539,7 @@ const CATALOGO_CARTAS = [
     image: "https://oeoujsnnyodrcqeyzcxo.supabase.co/storage/v1/object/public/cartas/carta-3.png", 
     color: "#249908" 
   },
-    { 
+  { 
     id: "c4", 
     name: "Sin Comer", 
     rarity: "Épico", 
@@ -640,7 +635,7 @@ function obtenerCartaPorProbabilidad(probabilidades) {
   const cartasDeRareza = CATALOGO_CARTAS.filter(c => c.rarity === rarezaSeleccionada);
   if (cartasDeRareza.length === 0) return CATALOGO_CARTAS[0];
 
-  return cartasDeParaRareza = cartasDeRareza[Math.floor(Math.random() * cartasDeRareza.length)];
+  return cartasDeRareza[Math.floor(Math.random() * cartasDeRareza.length)];
 }
 
 async function abrirSobre(coste, probabilidades) {
@@ -656,7 +651,8 @@ async function abrirSobre(coste, probabilidades) {
   const coleccionActual = currentUserData.collection || {};
   let cartasObtenidas = [];
 
-  for (let i = 0; i < 3; i++) {
+  // Modificado a 5 cartas por sobre
+  for (let i = 0; i < 5; i++) {
     const rand = Math.random() * 100;
     let acumulado = 0;
     let rarezaSeleccionada = "Común";
