@@ -56,7 +56,7 @@ body{background:var(--negro);color:var(--hueso);font-family:'Segoe UI',sans-seri
 /* HABITACIÓN DE LA BESTIA */
 .pet-room {position: relative; width: 100%; height: 580px; background: linear-gradient(rgba(6, 5, 7, 0.4), rgba(6, 5, 7, 0.7)), url('https://oeoujsnnyodrcqeyzcxo.supabase.co/storage/v1/object/public/cartas/fondo-guarderia.png'); background-size: cover; background-position: center; border: 2px solid rgba(255,102,0,0.3); border-radius: 16px; overflow: hidden; box-shadow: inset 0 0 60px rgba(0,0,0,0.85);}
 
-/* CONTENEDOR MÓVIL 2D */
+/* CONTENEDOR MÓVIL 2D DINÁMICO */
 .pet-avatar-container {
   position: absolute;
   left: 50%;
@@ -68,7 +68,7 @@ body{background:var(--negro);color:var(--hueso);font-family:'Segoe UI',sans-seri
   display: flex; 
   align-items: center; 
   justify-content: center;
-  transition: left 6s linear;
+  transition: left linear; /* La duración se inyecta dinámicamente desde JS según sea Walk o Run */
 }
 
 /* MOTOR DE SPRITESHEET ASEPRITE */
@@ -235,17 +235,19 @@ document.getElementById('navToggle').addEventListener('click', () => {
 });
 
 let currentUserData = null;
-let petMovementInterval = null;
+let petMovementTimeout = null;
 let lastPositionX = 50; 
 
-// BANCO DE BESTIAS 2D CON IDLE, WALK Y RUN DESDE SUPABASE
+// BANCO DE BESTIAS 2D CON SPRITES SEPARADOS PARA IZQUIERDA Y DERECHA (WALK Y RUN)
 const BANCO_BESTIAS_2D = [
   { 
-    nombre: "Bestia Fuego", 
+    nombre: "Zorro", 
     sprites: {
-      idle: "https://oeoujsnnyodrcqeyzcxo.supabase.co/storage/v1/object/public/cartas/bestia-fuego-idle.png",
-      walk: "https://oeoujsnnyodrcqeyzcxo.supabase.co/storage/v1/object/public/cartas/bestia-fuego-walk.png",
-      run:  "https://oeoujsnnyodrcqeyzcxo.supabase.co/storage/v1/object/public/cartas/bestia-fuego-run.png"
+      idle: "https://oeoujsnnyodrcqeyzcxo.supabase.co/storage/v1/object/public/cartas/Fox_Idle_front.aseprite",
+      walkRight: "https://oeoujsnnyodrcqeyzcxo.supabase.co/storage/v1/object/public/cartas/Fox_walk_right.aseprite",
+      walkLeft: "https://oeoujsnnyodrcqeyzcxo.supabase.co/storage/v1/object/public/cartas/Fox_walk_left.aseprite",
+      runRight: "https://oeoujsnnyodrcqeyzcxo.supabase.co/storage/v1/object/public/cartas/Fox_Run_right.aseprite",
+      runLeft: "https://oeoujsnnyodrcqeyzcxo.supabase.co/storage/v1/object/public/cartas/Fox_Run_left.aseprite"
     }
   }
 ];
@@ -358,7 +360,7 @@ function actualizarInterfazMascota() {
       }
       limpiarIntervalosMovimiento();
       petContainer.style.left = '50%';
-      petContainer.style.transform = 'translate(-50%, -50%) scaleX(1)';
+      petContainer.style.transform = 'translate(-50%, -50%)';
     } else {
       const bestiaAsignada = BANCO_BESTIAS_2D[mascota.animalIndex] || BANCO_BESTIAS_2D[0];
       document.getElementById('petName').textContent = bestiaAsignada.nombre;
@@ -368,8 +370,8 @@ function actualizarInterfazMascota() {
         visualContent.innerHTML = `<div id="spriteAnimado" class="aseprite-sprite animar-sprite" style="background-image: url('${bestiaAsignada.sprites.idle}');"></div>`;
       }
 
-      if (!petMovementInterval) {
-        iniciarMovimientoYAnimaciones(bestiaAsignada);
+      if (!petMovementTimeout) {
+        iniciarBucleComportamiento(bestiaAsignada);
       }
     }
 
@@ -386,55 +388,74 @@ function actualizarInterfazMascota() {
 }
 
 function limpiarIntervalosMovimiento() {
-  if (petMovementInterval) { clearInterval(petMovementInterval); petMovementInterval = null; }
+  if (petMovementTimeout) { 
+    clearTimeout(petMovementTimeout); 
+    petMovementTimeout = null; 
+  }
 }
 
-function iniciarMovimientoYAnimaciones(bestia) {
+function iniciarBucleComportamiento(bestia) {
   const room = document.getElementById('petRoom');
   const petContainer = document.getElementById('petContainer');
   const spriteDiv = document.getElementById('spriteAnimado');
   if (!room || !petContainer || !spriteDiv) return;
 
-  function cambiarDePosicion() {
-    const roomWidth = room.clientWidth;
-    const minX = 80;
-    const maxX = roomWidth - 80;
-    const randomX = Math.random() * (maxX - minX) + minX;
-    const percentX = (randomX / roomWidth) * 100;
+  function planificarSiguienteMovimiento() {
+    if (!currentUserData || currentUserData.mascota_data?.esHuevo) return;
 
-    const seMueveALaDerecha = percentX > lastPositionX;
-    const direccionSprite = seMueveALaDerecha ? 'scaleX(1)' : 'scaleX(-1)';
+    // Decidir aleatoriamente el comportamiento: 0 = Pararse un rato (Idle), 1 = Caminar (Walk), 2 = Correr (Run)
+    const tipoAccion = Math.random();
 
-    // Al desplazarse cambia a la animación WALK
-    spriteDiv.style.backgroundImage = `url('${bestia.sprites.walk}')`;
-    petContainer.style.transform = `translate(-50%, -50%) ${direccionSprite}`;
-    petContainer.style.left = percentX + '%';
-
-    lastPositionX = percentX;
-
-    // A los 6 segundos de terminar el desplazamiento, regresa a IDLE
-    setTimeout(() => {
+    if (tipoAccion < 0.35) {
+      // 1. QUEDARSE PARADO (IDLE) un rato aleatorio entre 3 y 7 segundos
       spriteDiv.style.backgroundImage = `url('${bestia.sprites.idle}')`;
-    }, 6000);
+      petContainer.style.transition = 'none';
+      
+      const tiempoParado = Math.random() * 4000 + 3000;
+      petMovementTimeout = setTimeout(planificarSiguienteMovimiento, tiempoParado);
+
+    } else {
+      // 2. MOVERSE (WALK o RUN) hacia una nueva posición aleatoria
+      const roomWidth = room.clientWidth;
+      const minX = 80;
+      const maxX = roomWidth - 80;
+      const randomX = Math.random() * (maxX - minX) + minX;
+      const percentX = (randomX / roomWidth) * 100;
+
+      const seMueveALaDerecha = percentX > lastPositionX;
+      const esCorriendo = Math.random() < 0.4; // 40% de probabilidad de correr
+
+      let spriteElegido = "";
+      let duracionViaje = 0;
+
+      if (esCorriendo) {
+        spriteElegido = seMueveALaDerecha ? bestia.sprites.runRight : bestia.sprites.runLeft;
+        duracionViaje = 3.5; // Los desplazamientos corriendo duran 3.5 segundos (más rápido)
+      } else {
+        spriteElegido = seMueveALaDerecha ? bestia.sprites.walkRight : bestia.sprites.walkLeft;
+        duracionViaje = 7.0; // Los desplazamientos caminando duran 7 segundos (más pausado)
+      }
+
+      // Aplicar transición fluida para el movimiento horizontal
+      petContainer.style.transition = `left ${duracionViaje}s linear`;
+      spriteDiv.style.backgroundImage = `url('${spriteElegido}')`;
+      petContainer.style.left = percentX + '%';
+
+      lastPositionX = percentX;
+
+      // Al finalizar el desplazamiento, programa la siguiente acción tras una breve pausa
+      petMovementTimeout = setTimeout(() => {
+        planificarSiguienteMovimiento();
+      }, duracionViaje * 1000);
+    }
   }
 
-  cambiarDePosicion();
-  petMovementInterval = setInterval(cambiarDePosicion, 12000);
+  planificarSiguienteMovimiento();
 }
 
 async function cuidarMascota(accion) {
   if (!currentUserData || !currentUserData.mascota_data) return;
   const mascota = currentUserData.mascota_data;
-  const spriteDiv = document.getElementById('spriteAnimado');
-  const bestiaAsignada = BANCO_BESTIAS_2D[mascota.animalIndex] || BANCO_BESTIAS_2D[0];
-
-  // Al realizar una acción, podemos usar temporalmente la animación RUN para darle dinamismo
-  if (spriteDiv && !mascota.esHuevo) {
-    spriteDiv.style.backgroundImage = `url('${bestiaAsignada.sprites.run}')`;
-    setTimeout(() => {
-      spriteDiv.style.backgroundImage = `url('${bestiaAsignada.sprites.idle}')`;
-    }, 2000);
-  }
 
   if (accion === 'alimentar') mascota.hambre = Math.min(100, mascota.hambre + 25);
   else if (accion === 'limpiar') mascota.limpieza = Math.min(100, mascota.limpieza + 25);
