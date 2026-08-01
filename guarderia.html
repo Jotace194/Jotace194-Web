@@ -572,9 +572,9 @@ function iniciarMovimientoHorizontal() {
     const percentX = (randomX / roomWidth) * 100;
 
     if (percentX < lastPositionX) {
-      petImg.style.transform = 'translate(-50%, -50%) scaleX(-1)';
-    } else {
       petImg.style.transform = 'translate(-50%, -50%) scaleX(1)';
+    } else {
+      petImg.style.transform = 'translate(-50%, -50%) scaleX(-1)';
     }
 
     lastPositionX = percentX;
