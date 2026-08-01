@@ -16,10 +16,10 @@
 }
 *{margin:0;padding:0;box-sizing:border-box}
 body{background:var(--negro);color:var(--hueso);font-family:'Segoe UI',sans-serif;line-height:1.7}
-.wrap{max-width:1200px;margin:0 auto;padding:0 24px}
+.wrap{max-width:1400px;margin:0 auto;padding:0 24px}
 
 .navbar{position:fixed;top:0;left:0;width:100%;z-index:1000;background:rgba(3,2,2,0.92);backdrop-filter:blur(12px);border-bottom:1px solid rgba(255,102,0,.15)}
-.nav-wrap{max-width:1200px;margin:0 auto;padding:0 24px;display:flex;align-items:center;justify-content:space-between;height:70px}
+.nav-wrap{max-width:1400px;margin:0 auto;padding:0 24px;display:flex;align-items:center;justify-content:space-between;height:70px}
 .nav-logo img{height:40px;width:40px;object-fit:cover;border-radius:50%;border:2px solid var(--naranja)}
 .nav-links{display:flex;gap:26px;align-items:center;list-style:none}
 .nav-links a{font-size:.9rem;color:var(--tenue);font-weight:600;text-decoration:none;transition:color .2s ease}
@@ -46,7 +46,7 @@ body{background:var(--negro);color:var(--hueso);font-family:'Segoe UI',sans-seri
 .hud-stats{display:flex;gap:15px;font-weight:700;flex-wrap:wrap;}
 .stat-badge{background:var(--carbon-claro);padding:8px 16px;border-radius:8px;border:1px solid rgba(255,255,255,0.05);color:var(--turquesa);}
 
-.game-section-card{background: var(--carbon); border: 1px solid rgba(255,102,0,0.2); border-radius: 16px; padding: 25px; margin-bottom: 25px;}
+.game-section-card{background: var(--carbon); border: 1px solid rgba(255,102,0,0.2); border-radius: 16px; padding: 30px; margin-bottom: 25px;}
 
 /* ESTILOS DE LA SELECCIÓN DE HUEVOS */
 .egg-selection-grid {display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; margin-top: 15px;}
@@ -54,8 +54,8 @@ body{background:var(--negro);color:var(--hueso);font-family:'Segoe UI',sans-seri
 .egg-option-card:hover {border-color: var(--naranja); transform: translateY(-4px);}
 .egg-option-img {width: 80px; height: 80px; object-fit: contain; margin: 0 auto 10px; display: block;}
 
-/* HABITACIÓN DE LA BESTIA (MUCHÍSIMO MÁS GRANDE) */
-.pet-room {position: relative; width: 100%; height: 600px; background: linear-gradient(to bottom, #141117, #060507); border: 2px solid rgba(255,102,0,0.3); border-radius: 16px; overflow: hidden; display: flex; align-items: flex-end; justify-content: center; padding-bottom: 50px; box-shadow: inset 0 0 60px rgba(0,0,0,0.85);}
+/* HABITACIÓN DE LA BESTIA (GIGANTE Y MUCHO MÁS ANCHA) */
+.pet-room {position: relative; width: 100%; height: 580px; background: linear-gradient(to bottom, #141117, #060507); border: 2px solid rgba(255,102,0,0.3); border-radius: 16px; overflow: hidden; display: flex; align-items: flex-end; justify-content: center; padding-bottom: 50px; box-shadow: inset 0 0 60px rgba(0,0,0,0.85);}
 .room-floor {position: absolute; bottom: 0; width: 100%; height: 80px; background: #1c1717; border-top: 2px solid var(--naranja-oscuro);}
 
 /* ANIMACIÓN DE MOVIMIENTO DENTRO DE LA HABITACIÓN */
@@ -67,17 +67,17 @@ body{background:var(--negro);color:var(--hueso);font-family:'Segoe UI',sans-seri
 .pet-avatar-container {width: 220px; height: 220px; z-index: 2; display: flex; align-items: center; justify-content: center; animation: floatPet 4s ease-in-out infinite;}
 .pet-avatar-container img {width: 190px; height: 190px; object-fit: contain; filter: drop-shadow(0 20px 20px rgba(0,0,0,0.75));}
 
-.pet-dashboard {text-align: center; max-width: 700px; margin: 0 auto;}
+.pet-dashboard {text-align: center; max-width: 1100px; margin: 0 auto;}
 
 /* BARRAS DE ESTADO PEQUEÑAS */
-.pet-stats-bars {display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 20px 0;}
-.stat-bar-group {text-align: left; background: var(--carbon-claro); padding: 8px 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.03);}
-.stat-bar-label {display: flex; justify-content: space-between; font-size: 0.75rem; margin-bottom: 3px; font-weight: 600;}
+.pet-stats-bars {display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin: 25px 0;}
+.stat-bar-group {text-align: left; background: var(--carbon-claro); padding: 10px 15px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.03);}
+.stat-bar-label {display: flex; justify-content: space-between; font-size: 0.8rem; margin-bottom: 5px; font-weight: 600;}
 .stat-bar-bg {width: 100%; height: 6px; background: #030202; border-radius: 3px; overflow: hidden;}
 .stat-bar-fill {height: 100%; width: 100%; transition: width 0.3s ease;}
 
-.pet-actions-grid {display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 20px;}
-.pet-action-btn {background: var(--carbon-claro); border: 1px solid rgba(255,102,0,0.3); color: var(--hueso); padding: 12px; border-radius: 8px; font-weight: 700; cursor: pointer; transition: background 0.2s;}
+.pet-actions-grid {display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-top: 20px;}
+.pet-action-btn {background: var(--carbon-claro); border: 1px solid rgba(255,102,0,0.3); color: var(--hueso); padding: 14px; border-radius: 8px; font-weight: 700; cursor: pointer; transition: background 0.2s;}
 .pet-action-btn:hover {background: var(--naranja); border-color: var(--naranja);}
 
 footer{padding:30px 0;border-top:1px solid rgba(255,102,0,.15);text-align:center;color:var(--tenue);font-size:.85rem;background:var(--carbon)}
@@ -103,7 +103,7 @@ footer{padding:30px 0;border-top:1px solid rgba(255,102,0,.15);text-align:center
   <header class="salon-header">
     <span class="salon-tag">Guardería</span>
     <h1>HABITACIÓN DE BESTIAS</h1>
-    <p>Elige tu huevo, cuida de tu criatura en su inmensa habitación y hazla evolucionar.</p>
+    <p>Elige tu huevo, cuida de tu criatura en su inmensa y ancha habitación y hazla evolucionar.</p>
   </header>
 
   <div class="game-container">
@@ -173,7 +173,7 @@ footer{padding:30px 0;border-top:1px solid rgba(255,102,0,.15);text-align:center
         <div id="petActiveView" class="hidden">
           <div class="pet-dashboard">
             
-            <!-- HABITACIÓN VISUAL GIGANTE -->
+            <!-- HABITACIÓN VISUAL ANCHA -->
             <div class="pet-room">
               <div class="room-floor"></div>
               <div class="pet-avatar-container">
