@@ -55,14 +55,13 @@ body{background:var(--negro);color:var(--hueso);font-family:'Segoe UI',sans-seri
 .egg-option-img {width: 80px; height: 80px; object-fit: contain; margin: 0 auto 10px; display: block;}
 
 /* HABITACIÓN DE LA BESTIA */
-.pet-room {position: relative; width: 100%; height: 580px; background: linear-gradient(rgba(6, 5, 7, 0.7), rgba(6, 5, 7, 0.85)), url('https://oeoujsnnyodrcqeyzcxo.supabase.co/storage/v1/object/public/cartas/fondo-guarderia.png'); background-size: cover; background-position: center; border: 2px solid rgba(255,102,0,0.3); border-radius: 16px; overflow: hidden; box-shadow: inset 0 0 60px rgba(0,0,0,0.85);}
-.room-floor {position: absolute; bottom: 0; width: 100%; height: 80px; background: #1c1717; border-top: 2px solid var(--naranja-oscuro);}
+.pet-room {position: relative; width: 100%; height: 580px; background: linear-gradient(rgba(6, 5, 7, 0.4), rgba(6, 5, 7, 0.7)), url('https://oeoujsnnyodrcqeyzcxo.supabase.co/storage/v1/object/public/cartas/fondo-habitacion.png'); background-size: cover; background-position: center; border: 2px solid rgba(255,102,0,0.3); border-radius: 16px; overflow: hidden; box-shadow: inset 0 0 60px rgba(0,0,0,0.85);}
 
-/* CONTENEDOR MÓVIL HORIZONTAL CON TRANSICIÓN LENTA (8s) */
+/* CONTENEDOR MÓVIL HORIZONTAL (Ajustado a -20px porque se quitó el suelo de 80px) */
 .pet-avatar-container {
   position: absolute;
   left: 50%;
-  bottom: 60px;
+  bottom: -20px; 
   transform: translateX(-50%);
   width: 220px; 
   height: 220px; 
@@ -200,9 +199,8 @@ footer{padding:30px 0;border-top:1px solid rgba(255,102,0,.15);text-align:center
         <div id="petActiveView" class="hidden">
           <div class="pet-dashboard">
             
-            <!-- HABITACIÓN VISUAL CON MOVIMIENTO HORIZONTAL -->
+            <!-- HABITACIÓN VISUAL SIN SUELO -->
             <div class="pet-room" id="petRoom">
-              <div class="room-floor"></div>
               <div class="pet-avatar-container" id="petContainer">
                 <img id="petImg" src="" alt="Mascota en Habitación">
               </div>
@@ -492,7 +490,6 @@ function actualizarInterfazMascota() {
     document.getElementById('petStageLabel').textContent = textoFase;
     document.getElementById('petLevelBadge').textContent = `Nivel ${mascota.nivel || 1}`;
 
-    // Barra de Experiencia (100 XP por nivel para calcular porcentaje visual limpio)
     const expActual = mascota.exp || 0;
     const expPorcentaje = Math.min(100, (expActual % 100));
     document.getElementById('expText').textContent = `${expActual} XP`;
@@ -578,13 +575,9 @@ async function cuidarMascota(accion) {
 
   mascota[campoUltimo] = new Date().toISOString();
   
-  // Sumar 15 de experiencia
   mascota.exp = (mascota.exp || 0) + 15;
-  
-  // Calcular nivel basado en la experiencia total (cada 100 XP sube 1 nivel, empezando en nivel 1)
   mascota.nivel = Math.floor(mascota.exp / 100) + 1;
 
-  // Evolución estricta basada en los niveles solicitados (Nivel 5 y Nivel 16)
   if (mascota.nivel >= 16) {
     mascota.fase = 'adulto';
   } else if (mascota.nivel >= 5) {
