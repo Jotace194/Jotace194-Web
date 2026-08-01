@@ -58,7 +58,7 @@ body{background:var(--negro);color:var(--hueso);font-family:'Segoe UI',sans-seri
 .pet-room {position: relative; width: 100%; height: 580px; background: linear-gradient(to bottom, #141117, #060507); border: 2px solid rgba(255,102,0,0.3); border-radius: 16px; overflow: hidden; box-shadow: inset 0 0 60px rgba(0,0,0,0.85);}
 .room-floor {position: absolute; bottom: 0; width: 100%; height: 80px; background: #1c1717; border-top: 2px solid var(--naranja-oscuro);}
 
-/* CONTENEDOR MÓVIL CON TRANSICIÓN SUAVE PARA MOVIMIENTO ALEATORIO */
+/* CONTENEDOR MÓVIL CON TRANSICIÓN MUY LENTA (8s) */
 .pet-avatar-container {
   position: absolute;
   left: 50%;
@@ -70,7 +70,7 @@ body{background:var(--negro);color:var(--hueso);font-family:'Segoe UI',sans-seri
   display: flex; 
   align-items: center; 
   justify-content: center;
-  transition: transform 3.5s ease-in-out, left 3.5s ease-in-out, top 3.5s ease-in-out;
+  transition: transform 8s ease-in-out, left 8s ease-in-out, top 8s ease-in-out;
 }
 .pet-avatar-container img {width: 190px; height: 190px; object-fit: contain; filter: drop-shadow(0 20px 20px rgba(0,0,0,0.75));}
 
@@ -144,33 +144,33 @@ footer{padding:30px 0;border-top:1px solid rgba(255,102,0,.15);text-align:center
 
       <!-- SECCIÓN PRINCIPAL DE MASCOTAS -->
       <div class="game-section-card">
-        <!-- Vista 1: Selector de 6 Huevos -->
+        <!-- Vista 1: Selector de 6 Huevos (Imágenes separadas para cada opción) -->
         <div id="petSelectorView" class="hidden">
           <h3 style="color: var(--naranja-claro); font-size: 1.1rem; margin-bottom: 10px;">🥚 ELIGE UN HUEVO MISTERIOSO</h3>
           <p style="color: var(--tenue); font-size: 0.88rem; margin-bottom: 20px;">Selecciona uno de los 6 huevos disponibles para incubarlo en tu habitación.</p>
           <div class="egg-selection-grid">
-            <div class="egg-option-card" onclick="adoptarHuevo(1, 'Huevo de Fuego', 'https://oeoujsnnyodrcqeyzcxo.supabase.co/storage/v1/object/public/cartas/carta-1.png')">
-              <img src="https://oeoujsnnyodrcqeyzcxo.supabase.co/storage/v1/object/public/cartas/carta-1.png" alt="Huevo 1" class="egg-option-img">
+            <div class="egg-option-card" onclick="seleccionarTipoHuevo(1)">
+              <img src="https://oeoujsnnyodrcqeyzcxo.supabase.co/storage/v1/object/public/cartas/carta-1.png" alt="Huevo Ígneo" class="egg-option-img">
               <h4 style="color: var(--hueso); font-size: 0.9rem;">Huevo Ígneo</h4>
             </div>
-            <div class="egg-option-card" onclick="adoptarHuevo(2, 'Huevo Pesado', 'https://oeoujsnnyodrcqeyzcxo.supabase.co/storage/v1/object/public/cartas/carta-2.png')">
-              <img src="https://oeoujsnnyodrcqeyzcxo.supabase.co/storage/v1/object/public/cartas/carta-2.png" alt="Huevo 2" class="egg-option-img">
+            <div class="egg-option-card" onclick="seleccionarTipoHuevo(2)">
+              <img src="https://oeoujsnnyodrcqeyzcxo.supabase.co/storage/v1/object/public/cartas/carta-2.png" alt="Huevo Rudo" class="egg-option-img">
               <h4 style="color: var(--hueso); font-size: 0.9rem;">Huevo Rudo</h4>
             </div>
-            <div class="egg-option-card" onclick="adoptarHuevo(3, 'Huevo Mecánico', 'https://oeoujsnnyodrcqeyzcxo.supabase.co/storage/v1/object/public/cartas/carta-6.png')">
-              <img src="https://oeoujsnnyodrcqeyzcxo.supabase.co/storage/v1/object/public/cartas/carta-6.png" alt="Huevo 3" class="egg-option-img">
+            <div class="egg-option-card" onclick="seleccionarTipoHuevo(3)">
+              <img src="https://oeoujsnnyodrcqeyzcxo.supabase.co/storage/v1/object/public/cartas/carta-6.png" alt="Huevo Cibernético" class="egg-option-img">
               <h4 style="color: var(--hueso); font-size: 0.9rem;">Huevo Cibernético</h4>
             </div>
-            <div class="egg-option-card" onclick="adoptarHuevo(4, 'Huevo Sombra', 'https://oeoujsnnyodrcqeyzcxo.supabase.co/storage/v1/object/public/cartas/carta-1.png')">
-              <img src="https://oeoujsnnyodrcqeyzcxo.supabase.co/storage/v1/object/public/cartas/carta-1.png" alt="Huevo 4" class="egg-option-img">
+            <div class="egg-option-card" onclick="seleccionarTipoHuevo(4)">
+              <img src="https://oeoujsnnyodrcqeyzcxo.supabase.co/storage/v1/object/public/cartas/carta-1.png" alt="Huevo Oscuro" class="egg-option-img">
               <h4 style="color: var(--hueso); font-size: 0.9rem;">Huevo Oscuro</h4>
             </div>
-            <div class="egg-option-card" onclick="adoptarHuevo(5, 'Huevo Astral', 'https://oeoujsnnyodrcqeyzcxo.supabase.co/storage/v1/object/public/cartas/carta-2.png')">
-              <img src="https://oeoujsnnyodrcqeyzcxo.supabase.co/storage/v1/object/public/cartas/carta-2.png" alt="Huevo 5" class="egg-option-img">
+            <div class="egg-option-card" onclick="seleccionarTipoHuevo(5)">
+              <img src="https://oeoujsnnyodrcqeyzcxo.supabase.co/storage/v1/object/public/cartas/carta-2.png" alt="Huevo Astral" class="egg-option-img">
               <h4 style="color: var(--hueso); font-size: 0.9rem;">Huevo Astral</h4>
             </div>
-            <div class="egg-option-card" onclick="adoptarHuevo(6, 'Huevo Salvaje', 'https://oeoujsnnyodrcqeyzcxo.supabase.co/storage/v1/object/public/cartas/carta-6.png')">
-              <img src="https://oeoujsnnyodrcqeyzcxo.supabase.co/storage/v1/object/public/cartas/carta-6.png" alt="Huevo 6" class="egg-option-img">
+            <div class="egg-option-card" onclick="seleccionarTipoHuevo(6)">
+              <img src="https://oeoujsnnyodrcqeyzcxo.supabase.co/storage/v1/object/public/cartas/carta-6.png" alt="Huevo Salvaje" class="egg-option-img">
               <h4 style="color: var(--hueso); font-size: 0.9rem;">Huevo Salvaje</h4>
             </div>
           </div>
@@ -180,7 +180,7 @@ footer{padding:30px 0;border-top:1px solid rgba(255,102,0,.15);text-align:center
         <div id="petActiveView" class="hidden">
           <div class="pet-dashboard">
             
-            <!-- HABITACIÓN VISUAL CON MOVIMIENTO ALEATORIO -->
+            <!-- HABITACIÓN VISUAL CON MOVIMIENTO MUY LENTO -->
             <div class="pet-room" id="petRoom">
               <div class="room-floor"></div>
               <div class="pet-avatar-container" id="petContainer">
@@ -237,6 +237,60 @@ document.getElementById('navToggle').addEventListener('click', () => {
 
 let currentUserData = null;
 let petMovementInterval = null;
+
+// ==========================================
+// CONFIGURACIÓN AISLADA DE CADA BESTIA Y HUEVO
+// ==========================================
+const BASE_DE_DATOS_BESTIAS = {
+  1: {
+    nombreBase: "Huevo Ígneo",
+    faseHuevoImg: "https://oeoujsnnyodrcqeyzcxo.supabase.co/storage/v1/object/public/cartas/carta-1.png",
+    faseCachorroNombre: "Cachorro de Fuego",
+    faseCachorroImg: "https://oeoujsnnyodrcqeyzcxo.supabase.co/storage/v1/object/public/cartas/carta-2.png",
+    faseAdultoNombre: "Dragón Ígneo Supremo",
+    faseAdultoImg: "https://oeoujsnnyodrcqeyzcxo.supabase.co/storage/v1/object/public/cartas/carta-1.png"
+  },
+  2: {
+    nombreBase: "Huevo Rudo",
+    faseHuevoImg: "https://oeoujsnnyodrcqeyzcxo.supabase.co/storage/v1/object/public/cartas/carta-2.png",
+    faseCachorroNombre: "Bestia Pesada Junior",
+    faseCachorroImg: "https://oeoujsnnyodrcqeyzcxo.supabase.co/storage/v1/object/public/cartas/carta-6.png",
+    faseAdultoNombre: "Titán Acorazado",
+    faseAdultoImg: "https://oeoujsnnyodrcqeyzcxo.supabase.co/storage/v1/object/public/cartas/carta-2.png"
+  },
+  3: {
+    nombreBase: "Huevo Cibernético",
+    faseHuevoImg: "https://oeoujsnnyodrcqeyzcxo.supabase.co/storage/v1/object/public/cartas/carta-6.png",
+    faseCachorroNombre: "Androide Alfa",
+    faseCachorroImg: "https://oeoujsnnyodrcqeyzcxo.supabase.co/storage/v1/object/public/cartas/carta-1.png",
+    faseAdultoNombre: "Mecabestia Omega",
+    faseAdultoImg: "https://oeoujsnnyodrcqeyzcxo.supabase.co/storage/v1/object/public/cartas/carta-6.png"
+  },
+  4: {
+    nombreBase: "Huevo Oscuro",
+    faseHuevoImg: "https://oeoujsnnyodrcqeyzcxo.supabase.co/storage/v1/object/public/cartas/carta-1.png",
+    faseCachorroNombre: "Sombra Menor",
+    faseCachorroImg: "https://oeoujsnnyodrcqeyzcxo.supabase.co/storage/v1/object/public/cartas/carta-2.png",
+    faseAdultoNombre: "Señor de las Sombras",
+    faseAdultoImg: "https://oeoujsnnyodrcqeyzcxo.supabase.co/storage/v1/object/public/cartas/carta-1.png"
+  },
+  5: {
+    nombreBase: "Huevo Astral",
+    faseHuevoImg: "https://oeoujsnnyodrcqeyzcxo.supabase.co/storage/v1/object/public/cartas/carta-2.png",
+    faseCachorroNombre: "Espíritu Estelar",
+    faseCachorroImg: "https://oeoujsnnyodrcqeyzcxo.supabase.co/storage/v1/object/public/cartas/carta-6.png",
+    faseAdultoNombre: "Avatar Cósmico",
+    faseAdultoImg: "https://oeoujsnnyodrcqeyzcxo.supabase.co/storage/v1/object/public/cartas/carta-2.png"
+  },
+  6: {
+    nombreBase: "Huevo Salvaje",
+    faseHuevoImg: "https://oeoujsnnyodrcqeyzcxo.supabase.co/storage/v1/object/public/cartas/carta-6.png",
+    faseCachorroNombre: "Bestia de la Pradera",
+    faseCachorroImg: "https://oeoujsnnyodrcqeyzcxo.supabase.co/storage/v1/object/public/cartas/carta-1.png",
+    faseAdultoNombre: "Depredador Alfa Salvaje",
+    faseAdultoImg: "https://oeoujsnnyodrcqeyzcxo.supabase.co/storage/v1/object/public/cartas/carta-6.png"
+  }
+};
 
 const TWITCH_CLIENT_ID = 'gcykx8eznq8gex7rgm0ebihs2k9q5h'; 
 const REDIRECT_URI = window.location.origin + window.location.pathname;
@@ -341,13 +395,14 @@ if (logoutBtn) {
 }
 
 // --- LÓGICA DE HUEVOS Y HABITACIÓN ---
-async function adoptarHuevo(tipoId, nombreHuevo, imagenUrl) {
+async function seleccionarTipoHuevo(tipoId) {
   if (!currentUserData) return;
+
+  const configBestia = BASE_DE_DATOS_BESTIAS[tipoId];
+  if (!configBestia) return;
 
   const mascotaInicial = {
     tipoId: tipoId,
-    nombre: nombreHuevo,
-    imagen: imagenUrl,
     fase: 'huevo', 
     cuidadosCount: 0,
     hambre: 100,
@@ -384,12 +439,24 @@ function actualizarInterfazMascota() {
     activeView.classList.remove('hidden');
 
     const mascota = currentUserData.mascota_data;
-    document.getElementById('petName').textContent = mascota.nombre;
-    document.getElementById('petImg').src = mascota.imagen;
+    const configBestia = BASE_DE_DATOS_BESTIAS[mascota.tipoId];
 
+    let nombreActual = configBestia.nombreBase;
+    let imagenActual = configBestia.faseHuevoImg;
     let textoFase = "Fase: 🥚 Huevo (Incubando)";
-    if (mascota.fase === 'cachorro') textoFase = "Fase: 🐾 Cachorro";
-    if (mascota.fase === 'adulto') textoFase = "Fase: 🐉 Bestia Adulta";
+
+    if (mascota.fase === 'cachorro') {
+      nombreActual = configBestia.faseCachorroNombre;
+      imagenActual = configBestia.faseCachorroImg;
+      textoFase = "Fase: 🐾 Cachorro";
+    } else if (mascota.fase === 'adulto') {
+      nombreActual = configBestia.faseAdultoNombre;
+      imagenActual = configBestia.faseAdultoImg;
+      textoFase = "Fase: 🐉 Bestia Adulta";
+    }
+
+    document.getElementById('petName').textContent = nombreActual;
+    document.getElementById('petImg').src = imagenActual;
     document.getElementById('petStageLabel').textContent = textoFase;
 
     document.getElementById('hambreText').textContent = mascota.hambre + '%';
@@ -401,26 +468,24 @@ function actualizarInterfazMascota() {
     document.getElementById('felicidadText').textContent = mascota.felicidad + '%';
     document.getElementById('felicidadBar').style.width = mascota.felicidad + '%';
 
-    // Iniciar movimiento aleatorio dentro de la habitación si no está activo
+    // Iniciar movimiento aleatorio muy lento si no está activo
     if (!petMovementInterval) {
-      iniciarMovimientoAleatorio();
+      iniciarMovimientoAleatorioLento();
     }
   }
 }
 
-function iniciarMovimientoAleatorio() {
+function iniciarMovimientoAleatorioLento() {
   const room = document.getElementById('petRoom');
   const pet = document.getElementById('petContainer');
   if (!room || !pet) return;
 
-  function moverBestia() {
-    // Dimensiones de la habitación y de la mascota
+  function moverBestiaLento() {
     const roomWidth = room.clientWidth;
     const roomHeight = room.clientHeight;
     const petWidth = pet.clientWidth;
     const petHeight = pet.clientHeight;
 
-    // Calcular límites aleatorios seguros para que no se salgan de los bordes
     const minX = petWidth / 2 + 20;
     const maxX = roomWidth - (petWidth / 2) - 20;
     const minY = petHeight / 2 + 20;
@@ -429,7 +494,6 @@ function iniciarMovimientoAleatorio() {
     const randomX = Math.random() * (maxX - minX) + minX;
     const randomY = Math.random() * (maxY - minY) + minY;
 
-    // Aplicar la nueva posición en porcentaje respecto al contenedor de la habitación
     const percentX = (randomX / roomWidth) * 100;
     const percentY = (randomY / roomHeight) * 100;
 
@@ -438,9 +502,9 @@ function iniciarMovimientoAleatorio() {
     pet.style.transform = 'translate(-50%, -50%)';
   }
 
-  // Mover inmediatamente al cargar y luego cada 4 segundos de forma aleatoria
-  moverBestia();
-  petMovementInterval = setInterval(moverBestia, 4000);
+  moverBestiaLento();
+  // Se mueve cada 7 segundos para que sea un desplazamiento pausado y lento
+  petMovementInterval = setInterval(moverBestiaLento, 7000);
 }
 
 async function cuidarMascota(accion) {
@@ -473,10 +537,8 @@ async function cuidarMascota(accion) {
 
   if (mascota.fase === 'huevo' && mascota.cuidadosCount >= 5) {
     mascota.fase = 'cachorro';
-    mascota.nombre = "Cachorro de Bestia";
   } else if (mascota.fase === 'cachorro' && mascota.cuidadosCount >= 12) {
     mascota.fase = 'adulto';
-    mascota.nombre = "Bestia Suprema";
   }
 
   const nuevosPuntos = currentUserData.points + 30;
@@ -484,7 +546,7 @@ async function cuidarMascota(accion) {
   const { error } = await supabaseClient
     .from('usuarios_twitch')
     .update({ 
-      points: novosPuntos = nuevosPuntos,
+      points: nuevosPuntos,
       mascota_data: mascota 
     })
     .eq('twitch_id', currentUserData.twitch_id);
