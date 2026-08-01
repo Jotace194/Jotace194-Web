@@ -86,7 +86,6 @@ body{background:var(--negro);color:var(--hueso);font-family:'Segoe UI',sans-seri
   height: 25px;
   object-fit: contain;
   cursor: pointer;
-  z-index: 3;
   filter: drop-shadow(0 5px 5px rgba(0,0,0,0.6));
   transition: transform 0.2s ease;
   animation: aparecerCaca 0.3s ease-out;
@@ -455,7 +454,7 @@ async function seleccionarTipoHuevo(tipoId) {
     hambre: 100,
     limpieza: 100,
     felicidad: 100,
-    poops: [], // Almacena las posiciones de las cacas [{x, y}]
+    poops: [], 
     ultimo_alimentar: null,
     ultimo_limpiar: null,
     ultimo_jugar: null
@@ -491,7 +490,6 @@ function actualizarInterfazMascota() {
     const mascota = currentUserData.mascota_data;
     const configBestia = BASE_DE_DATOS_BESTIAS[mascota.tipoId];
 
-    // Asegurarse de que el array poops exista
     if (!mascota.poops) mascota.poops = [];
 
     let nombreActual = configBestia.nombreBase;
@@ -524,7 +522,6 @@ function actualizarInterfazMascota() {
     document.getElementById('felicidadText').textContent = mascota.felicidad + '%';
     document.getElementById('felicidadBar').style.width = mascota.felicidad + '%';
 
-    // Renderizar cacas guardadas en la habitación
     renderizarCacasEnHabitacion();
 
     if (mascota.fase === 'huevo') {
@@ -579,15 +576,15 @@ function iniciarMovimientoHorizontal() {
 
     lastPositionX = percentX;
     petContainer.style.left = percentX + '%';
+
+    renderizarCacasEnHabitacion();
   }
 
   moverHorizontal();
   petMovementInterval = setInterval(moverHorizontal, 8000);
 }
 
-// Generar cacas de forma periódica si la bestia es cachorro o adulto
 function iniciarGeneradorDeCacas() {
-  // Comprueba cada 45 segundos si debe dejar una caca (si hay menos de 2)
   poopCheckInterval = setInterval(async () => {
     if (!currentUserData || !currentUserData.mascota_data) return;
     const mascota = currentUserData.mascota_data;
@@ -595,15 +592,12 @@ function iniciarGeneradorDeCacas() {
     if (mascota.fase === 'huevo') return;
     if (!mascota.poops) mascota.poops = [];
 
-    // Máximo 3 cacas a la vez en la habitación
     if (mascota.poops.length < 3) {
-      // Generar posición aleatoria dentro del suelo de la habitación (porcentaje)
-      const randomX = Math.floor(Math.random() * 50) + 10; // entre 10% y 90% de ancho
-      const randomY = Math.floor(Math.random() * 40) + 70; // entre 60% y 90% de alto (parte inferior)
+      const randomX = Math.floor(Math.random() * 80) + 10; 
+      const randomY = Math.floor(Math.random() * 50) + 40; 
 
       mascota.poops.push({ id: Date.now() + Math.random(), x: randomX, y: randomY });
 
-      // Guardar en Supabase
       await supabaseClient
         .from('usuarios_twitch')
         .update({ mascota_data: mascota })
@@ -616,23 +610,31 @@ function iniciarGeneradorDeCacas() {
 
 function renderizarCacasEnHabitacion() {
   const room = document.getElementById('petRoom');
-  if (!room) return;
+  const petContainer = document.getElementById('petContainer');
+  if (!room || !petContainer) return;
 
-  // Eliminar elementos de caca existentes para volver a pintar
   document.querySelectorAll('.room-poop').forEach(el => el.remove());
 
   const mascota = currentUserData?.mascota_data;
   if (!mascota || !mascota.poops || mascota.fase === 'huevo') return;
 
-  mascota.poops.forEach((poopObj, index) => {
+  const petTopPercent = parseFloat(petContainer.style.top) || 90;
+
+  mascota.poops.forEach((poopObj) => {
     const poopImg = document.createElement('img');
-    poopImg.src = 'https://oeoujsnnyodrcqeyzcxo.supabase.co/storage/v1/object/public/cartas/caca-1.png'; // Puedes cambiar esta URL por una imagen específica de caca si la tienes
+    poopImg.src = 'https://oeoujsnnyodrcqeyzcxo.supabase.co/storage/v1/object/public/cartas/caca-1.png';
     poopImg.alt = 'Caca';
     poopImg.className = 'room-poop';
     poopImg.style.left = poopObj.x + '%';
     poopImg.style.top = poopObj.y + '%';
 
-    // Al hacer click en la caca
+    // Lógica dinámica de profundidad (z-index) según la posición vertical
+    if (poopObj.y < petTopPercent) {
+      poopImg.style.zIndex = '1'; // Detrás de la bestia
+    } else {
+      poopImg.style.zIndex = '3'; // Delante de la bestia
+    }
+
     poopImg.addEventListener('click', async (e) => {
       e.stopPropagation();
       await limpiarCacaIndividual(poopObj.id);
@@ -648,10 +650,8 @@ async function limpiarCacaIndividual(poopId) {
 
   if (!mascota.poops) return;
 
-  // Filtrar la caca clickeada
   mascota.poops = mascota.poops.filter(p => p.id !== poopId);
 
-  // Dar 5 de experiencia y recalcular nivel
   mascota.exp = (mascota.exp || 0) + 5;
   mascota.nivel = Math.floor(mascota.exp / 100) + 1;
 
@@ -663,7 +663,6 @@ async function limpiarCacaIndividual(poopId) {
     mascota.fase = 'huevo';
   }
 
-  // Actualizar en Supabase
   const { error } = await supabaseClient
     .from('usuarios_twitch')
     .update({ mascota_data: mascota })
