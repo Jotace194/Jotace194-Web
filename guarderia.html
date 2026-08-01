@@ -59,7 +59,7 @@ body{background:var(--negro);color:var(--hueso);font-family:'Segoe UI',sans-seri
 /* HABITACIÓN DE LA BESTIA */
 .pet-room {position: relative; width: 100%; height: 580px; background: linear-gradient(rgba(6, 5, 7, 0.4), rgba(6, 5, 7, 0.7)), url('https://oeoujsnnyodrcqeyzcxo.supabase.co/storage/v1/object/public/cartas/fondo-guarderia.png'); background-size: cover; background-position: center; border: 2px solid rgba(255,102,0,0.3); border-radius: 16px; overflow: hidden; box-shadow: inset 0 0 60px rgba(0,0,0,0.85);}
 
-/* CONTENEDOR MÓVIL CENTRADO PERFECTAMENTE */
+/* CONTENEDOR MÓVIL CON GIRO FLUIDO */
 .pet-avatar-container {
   position: absolute;
   left: 50%;
@@ -71,14 +71,13 @@ body{background:var(--negro);color:var(--hueso);font-family:'Segoe UI',sans-seri
   display: flex; 
   align-items: center; 
   justify-content: center;
-  transition: left 8s ease-in-out;
+  transition: left 8s ease-in-out, transform 0.6s ease-in-out;
 }
 .pet-avatar-container img, .pet-avatar-container model-viewer {
-  width: 200px; 
-  height: 200px; 
+  width: 220px; 
+  height: 220px; 
   object-fit: contain; 
   filter: drop-shadow(0 20px 20px rgba(0,0,0,0.75));
-  transition: transform 0.3s ease;
   background-color: transparent;
 }
 
@@ -205,7 +204,6 @@ footer{padding:30px 0;border-top:1px solid rgba(255,102,0,.15);text-align:center
             <!-- HABITACIÓN VISUAL CENTRADA -->
             <div class="pet-room" id="petRoom">
               <div class="pet-avatar-container" id="petContainer">
-                <!-- Se inyectará dinámicamente imagen de huevo o model-viewer de .glb -->
                 <div id="petVisualContent"></div>
               </div>
             </div>
@@ -459,12 +457,13 @@ function actualizarInterfazMascota() {
       }
       limpiarIntervalosMovimiento();
       petContainer.style.left = '50%';
+      petContainer.style.transform = 'translate(-50%, -50%) rotateY(0deg)';
     } else {
       const animalAsignado = BANCO_24_ANIMALES[mascota.animalIndex] || BANCO_24_ANIMALES[0];
       document.getElementById('petName').textContent = animalAsignado.nombre;
       document.getElementById('petStageLabel').textContent = "Fase: 🐉 Criatura Definitiva";
 
-if (!visualContent.querySelector('model-viewer')) {
+      if (!visualContent.querySelector('model-viewer')) {
         visualContent.innerHTML = `
           <model-viewer 
             id="petModel"
@@ -521,8 +520,7 @@ function limpiarIntervalosMovimiento() {
 function iniciarMovimientoHorizontal() {
   const room = document.getElementById('petRoom');
   const petContainer = document.getElementById('petContainer');
-  const visualContent = document.getElementById('petVisualContent');
-  if (!room || !petContainer || !visualContent) return;
+  if (!room || !petContainer) return;
 
   function moverHorizontal() {
     const roomWidth = room.clientWidth;
@@ -534,14 +532,20 @@ function iniciarMovimientoHorizontal() {
     const randomX = Math.random() * (maxX - minX) + minX;
     const percentX = (randomX / roomWidth) * 100;
 
-    if (percentX < lastPositionX) {
-      visualContent.style.transform = 'translate(-50%, -50%) scaleX(1)';
-    } else {
-      visualContent.style.transform = 'translate(-50%, -50%) scaleX(-1)';
-    }
+    const caminaHaciaLaDerecha = percentX > lastPositionX;
+    const anguloGiro = caminaHaciaLaDerecha ? 35 : -35;
+    
+    petContainer.style.transform = `translate(-50%, -50%) rotateY(${anguloGiro}deg)`;
 
     lastPositionX = percentX;
     petContainer.style.left = percentX + '%';
+
+    setTimeout(() => {
+      if (petContainer) {
+        const giroFrontal = caminaHaciaLaDerecha ? 15 : -15;
+        petContainer.style.transform = `translate(-50%, -50%) rotateY(${giroFrontal}deg)`;
+      }
+    }, 4000);
 
     renderizarCacasEnHabitacion();
   }
