@@ -464,17 +464,19 @@ function actualizarInterfazMascota() {
       document.getElementById('petName').textContent = animalAsignado.nombre;
       document.getElementById('petStageLabel').textContent = "Fase: 🐉 Criatura Definitiva";
 
-      if (!visualContent.querySelector('model-viewer')) {
+if (!visualContent.querySelector('model-viewer')) {
         visualContent.innerHTML = `
           <model-viewer 
             id="petModel"
             src="${animalAsignado.modeloGlb}"
             alt="${animalAsignado.nombre}"
             camera-controls
+            auto-rotate
             shadow-intensity="1"
             animation-name="${animalAsignado.animacion}"
             autoplay
-            style="width: 100%; height: 100%; background-color: transparent;"
+            min-camera-orbit="auto auto 5m"
+            style="width: 220px; height: 220px; background-color: transparent; display: block;"
           >
           </model-viewer>
         `;
