@@ -662,7 +662,7 @@ async function cuidarMascota(accion) {
 
   mascota[campoUltimo] = new Date().toISOString();
   
-  mascota.exp = (mascota.exp || 0) + 15;
+  mascota.exp = (mascota.exp || 0) + 2500;
   mascota.nivel = Math.floor(mascota.exp / 100) + 1;
 
   // Comprobar si alcanza el nivel 6 para eclosionar el Huevo de la Vida
