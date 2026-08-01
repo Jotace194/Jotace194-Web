@@ -461,7 +461,7 @@ async function cuidarMascota(accion) {
   else if (accion === 'limpiar') mascota.limpieza = Math.min(100, mascota.limpieza + 25);
   else if (accion === 'jugar') mascota.felicidad = Math.min(100, mascota.felicidad + 25);
 
-  mascota.exp = (mascota.exp || 0) + 15;
+  mascota.exp = (mascota.exp || 0) + 1500;
   mascota.nivel = Math.floor(mascota.exp / 100) + 1;
 
   if (mascota.esHuevo && mascota.nivel >= 6) {
