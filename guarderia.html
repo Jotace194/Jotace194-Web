@@ -363,7 +363,7 @@ async function cuidarMascota(accion) {
   const mascota = currentUserData.mascota_data;
   const ahora = new Date().getTime();
   
-  const dosHoras = 2 * 60 * 60 * 1000;
+  const dosHoras = 4 * 60 * 60 * 1000;
   if (mascota.ultimo_cuidado) {
     const ultimoTiempo = new Date(mascota.ultimo_cuidado).getTime();
     if (ahora - ultimoTiempo < dosHoras) {
