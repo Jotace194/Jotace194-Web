@@ -61,7 +61,6 @@ body{background:var(--negro);color:var(--hueso);font-family:'Segoe UI',sans-seri
 /* ÁLBUM: Rejilla adaptada */
 .album-grid{display:grid;grid-template-columns:repeat(auto-fill, minmax(170px, 1fr));gap:35px 20px;margin-top:25px;}
 
-/* Contenedor individual: agrupa el marco y deja el texto fuera abajo */
 .album-slot-wrapper{
   display: flex;
   flex-direction: column;
@@ -69,14 +68,13 @@ body{background:var(--negro);color:var(--hueso);font-family:'Segoe UI',sans-seri
   text-align: center;
 }
 
-/* MARCO DE LA CARTA (Más grande que la imagen gracias al padding) */
 .album-card{
   width: 170px;
   height: 245px;
   background: var(--carbon-claro);
   border-radius: 14px;
   border: 3px solid var(--tenue);
-  padding: 10px; /* Margen interior para que el marco sea físicamente más grande que la imagen */
+  padding: 10px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -92,7 +90,6 @@ body{background:var(--negro);color:var(--hueso);font-family:'Segoe UI',sans-seri
   opacity: 0.3;
 }
 
-/* La imagen ocupa el espacio interior del marco dejando ver el borde */
 .card-real-img {
   width: 100%;
   height: 100%;
@@ -101,7 +98,6 @@ body{background:var(--negro);color:var(--hueso);font-family:'Segoe UI',sans-seri
   display: block;
 }
 
-/* TEXTOS Y CANTIDAD FUERA DE LA CARTA */
 .card-meta-outside {
   margin-top: 10px;
   display: flex;
@@ -222,7 +218,7 @@ footer{padding:30px 0;border-top:1px solid rgba(255,102,0,.15);text-align:center
           <!-- BLOQUE IZQUIERDA: Canjear Código -->
           <div class="reward-box">
             <h4 style="font-size: 0.95rem; color: var(--hueso); margin-bottom: 6px;">Canjear Código</h4>
-            <p style="color: var(--tenue); font-size: 0.8rem; margin-bottom: 12px;">Introduce un código promocional del canal.</p>
+            <p style="color: var(--tenue); font-size: 0.8rem; margin-bottom: 12px;">Introduce un código único obtenido en los puntos de canal de Twitch.</p>
             <div style="display: flex; gap: 10px;">
               <input type="text" id="redeemCodeInput" placeholder="Introduce tu código..." style="flex: 1; background: var(--carbon-claro); border: 1px solid rgba(255,102,0,0.3); padding: 9px 12px; border-radius: 8px; color: var(--hueso); outline: none; font-size: 0.85rem;">
               <button id="redeemBtn" style="background: var(--naranja); color: white; border: none; padding: 9px 16px; border-radius: 8px; font-weight: 700; cursor: pointer; font-size: 0.85rem;">Canjear</button>
@@ -234,7 +230,7 @@ footer{padding:30px 0;border-top:1px solid rgba(255,102,0,.15);text-align:center
           <div class="reward-box">
             <h4 style="font-size: 0.95rem; color: var(--hueso); margin-bottom: 6px;">Recompensa Diaria</h4>
             <p style="color: var(--tenue); font-size: 0.8rem; margin-bottom: 12px;">Reclama puntos gratis cada 24 horas.</p>
-            <button id="dailyClaimBtn" style="background: var(--turquesa); color: var(--negro); border: none; padding: 10px 16px; border-radius: 8px; font-weight: 700; cursor: pointer; width: 100%; font-size: 0.9rem; transition: opacity 0.2s;">Reclamar 100 Puntos</button>
+            <button id="dailyClaimBtn" style="background: var(--turquesa); color: var(--negro); border: none; padding: 10px 16px; border-radius: 8px; font-weight: 700; cursor: pointer; width: 100%; font-size: 0.9rem; transition: opacity 0.2s;">Reclamar 250 Puntos</button>
             <p id="dailyMessage" style="font-size: 0.8rem; margin-top: 8px; color: var(--turquesa); text-align: center;"></p>
           </div>
         </div>
@@ -395,43 +391,75 @@ document.getElementById('logoutBtn').addEventListener('click', () => {
   window.location.href = window.location.pathname;
 });
 
-// Códigos de canje
-const CODIGOS_VALIDOS = { "TWITCH500-ABC": 500, "TWITCH1000-XYZ": 1000 };
-
+// SISTEMA DE CÓDIGOS DINÁMICOS CONECTADOS A SUPABASE
 document.getElementById('redeemBtn').addEventListener('click', async () => {
-  const inputCode = document.getElementById('redeemCodeInput').value.trim();
+  const inputCode = document.getElementById('redeemCodeInput').value.trim().toUpperCase();
   const msgEl = document.getElementById('redeemMessage');
 
-  if (!inputCode) return;
-  let codigosUsados = JSON.parse(localStorage.getItem('jotace_codigos_usados')) || [];
-
-  if (codigosUsados.includes(inputCode)) {
+  if (!inputCode) {
     msgEl.style.color = "#FF6B6B";
-    msgEl.textContent = "Este código ya ha sido canjeado.";
+    msgEl.textContent = "Introduce un código válido.";
     return;
   }
 
-  if (CODIGOS_VALIDOS.hasOwnProperty(inputCode)) {
-    const puntosGanados = CODIGOS_VALIDOS[inputCode];
-    const nuevosPuntos = currentUserData.points + puntosGanados;
+  try {
+    // 1. Buscar el código en la tabla 'codigos_canje' de Supabase
+    const { data: codigoData, error: codigoError } = await supabaseClient
+      .from('codigos_canje')
+      .select('*')
+      .eq('codigo', inputCode)
+      .single();
 
-    const { error } = await supabaseClient
+    if (codigoError || !codigoData) {
+      msgEl.style.color = "#FF6B6B";
+      msgEl.textContent = "El código no existe o es incorrecto.";
+      return;
+    }
+
+    // 2. Verificar si ya fue usado
+    if (codigoData.usado) {
+      msgEl.style.color = "#FF6B6B";
+      msgEl.textContent = "Este código ya ha sido canjeado anteriormente.";
+      return;
+    }
+
+    // 3. Marcar el código como usado en la base de datos
+    const { error: updateCodeError } = await supabaseClient
+      .from('codigos_canje')
+      .update({ usado: true, usado_por: currentUserData.username })
+      .eq('id', codigoData.id);
+
+    if (updateCodeError) {
+      msgEl.style.color = "#FF6B6B";
+      msgEl.textContent = "Error al procesar el código. Inténtalo de nuevo.";
+      return;
+    }
+
+    // 4. Sumar los puntos al usuario actual
+    const nuevosPuntos = currentUserData.points + codigoData.puntos;
+    const { error: updateUserError } = await supabaseClient
       .from('usuarios_twitch')
       .update({ points: nuevosPuntos })
       .eq('twitch_id', currentUserData.twitch_id);
 
-    if (!error) {
-      currentUserData.points = nuevosPuntos;
-      codigosUsados.push(inputCode);
-      localStorage.setItem('jotace_codigos_usados', JSON.stringify(codigosUsados));
-      actualizarInterfazUsuario();
-      msgEl.style.color = "#8AE6DF";
-      msgEl.textContent = `¡Éxito! +${puntosGanados} puntos añadidos.`;
-      document.getElementById('redeemCodeInput').value = "";
+    if (updateUserError) {
+      msgEl.style.color = "#FF6B6B";
+      msgEl.textContent = "Error al actualizar tus puntos.";
+      return;
     }
-  } else {
+
+    // Actualizar estado local y UI
+    currentUserData.points = nuevosPuntos;
+    actualizarInterfazUsuario();
+
+    msgEl.style.color = "#8AE6DF";
+    msgEl.textContent = `¡Éxito! Has reclamado +${codigoData.puntos} puntos.`;
+    document.getElementById('redeemCodeInput').value = "";
+
+  } catch (err) {
+    console.error("Error al canjear:", err);
     msgEl.style.color = "#FF6B6B";
-    msgEl.textContent = "Código no válido.";
+    msgEl.textContent = "Ocurrió un error inesperado.";
   }
 });
 
@@ -499,63 +527,63 @@ const CATALOGO_CARTAS = [
     id: "c1", 
     name: "Bronce", 
     rarity: "Común", 
-    image: "https://oeoujsnnyodrcqeyzcxo.supabase.co/storage/v1/object/public/cartas/carta-1.png", // <--- Tu enlace aquí
+    image: "https://oeoujsnnyodrcqeyzcxo.supabase.co/storage/v1/object/public/cartas/carta-1.png", 
     color: "#8C827A" 
   },
   { 
     id: "c2", 
     name: "Buu", 
     rarity: "Común", 
-    image: "https://oeoujsnnyodrcqeyzcxo.supabase.co/storage/v1/object/public/cartas/carta-2.png", // <--- Tu enlace aquí
+    image: "https://oeoujsnnyodrcqeyzcxo.supabase.co/storage/v1/object/public/cartas/carta-2.png", 
     color: "#8C827A" 
   },
   { 
     id: "c3", 
     name: "Perdedor", 
     rarity: "Raro", 
-    image: "https://oeoujsnnyodrcqeyzcxo.supabase.co/storage/v1/object/public/cartas/carta-3.png", // <--- Tu enlace aquí
+    image: "https://oeoujsnnyodrcqeyzcxo.supabase.co/storage/v1/object/public/cartas/carta-3.png", 
     color: "#249908" 
   },
     { 
     id: "c4", 
     name: "Sin Comer", 
     rarity: "Épico", 
-    image: "https://oeoujsnnyodrcqeyzcxo.supabase.co/storage/v1/object/public/cartas/carta-4.png", // <--- Tu enlace aquí
+    image: "https://oeoujsnnyodrcqeyzcxo.supabase.co/storage/v1/object/public/cartas/carta-4.png", 
     color: "#4A90E2" 
   },
   { 
     id: "c5", 
     name: "Michael Miller", 
     rarity: "Raro", 
-    image: "https://oeoujsnnyodrcqeyzcxo.supabase.co/storage/v1/object/public/cartas/carta-5.png", // <--- Tu enlace aquí
+    image: "https://oeoujsnnyodrcqeyzcxo.supabase.co/storage/v1/object/public/cartas/carta-5.png", 
     color: "#249908" 
   },
   { 
     id: "c6", 
     name: "Jotace Camionero", 
     rarity: "Común", 
-    image: "https://oeoujsnnyodrcqeyzcxo.supabase.co/storage/v1/object/public/cartas/carta-6.png", // <--- Tu enlace aquí
+    image: "https://oeoujsnnyodrcqeyzcxo.supabase.co/storage/v1/object/public/cartas/carta-6.png", 
     color: "#8C827A" 
   },
   { 
     id: "c7", 
     name: "Martillazo", 
     rarity: "Legendario", 
-    image: "https://oeoujsnnyodrcqeyzcxo.supabase.co/storage/v1/object/public/cartas/carta-7.png", // <--- Tu enlace aquí
+    image: "https://oeoujsnnyodrcqeyzcxo.supabase.co/storage/v1/object/public/cartas/carta-7.png", 
     color: "#D6AA06" 
   },
   { 
     id: "c8", 
     name: "España", 
     rarity: "Legendario", 
-    image: "https://oeoujsnnyodrcqeyzcxo.supabase.co/storage/v1/object/public/cartas/carta-8.png", // <--- Tu enlace aquí
+    image: "https://oeoujsnnyodrcqeyzcxo.supabase.co/storage/v1/object/public/cartas/carta-8.png", 
     color: "#D6AA06" 
   },
   { 
     id: "c9", 
     name: "SJotace Roleador", 
     rarity: "Épico", 
-    image: "https://oeoujsnnyodrcqeyzcxo.supabase.co/storage/v1/object/public/cartas/carta-9.png", // <--- Tu enlace aquí
+    image: "https://oeoujsnnyodrcqeyzcxo.supabase.co/storage/v1/object/public/cartas/carta-9.png", 
     color: "#4A90E2" 
   }
 ];
@@ -612,7 +640,7 @@ function obtenerCartaPorProbabilidad(probabilidades) {
   const cartasDeRareza = CATALOGO_CARTAS.filter(c => c.rarity === rarezaSeleccionada);
   if (cartasDeRareza.length === 0) return CATALOGO_CARTAS[0];
 
-  return cartasDeRareza[Math.floor(Math.random() * cartasDeRareza.length)];
+  return cartasDeParaRareza = cartasDeRareza[Math.floor(Math.random() * cartasDeRareza.length)];
 }
 
 async function abrirSobre(coste, probabilidades) {
@@ -629,7 +657,19 @@ async function abrirSobre(coste, probabilidades) {
   let cartasObtenidas = [];
 
   for (let i = 0; i < 3; i++) {
-    const carta = obtenerCartaPorProbabilidad(probabilidades);
+    const rand = Math.random() * 100;
+    let acumulado = 0;
+    let rarezaSeleccionada = "Común";
+    for (const [rareza, porcentaje] of Object.entries(probabilidades)) {
+      acumulado += porcentaje;
+      if (rand <= acumulado) {
+        rarezaSeleccionada = rareza;
+        break;
+      }
+    }
+    const cartasDeRareza = CATALOGO_CARTAS.filter(c => c.rarity === rarezaSeleccionada);
+    const carta = cartasDeRareza[Math.floor(Math.random() * cartasDeRareza.length)] || CATALOGO_CARTAS[0];
+    
     cartasObtenidas.push(carta);
     coleccionActual[carta.id] = (coleccionActual[carta.id] || 0) + 1;
   }
