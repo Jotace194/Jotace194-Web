@@ -628,7 +628,7 @@ async function abrirSobre(coste, probabilidades) {
   const coleccionActual = currentUserData.collection || {};
   let cartasObtenidas = [];
 
-  for (let i = 0; i < 5; i++) {
+  for (let i = 0; i < 3; i++) {
     const carta = obtenerCartaPorProbabilidad(probabilidades);
     cartasObtenidas.push(carta);
     coleccionActual[carta.id] = (coleccionActual[carta.id] || 0) + 1;
