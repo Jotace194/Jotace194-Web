@@ -57,12 +57,12 @@ body{background:var(--negro);color:var(--hueso);font-family:'Segoe UI',sans-seri
 /* HABITACIÓN DE LA BESTIA */
 .pet-room {position: relative; width: 100%; height: 580px; background: linear-gradient(rgba(6, 5, 7, 0.4), rgba(6, 5, 7, 0.7)), url('https://oeoujsnnyodrcqeyzcxo.supabase.co/storage/v1/object/public/cartas/fondo-guarderia.png'); background-size: cover; background-position: center; border: 2px solid rgba(255,102,0,0.3); border-radius: 16px; overflow: hidden; box-shadow: inset 0 0 60px rgba(0,0,0,0.85);}
 
-/* CONTENEDOR MÓVIL HORIZONTAL (Ajustado a -20px porque se quitó el suelo de 80px) */
+/* CONTENEDOR MÓVIL CENTRADO PERFECTAMENTE */
 .pet-avatar-container {
   position: absolute;
   left: 50%;
-  bottom: 30px; 
-  transform: translateX(-50%);
+  top: 50%;
+  transform: translate(-50%, -50%);
   width: 220px; 
   height: 220px; 
   z-index: 2; 
@@ -79,13 +79,34 @@ body{background:var(--negro);color:var(--hueso);font-family:'Segoe UI',sans-seri
   transition: transform 0.3s ease;
 }
 
+/* ESTILOS PARA LAS CACAS EN LA HABITACIÓN */
+.room-poop {
+  position: absolute;
+  width: 45px;
+  height: 45px;
+  object-fit: contain;
+  cursor: pointer;
+  z-index: 3;
+  filter: drop-shadow(0 5px 5px rgba(0,0,0,0.6));
+  transition: transform 0.2s ease;
+  animation: aparecerCaca 0.3s ease-out;
+}
+.room-poop:hover {
+  transform: scale(1.15);
+}
+
+@keyframes aparecerCaca {
+  0% { transform: scale(0); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
 /* ANIMACIÓN DE TAMBALEO PARA EL HUEVO */
 @keyframes tambalearHuevo {
-  0% { transform: translateX(-50%) rotate(0deg); }
-  25% { transform: translateX(-50%) rotate(-8deg); }
-  50% { transform: translateX(-50%) rotate(0deg); }
-  75% { transform: translateX(-50%) rotate(8deg); }
-  100% { transform: translateX(-50%) rotate(0deg); }
+  0% { transform: translate(-50%, -50%) rotate(0deg); }
+  25% { transform: translate(-50%, -50%) rotate(-8deg); }
+  50% { transform: translate(-50%, -50%) rotate(0deg); }
+  75% { transform: translate(-50%, -50%) rotate(8deg); }
+  100% { transform: translate(-50%, -50%) rotate(0deg); }
 }
 
 .is-egg {
@@ -199,7 +220,7 @@ footer{padding:30px 0;border-top:1px solid rgba(255,102,0,.15);text-align:center
         <div id="petActiveView" class="hidden">
           <div class="pet-dashboard">
             
-            <!-- HABITACIÓN VISUAL SIN SUELO -->
+            <!-- HABITACIÓN VISUAL CENTRADA -->
             <div class="pet-room" id="petRoom">
               <div class="pet-avatar-container" id="petContainer">
                 <img id="petImg" src="" alt="Mascota en Habitación">
@@ -260,6 +281,7 @@ document.getElementById('navToggle').addEventListener('click', () => {
 
 let currentUserData = null;
 let petMovementInterval = null;
+let poopCheckInterval = null;
 let lastPositionX = 50; 
 
 // ==========================================
@@ -433,6 +455,7 @@ async function seleccionarTipoHuevo(tipoId) {
     hambre: 100,
     limpieza: 100,
     felicidad: 100,
+    poops: [], // Almacena las posiciones de las cacas [{x, y}]
     ultimo_alimentar: null,
     ultimo_limpiar: null,
     ultimo_jugar: null
@@ -460,16 +483,16 @@ function actualizarInterfazMascota() {
   if (!currentUserData || !currentUserData.mascota_data) {
     selectorView.classList.remove('hidden');
     activeView.classList.add('hidden');
-    if (petMovementInterval) {
-      clearInterval(petMovementInterval);
-      petMovementInterval = null;
-    }
+    limpiarIntervalosMovimiento();
   } else {
     selectorView.classList.add('hidden');
     activeView.classList.remove('hidden');
 
     const mascota = currentUserData.mascota_data;
     const configBestia = BASE_DE_DATOS_BESTIAS[mascota.tipoId];
+
+    // Asegurarse de que el array poops exista
+    if (!mascota.poops) mascota.poops = [];
 
     let nombreActual = configBestia.nombreBase;
     let imagenActual = configBestia.faseHuevoImg;
@@ -501,20 +524,34 @@ function actualizarInterfazMascota() {
     document.getElementById('felicidadText').textContent = mascota.felicidad + '%';
     document.getElementById('felicidadBar').style.width = mascota.felicidad + '%';
 
+    // Renderizar cacas guardadas en la habitación
+    renderizarCacasEnHabitacion();
+
     if (mascota.fase === 'huevo') {
-      if (petMovementInterval) {
-        clearInterval(petMovementInterval);
-        petMovementInterval = null;
-      }
+      limpiarIntervalosMovimiento();
       petContainer.style.left = '50%';
-      petImg.style.transform = 'none';
+      petImg.style.transform = 'translate(-50%, -50%)';
       petImg.classList.add('is-egg');
     } else {
       petImg.classList.remove('is-egg');
       if (!petMovementInterval) {
         iniciarMovimientoHorizontal();
       }
+      if (!poopCheckInterval && mascota.fase !== 'huevo') {
+        iniciarGeneradorDeCacas();
+      }
     }
+  }
+}
+
+function limpiarIntervalosMovimiento() {
+  if (petMovementInterval) {
+    clearInterval(petMovementInterval);
+    petMovementInterval = null;
+  }
+  if (poopCheckInterval) {
+    clearInterval(poopCheckInterval);
+    poopCheckInterval = null;
   }
 }
 
@@ -535,9 +572,9 @@ function iniciarMovimientoHorizontal() {
     const percentX = (randomX / roomWidth) * 100;
 
     if (percentX < lastPositionX) {
-      petImg.style.transform = 'scaleX(-1)';
+      petImg.style.transform = 'translate(-50%, -50%) scaleX(-1)';
     } else {
-      petImg.style.transform = 'scaleX(1)';
+      petImg.style.transform = 'translate(-50%, -50%) scaleX(1)';
     }
 
     lastPositionX = percentX;
@@ -546,6 +583,100 @@ function iniciarMovimientoHorizontal() {
 
   moverHorizontal();
   petMovementInterval = setInterval(moverHorizontal, 8000);
+}
+
+// Generar cacas de forma periódica si la bestia es cachorro o adulto
+function iniciarGeneradorDeCacas() {
+  // Comprueba cada 45 segundos si debe dejar una caca (si hay menos de 2)
+  poopCheckInterval = setInterval(async () => {
+    if (!currentUserData || !currentUserData.mascota_data) return;
+    const mascota = currentUserData.mascota_data;
+
+    if (mascota.fase === 'huevo') return;
+    if (!mascota.poops) mascota.poops = [];
+
+    // Máximo 2 cacas a la vez en la habitación
+    if (mascota.poops.length < 2) {
+      // Generar posición aleatoria dentro del suelo de la habitación (porcentaje)
+      const randomX = Math.floor(Math.random() * 80) + 10; // entre 10% y 90% de ancho
+      const randomY = Math.floor(Math.random() * 30) + 60; // entre 60% y 90% de alto (parte inferior)
+
+      mascota.poops.push({ id: Date.now() + Math.random(), x: randomX, y: randomY });
+
+      // Guardar en Supabase
+      await supabaseClient
+        .from('usuarios_twitch')
+        .update({ mascota_data: mascota })
+        .eq('twitch_id', currentUserData.twitch_id);
+
+      renderizarCacasEnHabitacion();
+    }
+  }, 45000); 
+}
+
+function renderizarCacasEnHabitacion() {
+  const room = document.getElementById('petRoom');
+  if (!room) return;
+
+  // Eliminar elementos de caca existentes para volver a pintar
+  document.querySelectorAll('.room-poop').forEach(el => el.remove());
+
+  const mascota = currentUserData?.mascota_data;
+  if (!mascota || !mascota.poops || mascota.fase === 'huevo') return;
+
+  mascota.poops.forEach((poopObj, index) => {
+    const poopImg = document.createElement('img');
+    poopImg.src = 'https://oeoujsnnyodrcqeyzcxo.supabase.co/storage/v1/object/public/cartas/carta-1.png'; // Puedes cambiar esta URL por una imagen específica de caca si la tienes
+    poopImg.alt = 'Caca';
+    poopImg.className = 'room-poop';
+    poopImg.style.left = poopObj.x + '%';
+    poopImg.style.top = poopObj.y + '%';
+
+    // Al hacer click en la caca
+    poopImg.addEventListener('click', async (e) => {
+      e.stopPropagation();
+      await limpiarCacaIndividual(poopObj.id);
+    });
+
+    room.appendChild(poopImg);
+  });
+}
+
+async function limpiarCacaIndividual(poopId) {
+  if (!currentUserData || !currentUserData.mascota_data) return;
+  const mascota = currentUserData.mascota_data;
+
+  if (!mascota.poops) return;
+
+  // Filtrar la caca clickeada
+  mascota.poops = mascota.poops.filter(p => p.id !== poopId);
+
+  // Dar 5 de experiencia y recalcular nivel
+  mascota.exp = (mascota.exp || 0) + 5;
+  mascota.nivel = Math.floor(mascota.exp / 100) + 1;
+
+  if (mascota.nivel >= 16) {
+    mascota.fase = 'adulto';
+  } else if (mascota.nivel >= 5) {
+    mascota.fase = 'cachorro';
+  } else {
+    mascota.fase = 'huevo';
+  }
+
+  // Actualizar en Supabase
+  const { error } = await supabaseClient
+    .from('usuarios_twitch')
+    .update({ mascota_data: mascota })
+    .eq('twitch_id', currentUserData.twitch_id);
+
+  if (!error) {
+    currentUserData.mascota_data = mascota;
+    actualizarInterfazMascota();
+    document.getElementById('petMsg').style.color = "var(--turquesa)";
+    document.getElementById('petMsg').textContent = `¡Has limpiado una caca! +5 XP.`;
+  } else {
+    alert("Error al limpiar la caca.");
+  }
 }
 
 async function cuidarMascota(accion) {
