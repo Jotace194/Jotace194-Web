@@ -595,10 +595,10 @@ function iniciarGeneradorDeCacas() {
     if (mascota.fase === 'huevo') return;
     if (!mascota.poops) mascota.poops = [];
 
-    // Máximo 5 cacas a la vez en la habitación
-    if (mascota.poops.length < 5) {
+    // Máximo 3 cacas a la vez en la habitación
+    if (mascota.poops.length < 3) {
       // Generar posición aleatoria dentro del suelo de la habitación (porcentaje)
-      const randomX = Math.floor(Math.random() * 60) + 20; // entre 10% y 90% de ancho
+      const randomX = Math.floor(Math.random() * 50) + 10; // entre 10% y 90% de ancho
       const randomY = Math.floor(Math.random() * 40) + 70; // entre 60% y 90% de alto (parte inferior)
 
       mascota.poops.push({ id: Date.now() + Math.random(), x: randomX, y: randomY });
