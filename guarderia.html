@@ -58,21 +58,27 @@ body{background:var(--negro);color:var(--hueso);font-family:'Segoe UI',sans-seri
 .pet-room {position: relative; width: 100%; height: 580px; background: linear-gradient(to bottom, #141117, #060507); border: 2px solid rgba(255,102,0,0.3); border-radius: 16px; overflow: hidden; box-shadow: inset 0 0 60px rgba(0,0,0,0.85);}
 .room-floor {position: absolute; bottom: 0; width: 100%; height: 80px; background: #1c1717; border-top: 2px solid var(--naranja-oscuro);}
 
-/* CONTENEDOR MÓVIL CON TRANSICIÓN MUY LENTA (8s) */
+/* CONTENEDOR MÓVIL HORIZONTAL CON TRANSICIÓN LENTA (8s) */
 .pet-avatar-container {
   position: absolute;
   left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
+  bottom: 60px; /* Anclado justo sobre el suelo de la habitación */
+  transform: translateX(-50%);
   width: 220px; 
   height: 220px; 
   z-index: 2; 
   display: flex; 
   align-items: center; 
   justify-content: center;
-  transition: transform 8s ease-in-out, left 8s ease-in-out, top 8s ease-in-out;
+  transition: left 8s ease-in-out;
 }
-.pet-avatar-container img {width: 190px; height: 190px; object-fit: contain; filter: drop-shadow(0 20px 20px rgba(0,0,0,0.75));}
+.pet-avatar-container img {
+  width: 190px; 
+  height: 190px; 
+  object-fit: contain; 
+  filter: drop-shadow(0 20px 20px rgba(0,0,0,0.75));
+  transition: transform 0.3s ease; /* Giro fluido al cambiar de dirección */
+}
 
 .pet-dashboard {text-align: center; max-width: 1100px; margin: 0 auto;}
 
@@ -144,7 +150,7 @@ footer{padding:30px 0;border-top:1px solid rgba(255,102,0,.15);text-align:center
 
       <!-- SECCIÓN PRINCIPAL DE MASCOTAS -->
       <div class="game-section-card">
-        <!-- Vista 1: Selector de 6 Huevos (Imágenes separadas para cada opción) -->
+        <!-- Vista 1: Selector de 6 Huevos -->
         <div id="petSelectorView" class="hidden">
           <h3 style="color: var(--naranja-claro); font-size: 1.1rem; margin-bottom: 10px;">🥚 ELIGE UN HUEVO MISTERIOSO</h3>
           <p style="color: var(--tenue); font-size: 0.88rem; margin-bottom: 20px;">Selecciona uno de los 6 huevos disponibles para incubarlo en tu habitación.</p>
@@ -180,7 +186,7 @@ footer{padding:30px 0;border-top:1px solid rgba(255,102,0,.15);text-align:center
         <div id="petActiveView" class="hidden">
           <div class="pet-dashboard">
             
-            <!-- HABITACIÓN VISUAL CON MOVIMIENTO MUY LENTO -->
+            <!-- HABITACIÓN VISUAL CON MOVIMIENTO HORIZONTAL -->
             <div class="pet-room" id="petRoom">
               <div class="room-floor"></div>
               <div class="pet-avatar-container" id="petContainer">
@@ -237,6 +243,7 @@ document.getElementById('navToggle').addEventListener('click', () => {
 
 let currentUserData = null;
 let petMovementInterval = null;
+let lastPositionX = 50; // Para comparar si se mueve a la izquierda o derecha
 
 // ==========================================
 // CONFIGURACIÓN AISLADA DE CADA BESTIA Y HUEVO
@@ -433,7 +440,10 @@ function actualizarInterfazMascota() {
   if (!currentUserData || !currentUserData.mascota_data) {
     selectorView.classList.remove('hidden');
     activeView.classList.add('hidden');
-    if (petMovementInterval) clearInterval(petMovementInterval);
+    if (petMovementInterval) {
+      clearInterval(petMovementInterval);
+      petMovementInterval = null;
+    }
   } else {
     selectorView.classList.add('hidden');
     activeView.classList.remove('hidden');
@@ -468,43 +478,59 @@ function actualizarInterfazMascota() {
     document.getElementById('felicidadText').textContent = mascota.felicidad + '%';
     document.getElementById('felicidadBar').style.width = mascota.felicidad + '%';
 
-    // Iniciar movimiento aleatorio muy lento si no está activo
-    if (!petMovementInterval) {
-      iniciarMovimientoAleatorioLento();
+    // Control del movimiento: Se mueve solo si YA NO es huevo (cachorro o adulto)
+    if (mascota.fase !== 'huevo') {
+      if (!petMovementInterval) {
+        iniciarMovimientoHorizontal();
+      }
+    } else {
+      // Si es huevo, se detiene el movimiento y se centra estático sin voltear
+      if (petMovementInterval) {
+        clearInterval(petMovementInterval);
+        petMovementInterval = null;
+      }
+      const petContainer = document.getElementById('petContainer');
+      const petImg = document.getElementById('petImg');
+      if (petContainer && petImg) {
+        petContainer.style.left = '50%';
+        petImg.style.transform = 'scaleX(1)';
+      }
     }
   }
 }
 
-function iniciarMovimientoAleatorioLento() {
+function iniciarMovimientoHorizontal() {
   const room = document.getElementById('petRoom');
-  const pet = document.getElementById('petContainer');
-  if (!room || !pet) return;
+  const petContainer = document.getElementById('petContainer');
+  const petImg = document.getElementById('petImg');
+  if (!room || !petContainer || !petImg) return;
 
-  function moverBestiaLento() {
+  function moverHorizontal() {
     const roomWidth = room.clientWidth;
-    const roomHeight = room.clientHeight;
-    const petWidth = pet.clientWidth;
-    const petHeight = pet.clientHeight;
+    const petWidth = petContainer.clientWidth;
 
     const minX = petWidth / 2 + 20;
     const maxX = roomWidth - (petWidth / 2) - 20;
-    const minY = petHeight / 2 + 20;
-    const maxY = roomHeight - (petHeight / 2) - 20;
 
     const randomX = Math.random() * (maxX - minX) + minX;
-    const randomY = Math.random() * (maxY - minY) + minY;
-
     const percentX = (randomX / roomWidth) * 100;
-    const percentY = (randomY / roomHeight) * 100;
 
-    pet.style.left = percentX + '%';
-    pet.style.top = percentY + '%';
-    pet.style.transform = 'translate(-50%, -50%)';
+    // Detectar dirección para girar la imagen horizontalmente (scaleX)
+    if (percentX < lastPositionX) {
+      // Se mueve hacia la izquierda (giramos la imagen)
+      petImg.style.transform = 'scaleX(-1)';
+    } else {
+      // Se mueve hacia la derecha (imagen original)
+      petImg.style.transform = 'scaleX(1)';
+    }
+
+    lastPositionX = percentX;
+    petContainer.style.left = percentX + '%';
   }
 
-  moverBestiaLento();
-  // Se mueve cada 7 segundos para que sea un desplazamiento pausado y lento
-  petMovementInterval = setInterval(moverBestiaLento, 7000);
+  moverHorizontal();
+  // Movimiento pausado horizontal cada 8 segundos
+  petMovementInterval = setInterval(moverHorizontal, 8000);
 }
 
 async function cuidarMascota(accion) {
