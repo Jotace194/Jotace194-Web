@@ -469,13 +469,13 @@ function actualizarInterfazMascota() {
             id="petModel"
             src="${animalAsignado.modeloGlb}"
             alt="${animalAsignado.nombre}"
-            camera-controls
             auto-rotate
             shadow-intensity="1"
             animation-name="${animalAsignado.animacion}"
             autoplay
             min-camera-orbit="auto auto 5m"
-            style="width: 220px; height: 220px; background-color: transparent; display: block;"
+            interaction-prompt="none"
+            style="width: 220px; height: 220px; background-color: transparent; display: block; pointer-events: none;"
           >
           </model-viewer>
         `;
@@ -657,7 +657,7 @@ async function cuidarMascota(accion) {
   const ultimoTiempo = mascota[campoUltimo] ? new Date(mascota[campoUltimo]).getTime() : 0;
 
   if (ahora - ultimoTiempo < cuatroHoras) {
-    const minutosFaltantes = Math.ceil((cuatroHoras - (ahora - ultimoTiempo)) / (1000 * 60));
+    const minutosFaltantes = Math.ceil((cuaturHoras - (ahora - ultimoTiempo)) / (1000 * 60));
     document.getElementById('petMsg').style.color = "#FF8833";
     document.getElementById('petMsg').textContent = `Ya has usado '${accion}' recientemente. Vuelve en ${minutosFaltantes} minutos.`;
     return;
