@@ -44,7 +44,7 @@ body{background:var(--negro);color:var(--hueso);font-family:'Segoe UI',sans-seri
 .hud-profile{display:flex;align-items:center;gap:12px;}
 .hud-profile img{width:45px;height:45px;border-radius:50%;border:2px solid var(--twitch-purple);object-fit:cover;}
 .hud-info h3{color:var(--naranja-claro);font-size:1.1rem;}
-.hud-stats{display:flex;gap:20px;font-weight:700;}
+.hud-stats{display:flex;gap:15px;font-weight:700;flex-wrap:wrap;}
 .stat-badge{background:var(--carbon-claro);padding:8px 16px;border-radius:8px;border:1px solid rgba(255,255,255,0.05);color:var(--turquesa);}
 
 .game-section-card{background: var(--carbon); border: 1px solid rgba(255,102,0,0.2); border-radius: 16px; padding: 25px; margin-bottom: 25px;}
@@ -238,6 +238,7 @@ footer{padding:30px 0;border-top:1px solid rgba(255,102,0,.15);text-align:center
         </div>
         <div class="hud-stats">
           <div class="stat-badge">🪙 <span id="userPoints">0</span> Puntos</div>
+          <div class="stat-badge">🔥 Racha: <span id="userStreak">0</span> días</div>
         </div>
         <button id="logoutBtn" style="background:none; border:none; color: var(--tenue); cursor:pointer; font-size: 0.85rem; text-decoration: underline;">Cerrar sesión</button>
       </div>
@@ -261,7 +262,7 @@ footer{padding:30px 0;border-top:1px solid rgba(255,102,0,.15);text-align:center
           <!-- BLOQUE DERECHA: Recompensa Cada 6 Horas -->
           <div class="reward-box">
             <h4 style="font-size: 0.95rem; color: var(--hueso); margin-bottom: 6px;">Recompensa Cada 6 Horas</h4>
-            <p style="color: var(--tenue); font-size: 0.8rem; margin-bottom: 12px;">Reclama puntos gratis cada 6 horas.</p>
+            <p style="color: var(--tenue); font-size: 0.8rem; margin-bottom: 12px;">Reclama puntos gratis cada 6 horas y mantén tu racha.</p>
             <button id="dailyClaimBtn" style="background: var(--turquesa); color: var(--negro); border: none; padding: 10px 16px; border-radius: 8px; font-weight: 700; cursor: pointer; width: 100%; font-size: 0.9rem; transition: opacity 0.2s;">Reclamar 250 Puntos</button>
             <p id="dailyMessage" style="font-size: 0.8rem; margin-top: 8px; color: var(--turquesa); text-align: center;"></p>
           </div>
@@ -337,7 +338,7 @@ document.getElementById('navToggle').addEventListener('click', () => {
 });
 
 let currentUserData = null;
-let currentRarityFilter = "Todas"; // Variable para rastrear el filtro actual
+let currentRarityFilter = "Todas";
 
 const TWITCH_CLIENT_ID = 'gcykx8eznq8gex7rgm0ebihs2k9q5h'; 
 const REDIRECT_URI = window.location.origin + window.location.pathname;
@@ -403,6 +404,8 @@ async function sincronizarUsuarioSupabase(user) {
         twitch_id: user.id,
         username: user.display_name,
         points: 500,
+        streak: 0,
+        last_daily_claim: null,
         collection: {}
       };
 
@@ -416,6 +419,8 @@ async function sincronizarUsuarioSupabase(user) {
       currentUserData = insertedData;
     } else if (data) {
       currentUserData = data;
+      // Comprobar y actualizar racha al iniciar sesión si expiró
+      await verificarExpiracionRachaAlCargar();
     }
 
     actualizarInterfazUsuario();
@@ -426,6 +431,7 @@ async function sincronizarUsuarioSupabase(user) {
 
 function actualizarInterfazUsuario() {
   document.getElementById('userPoints').textContent = currentUserData.points;
+  document.getElementById('userStreak').textContent = currentUserData.streak || 0;
   renderizarAlbum();
   verificarEstadoRecompensaDiaria();
 }
@@ -502,8 +508,27 @@ document.getElementById('redeemBtn').addEventListener('click', async () => {
   }
 });
 
-// RECOMPENSA CADA 6 HORAS
+// RECOMPENSA CADA 6 HORAS Y LÓGICA DE RACHA
 const PUNTOS_DIARIOS = 250;
+
+async function verificarExpiracionRachaAlCargar() {
+  if (!currentUserData.last_daily_claim) return;
+  
+  const ultimaVez = new Date(currentUserData.last_daily_claim).getTime();
+  const ahora = new Date().getTime();
+  const tiempoTranscurrido = ahora - ultimaVez;
+  
+  // Si pasan más de 48 horas sin reclamar, la racha se reinicia a 0
+  const cuarentaYOchoHoras = 48 * 60 * 60 * 1000;
+  
+  if (tiempoTranscurrido > cuarentaYOchoHoras && currentUserData.streak > 0) {
+    currentUserData.streak = 0;
+    await supabaseClient
+      .from('usuarios_twitch')
+      .update({ streak: 0 })
+      .eq('twitch_id', currentUserData.twitch_id);
+  }
+}
 
 function verificarEstadoRecompensaDiaria() {
   const btnDaily = document.getElementById('dailyClaimBtn');
@@ -538,23 +563,47 @@ function verificarEstadoRecompensaDiaria() {
 }
 
 document.getElementById('dailyClaimBtn').addEventListener('click', async () => {
-  const ahoraIso = new Date().toISOString();
+  const ahora = new Date();
+  const ahoraIso = ahora.toISOString();
   const nuevosPuntos = currentUserData.points + PUNTOS_DIARIOS;
+  
+  let nuevaRacha = currentUserData.streak || 0;
+  
+  if (currentUserData.last_daily_claim) {
+    const ultimaVez = new Date(currentUserData.last_daily_claim).getTime();
+    const tiempoTranscurrido = ahora.getTime() - ultimaVez;
+    const seisHoras = 6 * 60 * 60 * 1000;
+    const cuarentaYOchoHoras = 48 * 60 * 60 * 1000;
+    
+    // Si reclama después de 6h pero antes de 48h, suma racha
+    if (tiempoTranscurrido >= seisHoras && tiempoTranscurrido <= cuarentaYOchoHoras) {
+      nuevaRacha += 1;
+    } else if (tiempoTranscurrido > cuarentaYOchoHoras) {
+      // Si dejó pasar más de 48h, se reinicia y empieza en 1
+      nuevaRacha = 1;
+    }
+    // Si reclama antes de tiempo no debería poderse porque el botón está desactivado, 
+    // pero por seguridad si fuera el primer reclamo:
+  } else {
+    nuevaRacha = 1;
+  }
 
   const { error } = await supabaseClient
     .from('usuarios_twitch')
     .update({ 
       points: nuevosPuntos, 
+      streak: nuevaRacha,
       last_daily_claim: ahoraIso 
     })
     .eq('twitch_id', currentUserData.twitch_id);
 
   if (!error) {
     currentUserData.points = nuevosPuntos;
+    currentUserData.streak = nuevaRacha;
     currentUserData.last_daily_claim = ahoraIso;
     actualizarInterfazUsuario();
     verificarEstadoRecompensaDiaria();
-    alert(`¡Has reclamado con éxito tus ${PUNTOS_DIARIOS} puntos!`);
+    alert(`¡Has reclamado con éxito tus ${PUNTOS_DIARIOS} puntos! Racha actual: ${nuevaRacha} días.`);
   } else {
     alert("Hubo un error al reclamar los puntos. Inténtalo de nuevo.");
   }
@@ -643,10 +692,8 @@ function renderizarAlbum() {
   albumContainer.innerHTML = '';
   const coleccionUsuario = currentUserData.collection || {};
 
-  // Definir orden de las secciones de rareza
   const ordenRarezas = ["Común", "Raro", "Épico", "Legendario"];
   
-  // Mapeo de colores para los títulos de sección
   const coloresRareza = {
     "Común": "#8C827A",
     "Raro": "#249908",
@@ -654,7 +701,6 @@ function renderizarAlbum() {
     "Legendario": "#D6AA06"
   };
 
-  // Si hay un filtro activo que no sea "Todas", filtramos el array de rarezas para mostrar solo esa sección
   const rarezasAProcesar = currentRarityFilter === "Todas" 
     ? ordenRarezas 
     : ordenRarezas.filter(r => r === currentRarityFilter);
@@ -663,11 +709,9 @@ function renderizarAlbum() {
     const cartasDeEstaRareza = CATALOGO_CARTAS.filter(c => c.rarity === rareza);
     if (cartasDeEstaRareza.length === 0) return;
 
-    // Crear contenedor de la sección
     const sectionDiv = document.createElement('div');
     sectionDiv.className = 'rarity-section';
 
-    // Título de la sección (solo se muestra si estamos viendo "Todas", ya que el botón de filtro ya indica la rareza)
     if (currentRarityFilter === "Todas") {
       const titleEl = document.createElement('h4');
       titleEl.className = 'rarity-title';
@@ -676,7 +720,6 @@ function renderizarAlbum() {
       sectionDiv.appendChild(titleEl);
     }
 
-    // Rejilla interna para las cartas de esta rareza
     const gridDiv = document.createElement('div');
     gridDiv.className = 'album-grid';
 
