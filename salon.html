@@ -495,11 +495,41 @@ document.getElementById('dailyClaimBtn').addEventListener('click', async () => {
 
 // CATÁLOGO DE CARTAS CON SUS IMÁGENES Y RAREZAS
 const CATALOGO_CARTAS = [
-  { id: "c1", name: "Bronce", rarity: "Común", image: "img/carta-1.png", color: "#8C827A" },
-  { id: "c2", name: "Buu", rarity: "Común", image: "img/carta-2.png", color: "#8C827A" },
-  { id: "c3", name: "Perdedor", rarity: "Raro", image: "img/carta-3.png", color: "#4A90E2" },
-  { id: "c4", name: "Michael Miller", rarity: "Raro", image: "img/carta-5.png", color: "#4A90E2" },
-  { id: "c5", name: "Martillazo", rarity: "Épico", image: "img/carta-7.png", color: "#9013FE" }
+  { 
+    id: "c1", 
+    name: "Bronce", 
+    rarity: "Común", 
+    image: "https://oeoujsnnyodrcqeyzcxo.supabase.co/storage/v1/object/public/cartas/carta-1.png", // <--- Tu enlace aquí
+    color: "#8C827A" 
+  },
+  { 
+    id: "c2", 
+    name: "Buu", 
+    rarity: "Común", 
+    image: "https://oeoujsnnyodrcqeyzcxo.supabase.co/storage/v1/object/public/cartas/carta-2.png", // <--- Tu enlace aquí
+    color: "#8C827A" 
+  },
+  { 
+    id: "c3", 
+    name: "Perdedor", 
+    rarity: "Raro", 
+    image: "https://oeoujsnnyodrcqeyzcxo.supabase.co/storage/v1/object/public/cartas/carta-3.png", // <--- Tu enlace aquí
+    color: "#4A90E2" 
+  },
+  { 
+    id: "c4", 
+    name: "Michael Miller", 
+    rarity: "Raro", 
+    image: "https://oeoujsnnyodrcqeyzcxo.supabase.co/storage/v1/object/public/cartas/carta-5.png", // <--- Tu enlace aquí
+    color: "#4A90E2" 
+  },
+  { 
+    id: "c5", 
+    name: "Martillazo", 
+    rarity: "Épico", 
+    image: "https://oeoujsnnyodrcqeyzcxo.supabase.co/storage/v1/object/public/cartas/carta-7.png", // <--- Tu enlace aquí
+    color: "#9013FE" 
+  }
 ];
 
 function renderizarAlbum() {
