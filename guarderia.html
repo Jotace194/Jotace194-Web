@@ -706,7 +706,7 @@ async function cuidarMascota(accion) {
 
   mascota[campoUltimo] = new Date().toISOString();
   
-  mascota.exp = (mascota.exp || 0) + 100;
+  mascota.exp = (mascota.exp || 0) + 15;
   mascota.nivel = Math.floor(mascota.exp / 100) + 1;
 
   if (mascota.nivel >= 16) {
