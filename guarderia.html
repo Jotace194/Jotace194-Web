@@ -48,15 +48,26 @@ body{background:var(--negro);color:var(--hueso);font-family:'Segoe UI',sans-seri
 
 .game-section-card{background: var(--carbon); border: 1px solid rgba(255,102,0,0.2); border-radius: 16px; padding: 25px; margin-bottom: 25px;}
 
-/* ESTILOS DE LA GUARDERÍA */
-.pet-selection-grid {display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-top: 15px;}
-.pet-option-card {background: var(--carbon-claro); border: 1px solid rgba(255,102,0,0.3); border-radius: 12px; padding: 20px; text-align: center; cursor: pointer; transition: all 0.2s;}
-.pet-option-card:hover {border-color: var(--naranja); transform: translateY(-4px);}
-.pet-option-img {width: 100px; height: 100px; object-fit: contain; margin: 0 auto 10px; display: block;}
+/* ESTILOS DE LA SELECCIÓN DE HUEVOS (6 OPCIONES) */
+.egg-selection-grid {display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; margin-top: 15px;}
+.egg-option-card {background: var(--carbon-claro); border: 1px solid rgba(255,102,0,0.3); border-radius: 12px; padding: 15px; text-align: center; cursor: pointer; transition: all 0.2s;}
+.egg-option-card:hover {border-color: var(--naranja); transform: translateY(-4px);}
+.egg-option-img {width: 80px; height: 80px; object-fit: contain; margin: 0 auto 10px; display: block;}
+
+/* HABITACIÓN DE LA BESTIA */
+.pet-room {position: relative; width: 100%; height: 280px; background: linear-gradient(to bottom, #111015, #050405); border: 2px solid rgba(255,102,0,0.3); border-radius: 14px; overflow: hidden; display: flex; align-items: flex-end; justify-content: center; padding-bottom: 20px; box-shadow: inset 0 0 30px rgba(0,0,0,0.8);}
+.room-floor {position: absolute; bottom: 0; width: 100%; height: 40px; background: #1a1616; border-top: 2px solid var(--naranja-oscuro);}
+
+/* ANIMACIÓN DE MOVIMIENTO DENTRO DE LA HABITACIÓN */
+@keyframes floatPet {
+  0% { transform: translateY(0px) scale(1); }
+  50% { transform: translateY(-8px) scale(1.02); }
+  100% { transform: translateY(0px) scale(1); }
+}
+.pet-avatar-container {width: 120px; height: 120px; z-index: 2; display: flex; align-items: center; justify-content: center; animation: floatPet 3s ease-in-out infinite;}
+.pet-avatar-container img {width: 100px; height: 100px; object-fit: contain; filter: drop-shadow(0 10px 10px rgba(0,0,0,0.6));}
 
 .pet-dashboard {text-align: center; max-width: 500px; margin: 0 auto;}
-.pet-avatar-container {width: 150px; height: 150px; margin: 0 auto 15px; background: var(--carbon-claro); border-radius: 50%; border: 3px solid var(--turquesa); display: flex; align-items: center; justify-content: center; overflow: hidden; box-shadow: 0 0 20px rgba(138,230,223,0.2);}
-.pet-avatar-container img {width: 100px; height: 100px; object-fit: contain;}
 
 .pet-stats-bars {display: flex; flex-direction: column; gap: 10px; margin: 20px 0;}
 .stat-bar-group {text-align: left;}
@@ -81,7 +92,7 @@ footer{padding:30px 0;border-top:1px solid rgba(255,102,0,.15);text-align:center
       <li><a href="index.html">Inicio</a></li>
       <li><a href="universo.html">Universo</a></li>
       <li><a href="salon.html">Salón</a></li>
-      <li><a href="guarderia.html">Guardería</a></li>
+      <li><a href="guarderia.html" class="active">Guardería</a></li>
       <li><a href="redes.html">Redes</a></li>
     </ul>
   </div>
@@ -90,8 +101,8 @@ footer{padding:30px 0;border-top:1px solid rgba(255,102,0,.15);text-align:center
 <main class="wrap">
   <header class="salon-header">
     <span class="salon-tag">Guardería</span>
-    <h1>GUARDERÍA DE BESTIAS</h1>
-    <p>Alimenta, limpia y juega con tu compañero para ganar puntos.</p>
+    <h1>HABITACIÓN DE BESTIAS</h1>
+    <p>Elige tu huevo, cuida de tu criatura en su habitación y hazla evolucionar.</p>
   </header>
 
   <div class="game-container">
@@ -125,37 +136,52 @@ footer{padding:30px 0;border-top:1px solid rgba(255,102,0,.15);text-align:center
 
       <!-- SECCIÓN PRINCIPAL DE MASCOTAS -->
       <div class="game-section-card">
-        <!-- Vista 1: Si no tiene mascota elegida -->
+        <!-- Vista 1: Selector de 6 Huevos -->
         <div id="petSelectorView" class="hidden">
-          <h3 style="color: var(--naranja-claro); font-size: 1.1rem; margin-bottom: 10px;">🐾 ELIGE TU COMPAÑERO</h3>
-          <p style="color: var(--tenue); font-size: 0.88rem; margin-bottom: 20px;">Selecciona una bestia para que te acompañe en tus aventuras.</p>
-          <div class="pet-selection-grid">
-            <div class="pet-option-card" onclick="adoptarMascota('Dragoncito', 'https://oeoujsnnyodrcqeyzcxo.supabase.co/storage/v1/object/public/cartas/carta-1.png')">
-              <img src="https://oeoujsnnyodrcqeyzcxo.supabase.co/storage/v1/object/public/cartas/carta-1.png" alt="Dragoncito" class="pet-option-img">
-              <h4 style="color: var(--hueso);">Dragoncito</h4>
-              <p style="font-size: 0.75rem; color: var(--tenue); margin-top: 4px;">Fiero pero adorable.</p>
+          <h3 style="color: var(--naranja-claro); font-size: 1.1rem; margin-bottom: 10px;">🥚 ELIGE UN HUEVO MISTERIOSO</h3>
+          <p style="color: var(--tenue); font-size: 0.88rem; margin-bottom: 20px;">Selecciona uno de los 6 huevos disponibles para incubarlo en tu habitación.</p>
+          <div class="egg-selection-grid">
+            <div class="egg-option-card" onclick="adoptarHuevo(1, 'Huevo de Fuego', 'https://oeoujsnnyodrcqeyzcxo.supabase.co/storage/v1/object/public/cartas/carta-1.png')">
+              <img src="https://oeoujsnnyodrcqeyzcxo.supabase.co/storage/v1/object/public/cartas/carta-1.png" alt="Huevo 1" class="egg-option-img">
+              <h4 style="color: var(--hueso); font-size: 0.9rem;">Huevo Ígneo</h4>
             </div>
-            <div class="pet-option-card" onclick="adoptarMascota('Gordinflón', 'https://oeoujsnnyodrcqeyzcxo.supabase.co/storage/v1/object/public/cartas/carta-2.png')">
-              <img src="https://oeoujsnnyodrcqeyzcxo.supabase.co/storage/v1/object/public/cartas/carta-2.png" alt="Gordinflón" class="pet-option-img">
-              <h4 style="color: var(--hueso);">Gordinflón</h4>
-              <p style="font-size: 0.75rem; color: var(--tenue); margin-top: 4px;">Siempre hambriento.</p>
+            <div class="egg-option-card" onclick="adoptarHuevo(2, 'Huevo Pesado', 'https://oeoujsnnyodrcqeyzcxo.supabase.co/storage/v1/object/public/cartas/carta-2.png')">
+              <img src="https://oeoujsnnyodrcqeyzcxo.supabase.co/storage/v1/object/public/cartas/carta-2.png" alt="Huevo 2" class="egg-option-img">
+              <h4 style="color: var(--hueso); font-size: 0.9rem;">Huevo Rudo</h4>
             </div>
-            <div class="pet-option-card" onclick="adoptarMascota('Minibot', 'https://oeoujsnnyodrcqeyzcxo.supabase.co/storage/v1/object/public/cartas/carta-6.png')">
-              <img src="https://oeoujsnnyodrcqeyzcxo.supabase.co/storage/v1/object/public/cartas/carta-6.png" alt="Minibot" class="pet-option-img">
-              <h4 style="color: var(--hueso);">Minibot</h4>
-              <p style="font-size: 0.75rem; color: var(--tenue); margin-top: 4px;">Mecánico y veloz.</p>
+            <div class="egg-option-card" onclick="adoptarHuevo(3, 'Huevo Mecánico', 'https://oeoujsnnyodrcqeyzcxo.supabase.co/storage/v1/object/public/cartas/carta-6.png')">
+              <img src="https://oeoujsnnyodrcqeyzcxo.supabase.co/storage/v1/object/public/cartas/carta-6.png" alt="Huevo 3" class="egg-option-img">
+              <h4 style="color: var(--hueso); font-size: 0.9rem;">Huevo Cibernético</h4>
+            </div>
+            <div class="egg-option-card" onclick="adoptarHuevo(4, 'Huevo Sombra', 'https://oeoujsnnyodrcqeyzcxo.supabase.co/storage/v1/object/public/cartas/carta-1.png')">
+              <img src="https://oeoujsnnyodrcqeyzcxo.supabase.co/storage/v1/object/public/cartas/carta-1.png" alt="Huevo 4" class="egg-option-img">
+              <h4 style="color: var(--hueso); font-size: 0.9rem;">Huevo Oscuro</h4>
+            </div>
+            <div class="egg-option-card" onclick="adoptarHuevo(5, 'Huevo Astral', 'https://oeoujsnnyodrcqeyzcxo.supabase.co/storage/v1/object/public/cartas/carta-2.png')">
+              <img src="https://oeoujsnnyodrcqeyzcxo.supabase.co/storage/v1/object/public/cartas/carta-2.png" alt="Huevo 5" class="egg-option-img">
+              <h4 style="color: var(--hueso); font-size: 0.9rem;">Huevo Astral</h4>
+            </div>
+            <div class="egg-option-card" onclick="adoptarHuevo(6, 'Huevo Salvaje', 'https://oeoujsnnyodrcqeyzcxo.supabase.co/storage/v1/object/public/cartas/carta-6.png')">
+              <img src="https://oeoujsnnyodrcqeyzcxo.supabase.co/storage/v1/object/public/cartas/carta-6.png" alt="Huevo 6" class="egg-option-img">
+              <h4 style="color: var(--hueso); font-size: 0.9rem;">Huevo Salvaje</h4>
             </div>
           </div>
         </div>
 
-        <!-- Vista 2: Si ya tiene mascota -->
+        <!-- Vista 2: Habitación de la Bestia Activa -->
         <div id="petActiveView" class="hidden">
           <div class="pet-dashboard">
-            <div class="pet-avatar-container">
-              <img id="petImg" src="" alt="Mascota">
+            
+            <!-- HABITACIÓN VISUAL -->
+            <div class="pet-room">
+              <div class="room-floor"></div>
+              <div class="pet-avatar-container">
+                <img id="petImg" src="" alt="Mascota en Habitación">
+              </div>
             </div>
-            <h3 id="petName" style="color: var(--hueso); font-size: 1.2rem;">Nombre de Bestia</h3>
-            <p style="font-size: 0.8rem; color: var(--turquesa); margin-bottom: 10px;">¡Cuida de tu mascota para ganar +50 puntos cada pocas horas!</p>
+
+            <h3 id="petName" style="color: var(--hueso); font-size: 1.2rem; margin-top: 15px;">Nombre de Bestia</h3>
+            <p id="petStageLabel" style="font-size: 0.8rem; color: var(--turquesa); margin-bottom: 10px;">Fase: Huevo (Incubando)</p>
 
             <div class="pet-stats-bars">
               <div class="stat-bar-group">
@@ -209,7 +235,6 @@ const loginUrl = `https://id.twitch.tv/oauth2/authorize?client_id=${TWITCH_CLIEN
 const loginBtn = document.getElementById('twitchLoginBtn');
 if (loginBtn) { loginBtn.href = loginUrl; }
 
-// Capturar Token de Twitch de forma segura
 const hash = window.location.hash.substring(1);
 if (hash) {
   const params = new URLSearchParams(hash);
@@ -305,13 +330,16 @@ if (logoutBtn) {
   });
 }
 
-// --- LÓGICA DE LA GUARDERÍA ---
-async function adoptarMascota(nombre, imagenUrl) {
+// --- LÓGICA DE HUEVOS Y HABITACIÓN ---
+async function adoptarHuevo(tipoId, nombreHuevo, imagenUrl) {
   if (!currentUserData) return;
 
   const mascotaInicial = {
-    nombre: nombre,
+    tipoId: tipoId,
+    nombre: nombreHuevo,
     imagen: imagenUrl,
+    fase: 'huevo', // huevo, cachorro, adulto
+    cuidadosCount: 0,
     hambre: 100,
     limpieza: 100,
     felicidad: 100,
@@ -327,7 +355,7 @@ async function adoptarMascota(nombre, imagenUrl) {
     currentUserData.mascota_data = mascotaInicial;
     actualizarInterfazMascota();
   } else {
-    alert("Error al adoptar la mascota.");
+    alert("Error al seleccionar el huevo.");
   }
 }
 
@@ -346,6 +374,11 @@ function actualizarInterfazMascota() {
     document.getElementById('petName').textContent = mascota.nombre;
     document.getElementById('petImg').src = mascota.imagen;
 
+    let textoFase = "Fase: 🥚 Huevo (Incubando)";
+    if (mascota.fase === 'cachorro') textoFase = "Fase: 🐾 Cachorro";
+    if (mascota.fase === 'adulto') textoFase = "Fase: 🐉 Bestia Adulta";
+    document.getElementById('petStageLabel').textContent = textoFase;
+
     document.getElementById('hambreText').textContent = mascota.hambre + '%';
     document.getElementById('hambreBar').style.width = mascota.hambre + '%';
 
@@ -363,11 +396,11 @@ async function cuidarMascota(accion) {
   const mascota = currentUserData.mascota_data;
   const ahora = new Date().getTime();
   
-  const dosHoras = 4 * 60 * 60 * 1000;
+  const cuatroHoras = 4 * 60 * 60 * 1000;
   if (mascota.ultimo_cuidado) {
     const ultimoTiempo = new Date(mascota.ultimo_cuidado).getTime();
-    if (ahora - ultimoTiempo < dosHoras) {
-      const minutosFaltantes = Math.ceil((dosHoras - (ahora - ultimoTiempo)) / (1000 * 60));
+    if (ahora - ultimoTiempo < cuatroHoras) {
+      const minutosFaltantes = Math.ceil((cuatroHoras - (ahora - ultimoTiempo)) / (1000 * 60));
       document.getElementById('petMsg').textContent = `Tu mascota ya está atendida. Vuelve en ${minutosFaltantes} minutos para ganar más puntos.`;
       return;
     }
@@ -377,6 +410,16 @@ async function cuidarMascota(accion) {
   mascota.limpieza = Math.min(100, mascota.limpieza + 20);
   mascota.felicidad = Math.min(100, mascota.felicidad + 20);
   mascota.ultimo_cuidado = new Date().toISOString();
+  mascota.cuidadosCount = (mascota.cuidadosCount || 0) + 1;
+
+  // Lógica simple de evolución por número de cuidados
+  if (mascota.fase === 'huevo' && mascota.cuidadosCount >= 3) {
+    mascota.fase = 'cachorro';
+    mascota.nombre = "Cachorro de Bestia";
+  } else if (mascota.fase === 'cachorro' && mascota.cuidadosCount >= 6) {
+    mascota.fase = 'adulto';
+    mascota.nombre = "Bestia Suprema";
+  }
 
   const nuevosPuntos = currentUserData.points + 50;
 
@@ -394,7 +437,7 @@ async function cuidarMascota(accion) {
     actualizarInterfazUsuario();
     actualizarInterfazMascota();
     document.getElementById('petMsg').style.color = "var(--turquesa)";
-    document.getElementById('petMsg').textContent = `¡Has cuidado de ${mascota.nombre}! +50 puntos conseguidos.`;
+    document.getElementById('petMsg').textContent = `¡Has cuidado de tu criatura! +50 puntos conseguidos.`;
   } else {
     alert("Error al actualizar la mascota.");
   }
