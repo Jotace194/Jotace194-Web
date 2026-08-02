@@ -85,7 +85,7 @@ body{background:var(--negro);color:var(--hueso);font-family:'Segoe UI',sans-seri
   to { background-position: 100% 0; }
 }
 
-@keyframes playSprite8 {
+@keyframes playSprite6 {
   from { background-position: 0% 0; }
   to { background-position: 100% 0; }
 }
@@ -96,8 +96,8 @@ body{background:var(--negro);color:var(--hueso);font-family:'Segoe UI',sans-seri
 }
 
 .anim-walk {
-  background-size: 800% 100%;
-  animation: playSprite8 0.7s steps(8) infinite;
+  background-size: 600% 100%;
+  animation: playSprite6 0.6s steps(6) infinite;
 }
 
 @keyframes tambalearHuevo {
@@ -250,7 +250,7 @@ let currentUserData = null;
 let petMovementTimeout = null;
 let lastPositionX = 50; 
 
-// BANCO DE BESTIAS 2D
+// BANCO DE BESTIAS 2D (Idle de 4 fotogramas y Walk de 6 fotogramas)
 const BANCO_BESTIAS_2D = [
   { 
     nombre: "Zorro Místico", 
@@ -424,7 +424,7 @@ function iniciarBucleComportamiento(bestia) {
       petMovementTimeout = setTimeout(planificarSiguienteMovimiento, tiempoParado);
 
     } else {
-      // ESTADO CAMINAR (8 cuadros)
+      // ESTADO CAMINAR (6 cuadros)
       const roomWidth = room.clientWidth;
       const minX = 60;
       const maxX = roomWidth - 60;
@@ -432,12 +432,19 @@ function iniciarBucleComportamiento(bestia) {
       const percentX = (randomX / roomWidth) * 100;
 
       const seMueveALaDerecha = percentX > lastPositionX;
-      const spriteElegido = seMueveALaDerecha ? bestia.sprites.walkRight : bestia.sprites.walkLeft;
+      
+      // Control de orientación horizontal mediante escala si es necesario
+      if (seMueveALaDerecha) {
+        spriteDiv.style.transform = "scaleX(1)";
+      } else {
+        spriteDiv.style.transform = "scaleX(-1)";
+      }
+
       const duracionViaje = 6.0;
 
       spriteDiv.className = "aseprite-sprite anim-walk";
       petContainer.style.transition = `left ${duracionViaje}s linear`;
-      spriteDiv.style.backgroundImage = `url('${spriteElegido}')`;
+      spriteDiv.style.backgroundImage = `url('${bestia.sprites.walk}')`;
       petContainer.style.left = percentX + '%';
 
       lastPositionX = percentX;
