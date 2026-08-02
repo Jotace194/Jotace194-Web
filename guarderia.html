@@ -73,9 +73,9 @@ body{background:var(--negro);color:var(--hueso);font-family:'Segoe UI',sans-seri
 
 /* MOTOR DE SPRITESHEET ASEPRITE (ADAPTADO A 4 CUADROS) */
 .aseprite-sprite {
-  width: 72px;
-  height: 72px;
-  background-size: 400% 100%;
+  width: 100px;
+  height: 100px;
+  background-size: 200% 100%;
   background-repeat: no-repeat;
   image-rendering: pixelated;
   image-rendering: crisp-edges;
@@ -87,7 +87,7 @@ body{background:var(--negro);color:var(--hueso);font-family:'Segoe UI',sans-seri
 }
 
 .animar-sprite {
-  animation: playSprite 1.5s steps(4) infinite;
+  animation: playSprite 1.5s steps(2) infinite;
 }
 
 @keyframes tambalearHuevo {
@@ -243,7 +243,7 @@ let lastPositionX = 50;
 // BANCO DE BESTIAS 2D CON SPRITES SEPARADOS PARA IZQUIERDA Y DERECHA (WALK Y RUN)
 const BANCO_BESTIAS_2D = [
   { 
-    nombre: "Bestia Fuego", 
+    nombre: "zorro", 
     sprites: {
       idle: "https://oeoujsnnyodrcqeyzcxo.supabase.co/storage/v1/object/public/cartas/Fox_Idle_front.png",
       walkRight: "https://oeoujsnnyodrcqeyzcxo.supabase.co/storage/v1/object/public/cartas/Fox_walk_right.png",
