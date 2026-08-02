@@ -268,6 +268,7 @@ const loginUrl = `https://id.twitch.tv/oauth2/authorize?client_id=${TWITCH_CLIEN
 const loginBtn = document.getElementById('twitchLoginBtn');
 if (loginBtn) { loginBtn.href = loginUrl; }
 
+// --- PROCESAMIENTO CORRECTO DEL TOKEN DE TWITCH ---
 const hash = window.location.hash.substring(1);
 if (hash) {
   const params = new URLSearchParams(hash);
@@ -279,14 +280,19 @@ if (hash) {
 }
 
 const savedToken = localStorage.getItem('twitch_access_token');
-if (savedToken) { obtenerDatosTwitch(savedToken); }
+if (savedToken) { 
+  obtenerDatosTwitch(savedToken); 
+}
 
 async function obtenerDatosTwitch(token) {
   try {
     const response = await fetch('https://api.twitch.tv/helix/users', {
       headers: { 'Client-ID': TWITCH_CLIENT_ID, 'Authorization': `Bearer ${token}` }
     });
-    if (!response.ok) { localStorage.removeItem('twitch_access_token'); return; }
+    if (!response.ok) { 
+      localStorage.removeItem('twitch_access_token'); 
+      return; 
+    }
     const data = await response.json();
     const user = data.data[0];
 
@@ -296,7 +302,9 @@ async function obtenerDatosTwitch(token) {
     document.getElementById('twitchAvatar').src = user.profile_image_url;
 
     await sincronizarUsuarioSupabase(user);
-  } catch (err) { console.error("Error al conectar con Twitch", err); }
+  } catch (err) { 
+    console.error("Error al conectar con Twitch", err); 
+  }
 }
 
 async function sincronizarUsuarioSupabase(user) {
@@ -314,11 +322,15 @@ async function sincronizarUsuarioSupabase(user) {
       const { data: insertedData, error: insertError } = await supabaseClient.from('usuarios_twitch').insert([nuevoUsuario]).select().single();
       if (insertError) return;
       currentUserData = insertedData;
-    } else if (data) { currentUserData = data; }
+    } else if (data) { 
+      currentUserData = data; 
+    }
 
     actualizarInterfazUsuario();
     actualizarInterfazMascota();
-  } catch (err) { console.error("Error Supabase:", err); }
+  } catch (err) { 
+    console.error("Error Supabase:", err); 
+  }
 }
 
 function actualizarInterfazUsuario() {
@@ -356,4 +368,129 @@ function actualizarInterfazMascota() {
     selectorView.classList.add('hidden');
     activeView.classList.remove('hidden');
 
-    const mascota = currentUserData.
+    const mascota = currentUserData.mascota_data;
+    const nivelActual = mascota.nivel || 1;
+
+    if (mascota.esHuevo) {
+      document.getElementById('petName').textContent = "Huevo de la Vida";
+      document.getElementById('petStageLabel').textContent = "Fase: 🥚 Incubación";
+      
+      visualContent.innerHTML = `<img id="petImg" src="https://oeoujsnnyodrcqeyzcxo.supabase.co/storage/v1/object/public/cartas/igneo-huevo.png" alt="Huevo" style="width:130px;height:130px;object-fit:contain;">`;
+      document.getElementById('petImg').classList.add('is-egg');
+      limpiarIntervalosMovimiento();
+      petContainer.style.left = '50%';
+      petContainer.style.transform = 'translate(-50%, -50%)';
+    } else {
+      const bestiaAsignada = BANCO_BESTIAS_2D[mascota.animalIndex] || BANCO_BESTIAS_2D[0];
+      document.getElementById('petName').textContent = bestiaAsignada.nombre;
+      document.getElementById('petStageLabel').textContent = "Fase: 🦊 Zorro 2D";
+
+      if (!visualContent.querySelector('#spriteAnimado')) {
+        visualContent.innerHTML = `<div id="spriteAnimado" class="${bestiaAsignada.sprites.idleClass}" style="background-image: url('${bestiaAsignada.sprites.idle}');"></div>`;
+      }
+
+      if (!petMovementTimeout) {
+        iniciarBucleComportamiento(bestiaAsignada);
+      }
+    }
+
+    document.getElementById('petLevelBadge').textContent = `Nivel ${nivelActual}`;
+    const expActual = mascota.exp || 0;
+    const expPorcentaje = Math.min(100, (expActual % 100));
+    document.getElementById('expText').textContent = `${expActual} / 600 XP`;
+    document.getElementById('expBar').style.width = expPorcentaje + '%';
+    document.getElementById('hambreText').textContent = mascota.hambre + '%';
+    document.getElementById('hambreBar').style.width = mascota.hambre + '%';
+    document.getElementById('felicidadText').textContent = mascota.felicidad + '%';
+    document.getElementById('felicidadBar').style.width = mascota.felicidad + '%';
+  }
+}
+
+function limpiarIntervalosMovimiento() {
+  if (petMovementTimeout) { 
+    clearTimeout(petMovementTimeout); 
+    petMovementTimeout = null; 
+  }
+}
+
+function iniciarBucleComportamiento(bestia) {
+  const room = document.getElementById('petRoom');
+  const petContainer = document.getElementById('petContainer');
+  if (!room || !petContainer) return;
+
+  function planificarSiguienteMovimiento() {
+    if (!currentUserData || currentUserData.mascota_data?.esHuevo) return;
+
+    const spriteDiv = document.getElementById('spriteAnimado');
+    if (!spriteDiv) return;
+
+    const tipoAccion = Math.random();
+
+    if (tipoAccion < 0.4) {
+      // ESTADO IDLE (Quieto - 4 cuadros)
+      spriteDiv.className = bestia.sprites.idleClass;
+      spriteDiv.style.backgroundImage = `url('${bestia.sprites.idle}')`;
+      petContainer.style.transition = 'none';
+      
+      const tiempoParado = Math.random() * 4000 + 3000;
+      petMovementTimeout = setTimeout(planificarSiguienteMovimiento, tiempoParado);
+
+    } else {
+      // ESTADO CAMINAR (6 cuadros)
+      const roomWidth = room.clientWidth;
+      const minX = 80;
+      const maxX = roomWidth - 80;
+      const randomX = Math.random() * (maxX - minX) + minX;
+      const percentX = (randomX / roomWidth) * 100;
+
+      const seMueveALaDerecha = percentX > lastPositionX;
+      const spriteElegido = seMueveALaDerecha ? bestia.sprites.walkRight : bestia.sprites.walkLeft;
+      const duracionViaje = 6.0;
+
+      spriteDiv.className = bestia.sprites.walkClass;
+      petContainer.style.transition = `left ${duracionViaje}s linear`;
+      spriteDiv.style.backgroundImage = `url('${spriteElegido}')`;
+      petContainer.style.left = percentX + '%';
+
+      lastPositionX = percentX;
+
+      petMovementTimeout = setTimeout(() => {
+        planificarSiguienteMovimiento();
+      }, duracionViaje * 1000);
+    }
+  }
+
+  planificarSiguienteMovimiento();
+}
+
+async function cuidarMascota(accion) {
+  if (!currentUserData || !currentUserData.mascota_data) return;
+  const mascota = currentUserData.mascota_data;
+
+  if (accion === 'alimentar') mascota.hambre = Math.min(100, mascota.hambre + 25);
+  else if (accion === 'limpiar') mascota.limpieza = Math.min(100, mascota.limpieza + 25);
+  else if (accion === 'jugar') mascota.felicidad = Math.min(100, mascota.felicidad + 25);
+
+  mascota.exp = (mascota.exp || 0) + 15;
+  mascota.nivel = Math.floor(mascota.exp / 100) + 1;
+
+  if (mascota.esHuevo && mascota.nivel >= 6) {
+    mascota.esHuevo = false;
+    mascota.animalIndex = 0; 
+  }
+
+  const nuevosPuntos = currentUserData.points + 30;
+  const { error } = await supabaseClient.from('usuarios_twitch').update({ points: nuevosPuntos, mascota_data: mascota }).eq('twitch_id', currentUserData.twitch_id);
+
+  if (!error) {
+    currentUserData.points = nuevosPuntos;
+    currentUserData.mascota_data = mascota;
+    actualizarInterfazUsuario();
+    actualizarInterfazMascota();
+    document.getElementById('petMsg').style.color = "var(--turquesa)";
+    document.getElementById('petMsg').textContent = `¡Acción '${accion}' realizada! +15 XP.`;
+  }
+}
+</script>
+</body>
+</html>
