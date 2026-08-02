@@ -85,7 +85,7 @@ body{background:var(--negro);color:var(--hueso);font-family:'Segoe UI',sans-seri
   to { background-position: 100% 0; }
 }
 
-@keyframes playSprite6 {
+@keyframes playSprite8 {
   from { background-position: 0% 0; }
   to { background-position: 100% 0; }
 }
@@ -96,8 +96,8 @@ body{background:var(--negro);color:var(--hueso);font-family:'Segoe UI',sans-seri
 }
 
 .anim-walk {
-  background-size: 600% 100%;
-  animation: playSprite6 0.6s steps(6) infinite;
+  background-size: 800% 100%;
+  animation: playSprite8 0.7s steps(8) infinite;
 }
 
 @keyframes tambalearHuevo {
@@ -374,7 +374,6 @@ function actualizarInterfazMascota() {
       document.getElementById('petName').textContent = bestiaAsignada.nombre;
       document.getElementById('petStageLabel').textContent = "Fase: 🦊 Zorro 2D";
 
-      // Render limpio inicial de Idle si no existe
       if (!visualContent.querySelector('#spriteAnimado')) {
         visualContent.innerHTML = `<div id="spriteAnimado" class="aseprite-sprite anim-idle" style="background-image: url('${bestiaAsignada.sprites.idle}');"></div>`;
       }
@@ -417,7 +416,7 @@ function iniciarBucleComportamiento(bestia) {
     const tipoAccion = Math.random();
 
     if (tipoAccion < 0.4) {
-      // ESTADO IDLE (Quieto)
+      // ESTADO IDLE (Quieto - 4 cuadros)
       spriteDiv.className = "aseprite-sprite anim-idle";
       spriteDiv.style.backgroundImage = `url('${bestia.sprites.idle}')`;
       petContainer.style.transition = 'none';
@@ -426,7 +425,7 @@ function iniciarBucleComportamiento(bestia) {
       petMovementTimeout = setTimeout(planificarSiguienteMovimiento, tiempoParado);
 
     } else {
-      // ESTADO CAMINAR
+      // ESTADO CAMINAR (8 cuadros)
       const roomWidth = room.clientWidth;
       const minX = 80;
       const maxX = roomWidth - 80;
