@@ -73,9 +73,9 @@ body{background:var(--negro);color:var(--hueso);font-family:'Segoe UI',sans-seri
 
 /* MOTOR DE SPRITESHEET ASEPRITE (ADAPTADO A 4 CUADROS) */
 .aseprite-sprite {
-  width: 120px;
-  height: 120px;
-  background-size: 600% 100%;
+  width: 100px;
+  height: 100px;
+  background-size: 200% 100%;
   background-repeat: no-repeat;
   image-rendering: pixelated;
   image-rendering: crisp-edges;
@@ -83,11 +83,11 @@ body{background:var(--negro);color:var(--hueso);font-family:'Segoe UI',sans-seri
 
 @keyframes playSprite {
   from { background-position: 0% 0; }
-  to { background-position: 50% 0; }
+  to { background-position: 100% 0; }
 }
 
 .animar-sprite {
-  animation: playSprite 1s steps(6) infinite;
+  animation: playSprite 1s steps(2) infinite;
 }
 
 @keyframes tambalearHuevo {
