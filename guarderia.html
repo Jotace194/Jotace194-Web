@@ -255,9 +255,8 @@ const BANCO_BESTIAS_2D = [
   { 
     nombre: "Zorro Místico", 
     sprites: {
-      idle: "https://oeoujsnnyodrcqeyzcxo.supabase.co/storage/v1/object/public/cartas/Fox_Idle_front.png",
-      walkRight: "https://oeoujsnnyodrcqeyzcxo.supabase.co/storage/v1/object/public/cartas/Fox_walk_right.png",
-      walkLeft: "https://oeoujsnnyodrcqeyzcxo.supabase.co/storage/v1/object/public/cartas/Fox_walk_left.png"
+      idle: "https://oeoujsnnyodrcqeyzcxo.supabase.co/storage/v1/object/public/cartas/Pink_Idle_4.png",
+      walk: "https://oeoujsnnyodrcqeyzcxo.supabase.co/storage/v1/object/public/cartas/Pink_Walk_6.png",
     }
   }
 ];
@@ -427,8 +426,8 @@ function iniciarBucleComportamiento(bestia) {
     } else {
       // ESTADO CAMINAR (8 cuadros)
       const roomWidth = room.clientWidth;
-      const minX = 80;
-      const maxX = roomWidth - 80;
+      const minX = 60;
+      const maxX = roomWidth - 60;
       const randomX = Math.random() * (maxX - minX) + minX;
       const percentX = (randomX / roomWidth) * 100;
 
